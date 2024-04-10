@@ -1,15 +1,16 @@
 package user
 
 import (
+	"backend/data/roles"
 	"backend/utils"
 	"errors"
 )
 
 type Service interface {
-	Register(user InputCreateUser) (User, error)
+	Register(user InputCreateUser) (ResponseUser, error)
 	Login(input InputLoginUser) (string, error)
 	GetById(id int) (User, error)
-	GetAll() ([]InputListUser, error)
+	GetAll() ([]ResponseListUser, error)
 }
 
 type service struct {
@@ -20,17 +21,30 @@ func NewService(r Repository) *service {
 	return &service{r}
 }
 
-func (s *service) Register(input InputCreateUser) (User, error) {
-	var user User
-	user.Email = input.Email
-	user.Password = utils.HashPassword(input.Password)
-
-	user, err := s.repository.Register(user)
-	if err != nil {
-		return user, err
+func (s *service) Register(input InputCreateUser) (ResponseUser, error) {
+	var user User = User{
+		FirstName: input.FirstName,
+		LastName:  input.LastName,
+		Email:     input.Email,
+		Password:  utils.HashPassword(input.Password),
+		Role:      roles.ROLE_USER,
 	}
 
-	return user, nil
+	user, err := s.repository.Register(user)
+	formattedUser := ResponseUser{
+		ID:        user.ID,
+		FirstName: user.FirstName,
+		LastName:  user.LastName,
+		Email:     user.Email,
+		Role:      user.Role,
+		CreatedAt: user.CreatedAt,
+		UpdatedAt: user.UpdatedAt,
+	}
+	if err != nil {
+		return formattedUser, err
+	}
+
+	return formattedUser, nil
 }
 
 func (s *service) Login(input InputLoginUser) (string, error) {
@@ -52,7 +66,7 @@ func (s *service) GetById(id int) (User, error) {
 	return user, nil
 }
 
-func (s *service) GetAll() ([]InputListUser, error) {
+func (s *service) GetAll() ([]ResponseListUser, error) {
 	users, err := s.repository.FindAll()
 	if err != nil {
 		return users, err

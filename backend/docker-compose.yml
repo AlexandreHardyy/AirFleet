@@ -10,7 +10,7 @@ services:
       POSTGRES_PASSWORD: test1234
       POSTGRES_DB: project-go
     volumes:
-      - pg-data:/var/lib/postgresql/data
+      - ./postgres-data:/var/lib/postgresql/data
   
   adminer:
     image: adminer
@@ -23,4 +23,4 @@ services:
 
 volumes:
   db-data: {}
-  pg-data: {}
+  postgres-data: {}

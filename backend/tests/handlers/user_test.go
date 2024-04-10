@@ -16,36 +16,36 @@ import (
 	"backend/models/user"
 )
 
-type MockUserService struct {
+type MockUserRepository struct {
 	mock.Mock
 }
 
-func (m *MockUserService) Register(input user.InputCreateUser) (user.User, error) {
+func (m *MockUserRepository) Register(input user.User) (user.User, error) {
 	args := m.Called(input)
 	return args.Get(0).(user.User), args.Error(1)
 }
 
-func (m *MockUserService) Login(input user.InputLoginUser) (string, error) {
-	args := m.Called(input)
+func (m *MockUserRepository) Login(email string, password string) (string, error) {
+	args := m.Called(email, password)
 	return args.String(0), args.Error(1)
 }
 
-func (m *MockUserService) GetById(id int) (user.User, error) {
+func (m *MockUserRepository) GetById(id int) (user.User, error) {
 	args := m.Called(id)
 	return args.Get(0).(user.User), args.Error(1)
 }
 
-func (m *MockUserService) GetAll() ([]user.InputListUser, error) {
+func (m *MockUserRepository) FindAll() ([]user.ResponseListUser, error) {
 	args := m.Called()
-	return args.Get(0).([]user.InputListUser), args.Error(1)
+	return args.Get(0).([]user.ResponseListUser), args.Error(1)
 }
 
 func TestRegisterCreatedSuccessfully(t *testing.T) {
 	t.Log("Register: user input should be created successfully")
-	mockUserService := new(MockUserService)
-	handler := handlers.NewUserHandler(mockUserService)
+	mockUserRepository := new(MockUserRepository)
+	userService := user.NewService(mockUserRepository)
+	handler := handlers.NewUserHandler(userService)
 
-	// Prepare test data
 	input := user.InputCreateUser{
 		Email:     "quoi@feur.com",
 		FirstName: "quoi",
@@ -53,7 +53,6 @@ func TestRegisterCreatedSuccessfully(t *testing.T) {
 		Password:  "password123",
 	}
 
-	// Mock behavior
 	mockUser := user.User{
 		ID:        1,
 		Email:     "quoi@feur.com",
@@ -64,7 +63,7 @@ func TestRegisterCreatedSuccessfully(t *testing.T) {
 		UpdatedAt: time.Date(1, time.January, 1, 0, 0, 0, 0, time.UTC),
 		CreatedAt: time.Date(1, time.January, 1, 0, 0, 0, 0, time.UTC),
 	}
-	mockUserService.On("Register", input).Return(mockUser, nil)
+	mockUserRepository.On("Register", mock.AnythingOfType("user.User")).Return(mockUser, nil)
 
 	// Prepare HTTP request
 	jsonInput, _ := json.Marshal(input)
@@ -74,33 +73,36 @@ func TestRegisterCreatedSuccessfully(t *testing.T) {
 	c, _ := gin.CreateTestContext(w)
 	c.Request = req
 
-	// Execute the handler
 	handler.Register(c)
 
-	// Verify the response
 	assert.Equal(t, http.StatusCreated, w.Code)
 
-	var responseUser user.User
+	var responseUser user.ResponseUser
 	err := json.Unmarshal(w.Body.Bytes(), &responseUser)
 	assert.NoError(t, err)
-	assert.Equal(t, mockUser, responseUser)
-	println("ROLE", mockUser.Role, "ROLE2", responseUser.Role)
-
-	mockUserService.AssertExpectations(t)
-}
-
-func TestRegisterWrongInput(t *testing.T) {
-	t.Log("Register: user input should be wrong")
-	mockUserService := new(MockUserService)
-	handler := handlers.NewUserHandler(mockUserService)
-
-	// Prepare test data
-	input := user.InputCreateUser{
+	assert.Equal(t, user.ResponseUser{
+		ID:        1,
 		Email:     "quoi@feur.com",
 		FirstName: "quoi",
-	}
+		LastName:  "feur",
+		Role:      "ROLE_USER",
+		UpdatedAt: time.Date(1, time.January, 1, 0, 0, 0, 0, time.UTC),
+		CreatedAt: time.Date(1, time.January, 1, 0, 0, 0, 0, time.UTC),
+	}, responseUser)
 
-	mockUserService.On("Register", input).Return(user.User{}, nil)
+	mockUserRepository.AssertExpectations(t)
+}
+
+func TestRegisterWrongArguments(t *testing.T) {
+	t.Log("Register: user input should be created successfully")
+	mockUserRepository := new(MockUserRepository)
+	userService := user.NewService(mockUserRepository)
+	handler := handlers.NewUserHandler(userService)
+
+	input := user.InputCreateUser{
+		Email:    "quoi@feur.com",
+		Password: "password123",
+	}
 
 	// Prepare HTTP request
 	jsonInput, _ := json.Marshal(input)
@@ -115,5 +117,4 @@ func TestRegisterWrongInput(t *testing.T) {
 
 	// Verify the response
 	assert.Equal(t, http.StatusBadRequest, w.Code)
-
 }
