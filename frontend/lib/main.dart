@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+
+  await Future.delayed(const Duration(seconds: 3));
+
+  FlutterNativeSplash.remove();
   runApp(const App());
 }
 
@@ -42,7 +49,7 @@ class _HomeState extends State<Home> {
       body: Container(
           width:  MediaQuery.of(context).size.width,
           height: MediaQuery.of(context).size.height,
-          color: const Color(0xFF131141),
+          color: Colors.white,
           child: Center(
             child: Image.asset(
               'assets/images/logo.png',
