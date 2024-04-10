@@ -8,7 +8,22 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
+
+	_ "backend/docs"
+
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
+
+//	@title			Backend AirFleet
+//	@version		1.0
+//	@description	this is the go project.
+
+// @BasePath					/api
+//
+// @securityDefinitions.apikey	BearerAuth
+// @in							header
+// @name						Authorization
 
 func main() {
 	err := godotenv.Load()
@@ -21,6 +36,6 @@ func main() {
 	router := gin.Default()
 	routes.InitRoutes(router, db)
 
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	router.Run(":3001")
-
 }

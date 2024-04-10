@@ -13,7 +13,7 @@ type Repository interface {
 	Register(user User) (User, error)
 	Login(email string, password string) (string, error)
 	GetById(id int) (User, error)
-	FindAll() ([]InputListUser, error)
+	FindAll() ([]ResponseListUser, error)
 }
 
 type repository struct {
@@ -64,8 +64,8 @@ func (r *repository) GetById(id int) (User, error) {
 	return user, nil
 }
 
-func (r *repository) FindAll() ([]InputListUser, error) {
-	users := []InputListUser{}
+func (r *repository) FindAll() ([]ResponseListUser, error) {
+	users := []ResponseListUser{}
 	err := r.db.Model(&User{}).Find(&users).Error
 	if err != nil {
 		return users, err

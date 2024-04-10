@@ -1,0 +1,179 @@
+basePath: /api
+definitions:
+  handlers.Response:
+    properties:
+      message:
+        type: string
+    type: object
+  user.InputCreateUser:
+    properties:
+      email:
+        type: string
+      first_name:
+        type: string
+      last_name:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - first_name
+    - last_name
+    - password
+    type: object
+  user.InputLoginUser:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  user.ResponseListUser:
+    properties:
+      created_at:
+        type: string
+      email:
+        type: string
+      first_name:
+        type: string
+      id:
+        type: integer
+      is_verified:
+        type: boolean
+      last_name:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  user.ResponseLogin:
+    properties:
+      token:
+        type: string
+    type: object
+  user.ResponseUser:
+    properties:
+      created_at:
+        type: string
+      email:
+        type: string
+      first_name:
+        type: string
+      id:
+        type: integer
+      last_name:
+        type: string
+      role:
+        type: string
+      updated_at:
+        type: string
+    type: object
+info:
+  contact: {}
+  description: this is the go project.
+  title: Backend AirFleet
+  version: "1.0"
+paths:
+  /users:
+    get:
+      consumes:
+      - application/json
+      description: get all user for admins
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/user.ResponseListUser'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.Response'
+      security:
+      - BearerAuth: []
+      summary: Get all users
+      tags:
+      - user
+    post:
+      consumes:
+      - application/json
+      description: register for a normal client
+      parameters:
+      - description: Message body
+        in: body
+        name: userInput
+        required: true
+        schema:
+          $ref: '#/definitions/user.InputCreateUser'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/user.ResponseUser'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.Response'
+      summary: Register user
+      tags:
+      - user
+  /users/login:
+    post:
+      consumes:
+      - application/json
+      description: register for a client
+      parameters:
+      - description: Message body
+        in: body
+        name: userInput
+        required: true
+        schema:
+          $ref: '#/definitions/user.InputLoginUser'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/user.ResponseLogin'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.Response'
+      summary: Register example
+      tags:
+      - user
+  /users/me:
+    get:
+      consumes:
+      - application/json
+      description: get current user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/user.ResponseUser'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.Response'
+      security:
+      - BearerAuth: []
+      summary: Current user
+      tags:
+      - user
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
