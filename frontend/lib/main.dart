@@ -1,9 +1,5 @@
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:frontend/map.dart';
+import 'package:frontend/map/map.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
@@ -12,8 +8,8 @@ Future<void> main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
-  const String ACCESS_TOKEN = String.fromEnvironment("PUBLIC_ACCESS_TOKEN");
-  MapboxOptions.setAccessToken(ACCESS_TOKEN);
+  const String MAPBOX_ACCESS_TOKEN = String.fromEnvironment("PUBLIC_ACCESS_TOKEN");
+  MapboxOptions.setAccessToken(MAPBOX_ACCESS_TOKEN);
 
   await Future.delayed(const Duration(seconds: 3));
 
@@ -69,19 +65,19 @@ class _HomeState extends State<Home> {
                   Expanded(
                     flex: 1,
                     child: Container(
-                      color: Colors.red,
-                    ),
-                  ),
-                  Expanded(
-                    flex: 1,
-                    child: Container(
                       color: Colors.blue,
                     ),
                   ),
                   Expanded(
                     flex: 1,
                     child: Container(
-                      color: Colors.green,
+                      color: Colors.pink,
+                    ),
+                  ),
+                  Expanded(
+                    flex: 1,
+                    child: Container(
+                      color: Colors.red,
                     ),
                   ),
                 ]
