@@ -1,7 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/map/map.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+
+  const String MAPBOX_ACCESS_TOKEN = String.fromEnvironment("PUBLIC_ACCESS_TOKEN");
+  MapboxOptions.setAccessToken(MAPBOX_ACCESS_TOKEN);
+
+  await Future.delayed(const Duration(seconds: 3));
+
+  FlutterNativeSplash.remove();
   runApp(const App());
 }
 
@@ -39,18 +51,40 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF131141),
-      body: Container(
-          width:  MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height,
-          color: const Color(0xFF131141),
-          child: Center(
-            child: Image.asset(
-              'assets/images/logo.png',
-              width: 200,
-              height: 200,
-            ),
-        ),
-      ),
+      body: Column(
+        children: [
+          const Expanded(
+            flex: 2,
+            child: AirFleetMap(),
+          ),
+          Expanded(
+            flex: 1,
+            child:
+              Column(
+                children: [
+                  Expanded(
+                    flex: 1,
+                    child: Container(
+                      color: Colors.blue,
+                    ),
+                  ),
+                  Expanded(
+                    flex: 1,
+                    child: Container(
+                      color: Colors.pink,
+                    ),
+                  ),
+                  Expanded(
+                    flex: 1,
+                    child: Container(
+                      color: Colors.red,
+                    ),
+                  ),
+                ]
+              ),
+          )
+        ],
+      )
     );
   }
 }

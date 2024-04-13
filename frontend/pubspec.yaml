@@ -36,6 +36,10 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.6
   google_fonts: ^6.2.1
+  flutter_native_splash: ^2.4.0
+  mapbox_maps_flutter: ^1.0.0
+  permission_handler: ^11.3.1
+  font_awesome_flutter: ^10.7.0
 
 dev_dependencies:
   flutter_test:
