@@ -70,7 +70,7 @@ func (th *userHandler) Register(c *gin.Context) {
 //
 //	@Param		userInput	body		user.InputLoginUser	true	"Message body"
 //	@Success	200			{object}	user.ResponseLogin
-//	@Failure	400			{object}	Response
+//	@Failure	404			{object}	Response
 //
 // @Router /users/login [post]
 func (th *userHandler) Login(c *gin.Context) {
@@ -89,7 +89,7 @@ func (th *userHandler) Login(c *gin.Context) {
 		response := &Response{
 			Message: "Invalid credentials",
 		}
-		c.JSON(http.StatusBadRequest, response)
+		c.JSON(http.StatusNotFound, response)
 		return
 	}
 

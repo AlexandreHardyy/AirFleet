@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:frontend/map/map.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
@@ -8,7 +9,13 @@ Future<void> main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
-  const String MAPBOX_ACCESS_TOKEN = String.fromEnvironment("PUBLIC_ACCESS_TOKEN");
+  await dotenv.load(fileName: ".env");
+
+  final String MAPBOX_ACCESS_TOKEN =
+      const String.fromEnvironment("PUBLIC_ACCESS_TOKEN") != ""
+          ? const String.fromEnvironment("PUBLIC_ACCESS_TOKEN")
+          : dotenv.get("PUBLIC_ACCESS_TOKEN_MAPBOX");
+
   MapboxOptions.setAccessToken(MAPBOX_ACCESS_TOKEN);
 
   await Future.delayed(const Duration(seconds: 3));
