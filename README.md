@@ -1,5 +1,5 @@
 # AIR FLEET
-Contributors: Armand DE FARIA LEITE, Noé PIGEAU, Théo HERVE, Alexandre HARDY
+Contributors: Armand DE FARIA LEITE, Noé PIGEAU, Théo HERVÉ, Alexandre HARDY
 
 ### BACKEND GOLANG
 

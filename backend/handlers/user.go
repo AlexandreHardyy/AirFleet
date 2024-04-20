@@ -166,3 +166,92 @@ func (th *userHandler) GetAll(c *gin.Context) {
 
 	c.JSON(http.StatusOK, users)
 }
+
+// Update godoc
+//
+// @Summary Update user
+// @Schemes
+// @Description update user for admins
+// @Tags user
+// @Accept json
+// @Produce json
+//
+//	@Param		id		path		int		true	"User ID"
+//	@Param		userInput	body		user.InputUpdateUser	true	"Message body"
+//	@Success	200			{object}	user.ResponseUser
+//	@Failure	401         {object}	Response
+//
+// @Router /users/{id} [put]
+//
+//	@Security	BearerAuth
+func (th *userHandler) Update(c *gin.Context) {
+
+	userId, err := token.ExtractTokenID(c)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	var input user.InputUpdateUser
+	err = c.ShouldBindJSON(&input)
+	if err != nil {
+		response := &Response{
+			Message: "Cannot extract JSON body",
+		}
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	userById, err := th.userService.Update(userId, input)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, user.ResponseUser{
+		ID:        userById.ID,
+		Email:     userById.Email,
+		FirstName: userById.FirstName,
+		LastName:  userById.LastName,
+		Role:      userById.Role,
+		CreatedAt: userById.CreatedAt,
+		UpdatedAt: userById.UpdatedAt,
+	})
+}
+
+// Delete godoc
+//
+// @Summary Delete user
+// @Schemes
+// @Description delete user for admins
+// @Tags user
+// @Accept json
+// @Produce json
+//
+//	@Param		id		path		int		true	"User ID"
+//	@Success	200			{object}	Response
+//	@Failure	401         {object}	Response
+//
+// @Router /users/{id} [delete]
+//
+//	@Security	BearerAuth
+func (th *userHandler) Delete(c *gin.Context) {
+
+	userId, err := token.ExtractTokenID(c)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	err = th.userService.Delete(userId)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "User deleted"})
+}

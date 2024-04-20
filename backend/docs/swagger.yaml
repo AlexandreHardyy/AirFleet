@@ -31,6 +31,19 @@ definitions:
     - email
     - password
     type: object
+  user.InputUpdateUser:
+    properties:
+      email:
+        type: string
+      first_name:
+        type: string
+      last_name:
+        type: string
+      password:
+        type: string
+      role:
+        type: string
+    type: object
   user.ResponseListUser:
     properties:
       created_at:
@@ -122,6 +135,65 @@ paths:
           schema:
             $ref: '#/definitions/handlers.Response'
       summary: Register user
+      tags:
+      - user
+  /users/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: delete user for admins
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.Response'
+      security:
+      - BearerAuth: []
+      summary: Delete user
+      tags:
+      - user
+    put:
+      consumes:
+      - application/json
+      description: update user for admins
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Message body
+        in: body
+        name: userInput
+        required: true
+        schema:
+          $ref: '#/definitions/user.InputUpdateUser'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/user.ResponseUser'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.Response'
+      security:
+      - BearerAuth: []
+      summary: Update user
       tags:
       - user
   /users/login:

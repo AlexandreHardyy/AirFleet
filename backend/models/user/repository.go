@@ -14,6 +14,8 @@ type Repository interface {
 	Login(email string, password string) (string, error)
 	GetById(id int) (User, error)
 	FindAll() ([]ResponseListUser, error)
+	Update(id int, user User) (User, error) // new method
+	Delete(id int) error                    // new method
 }
 
 type repository struct {
@@ -65,11 +67,23 @@ func (r *repository) GetById(id int) (User, error) {
 }
 
 func (r *repository) FindAll() ([]ResponseListUser, error) {
-	users := []ResponseListUser{}
+	var users []ResponseListUser
 	err := r.db.Model(&User{}).Find(&users).Error
 	if err != nil {
 		return users, err
 	}
 
 	return users, nil
+}
+
+func (r *repository) Update(id int, user User) (User, error) {
+	err := r.db.Model(&User{}).Where("id = ?", id).Updates(user).Error
+	if err != nil {
+		return User{}, err
+	}
+	return r.GetById(id)
+}
+
+func (r *repository) Delete(id int) error {
+	return r.db.Delete(&User{}, id).Error
 }

@@ -19,4 +19,8 @@ func initUserRoutes(api *gin.RouterGroup, db *gorm.DB) {
 	// api = protected.Group("/user")
 	api.GET("/me", middlewares.IsAuth(), userHandler.CurrentUser)
 	api.GET("", middlewares.IsAdminAuth(db), userHandler.GetAll)
+
+	api.PUT("/users/:id", userHandler.Update)
+
+	api.DELETE("/users/:id", userHandler.Delete)
 }

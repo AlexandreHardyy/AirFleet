@@ -11,6 +11,8 @@ type Service interface {
 	Login(input InputLoginUser) (string, error)
 	GetById(id int) (User, error)
 	GetAll() ([]ResponseListUser, error)
+	Update(id int, user InputUpdateUser) (ResponseUser, error) // new method
+	Delete(id int) error                                       // new method
 }
 
 type service struct {
@@ -72,4 +74,31 @@ func (s *service) GetAll() ([]ResponseListUser, error) {
 		return users, err
 	}
 	return users, nil
+}
+
+func (s *service) Update(id int, input InputUpdateUser) (ResponseUser, error) {
+	user := User{
+		FirstName: input.FirstName,
+		LastName:  input.LastName,
+		Email:     input.Email,
+		Password:  utils.HashPassword(input.Password),
+		Role:      input.Role,
+	}
+	user, err := s.repository.Update(id, user)
+	if err != nil {
+		return ResponseUser{}, err
+	}
+	return ResponseUser{
+		ID:        user.ID,
+		FirstName: user.FirstName,
+		LastName:  user.LastName,
+		Email:     user.Email,
+		Role:      user.Role,
+		CreatedAt: user.CreatedAt,
+		UpdatedAt: user.UpdatedAt,
+	}, nil
+}
+
+func (s *service) Delete(id int) error {
+	return s.repository.Delete(id)
 }
