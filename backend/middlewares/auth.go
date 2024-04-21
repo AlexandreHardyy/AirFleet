@@ -2,12 +2,12 @@ package middlewares
 
 import (
 	"backend/data/roles"
+	"backend/database"
 	"backend/models/user"
 	"backend/utils/token"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 )
 
 func IsAuth() gin.HandlerFunc {
@@ -25,7 +25,7 @@ func IsAuth() gin.HandlerFunc {
 
 const ROLE_ADMIN = "ROLE_ADMIN"
 
-func IsAdminAuth(db *gorm.DB) gin.HandlerFunc {
+func IsAdminAuth() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		println("middleware admin auth")
 		err := token.TokenValid(c)
@@ -35,7 +35,7 @@ func IsAdminAuth(db *gorm.DB) gin.HandlerFunc {
 			return
 		}
 		userId, _ := token.ExtractTokenID(c)
-		userRepository := user.NewRepository(db)
+		userRepository := user.NewRepository(database.DB)
 
 		currentUser, err := userRepository.GetById(userId)
 		if err != nil || currentUser.Role != roles.ROLE_ADMIN {

@@ -1,13 +1,12 @@
 package user
 
 import (
-	"backend/data/roles"
 	"backend/utils"
 	"errors"
 )
 
 type Service interface {
-	Register(user InputCreateUser) (ResponseUser, error)
+	Register(user User) (ResponseUser, error)
 	Login(input InputLoginUser) (string, error)
 	GetById(id int) (User, error)
 	GetAll() ([]ResponseListUser, error)
@@ -21,16 +20,13 @@ func NewService(r Repository) *service {
 	return &service{r}
 }
 
-func (s *service) Register(input InputCreateUser) (ResponseUser, error) {
-	var user User = User{
-		FirstName: input.FirstName,
-		LastName:  input.LastName,
-		Email:     input.Email,
-		Password:  utils.HashPassword(input.Password),
-		Role:      roles.ROLE_USER,
-	}
+func (s *service) Register(input User) (ResponseUser, error) {
+	var user User = input
+	user.Password = utils.HashPassword(input.Password)
+	user.IsVerified = false
+	user.IsPilotVerified = false
 
-	user, err := s.repository.Register(user)
+	user, err := s.repository.Create(user)
 	formattedUser := ResponseUser{
 		ID:        user.ID,
 		FirstName: user.FirstName,

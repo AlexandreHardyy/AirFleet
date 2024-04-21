@@ -31,10 +31,10 @@ func main() {
 		log.Fatalf("err loading: %v", err)
 	}
 
-	db := database.OpenConnection()
+	database.OpenConnection()
 	gin.SetMode(os.Getenv("GIN_MODE"))
 	router := gin.Default()
-	routes.InitRoutes(router, db)
+	routes.InitRoutes(router)
 
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	router.Run(":3001")

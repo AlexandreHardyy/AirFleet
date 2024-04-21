@@ -93,7 +93,7 @@ const docTemplate = `{
         },
         "/users/login": {
             "post": {
-                "description": "register for a client",
+                "description": "login a client",
                 "consumes": [
                     "application/json"
                 ],
@@ -103,7 +103,7 @@ const docTemplate = `{
                 "tags": [
                     "user"
                 ],
-                "summary": "Register example",
+                "summary": "Login",
                 "parameters": [
                     {
                         "description": "Message body",
@@ -122,8 +122,8 @@ const docTemplate = `{
                             "$ref": "#/definitions/user.ResponseLogin"
                         }
                     },
-                    "400": {
-                        "description": "Bad Request",
+                    "404": {
+                        "description": "Not Found",
                         "schema": {
                             "$ref": "#/definitions/handlers.Response"
                         }
@@ -164,6 +164,46 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/users/pilot": {
+            "post": {
+                "description": "register for a pilot",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "Register pilot",
+                "parameters": [
+                    {
+                        "description": "Message body",
+                        "name": "userInput",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/user.InputCreatePilot"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/user.ResponseUser"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Response"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -174,6 +214,9 @@ const docTemplate = `{
                     "type": "string"
                 }
             }
+        },
+        "user.InputCreatePilot": {
+            "type": "object"
         },
         "user.InputCreateUser": {
             "type": "object",

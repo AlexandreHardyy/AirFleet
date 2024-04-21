@@ -1,11 +1,10 @@
 package database
 
 import (
+	"backend/models/file"
 	"backend/models/user"
-
-	"gorm.io/gorm"
 )
 
-func Migrate(db *gorm.DB) {
-	db.AutoMigrate(&user.User{})
+func Migrate() {
+	DB.AutoMigrate(&user.User{}, &file.File{})
 }

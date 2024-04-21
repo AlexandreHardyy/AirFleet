@@ -9,6 +9,8 @@ import (
 	"gorm.io/gorm"
 )
 
+var DB *gorm.DB
+
 func OpenConnection() (db *gorm.DB) {
 
 	host := os.Getenv("POSTGRES_HOST")
@@ -23,8 +25,9 @@ func OpenConnection() (db *gorm.DB) {
 	if err != nil {
 		log.Fatal(err.Error())
 	}
+	DB = db
 
-	Migrate(db)
+	Migrate()
 
-	return db
+	return DB
 }

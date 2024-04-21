@@ -1,9 +1,17 @@
 package handlers
 
 import (
+	"backend/data/roles"
+	"backend/database"
+	"backend/models/file"
 	"backend/models/user"
+	"backend/utils"
 	"backend/utils/token"
+	"fmt"
+	"mime/multipart"
 	"net/http"
+	"os"
+	"path/filepath"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -41,14 +49,19 @@ func (th *userHandler) Register(c *gin.Context) {
 	var input user.InputCreateUser
 	err := c.ShouldBindJSON(&input)
 	if err != nil {
-		response := &Response{
+		c.JSON(http.StatusBadRequest, &Response{
 			Message: "Error: cannot extract JSON body",
-		}
-		c.JSON(http.StatusBadRequest, response)
+		})
 		return
 	}
 
-	newUser, err := th.userService.Register(input)
+	newUser, err := th.userService.Register(user.User{
+		Email:     input.Email,
+		LastName:  input.LastName,
+		FirstName: input.FirstName,
+		Password:  input.Password,
+		Role:      roles.ROLE_USER,
+	})
 	if err != nil {
 		response := &Response{
 			Message: err.Error(),
@@ -60,10 +73,79 @@ func (th *userHandler) Register(c *gin.Context) {
 	c.JSON(http.StatusCreated, newUser)
 }
 
-// Login godoc
-// @Summary Register example
+// Register godoc
+// @Summary Register pilot
 // @Schemes
-// @Description register for a client
+// @Description register for a pilot
+// @Tags user
+// @Accept multipart/form-data
+// @Produce json
+//
+//	@Param		userInput	body		user.InputCreatePilot	true	"Message body"
+//	@Success	201			{object}	user.ResponseUser
+//	@Failure	400			{object}	Response
+//
+// @Router /users/pilot [post]
+func (th *userHandler) RegisterPilot(c *gin.Context) {
+	var input user.InputCreatePilot
+	if err := c.ShouldBind(&input); err != nil {
+		println(err.Error())
+		c.JSON(http.StatusBadRequest, &Response{
+			Message: err.Error(),
+		})
+		return
+	}
+	if !utils.IsFileValid(input.DrivingLicence) || !utils.IsFileValid(input.IdCard) {
+		c.JSON(http.StatusBadRequest, &Response{
+			Message: "Error: only file .jpeg .png .jpg .pdf are authorize with a size limit of 5mo",
+		})
+		return
+	}
+
+	dir, _ := os.Getwd()
+	newUser, err := th.userService.Register(user.User{
+		Email:     input.Email,
+		FirstName: input.FirstName,
+		LastName:  input.LastName,
+		Password:  input.Password,
+		Role:      roles.ROLE_PILOT,
+	})
+
+	if err != nil {
+		response := &Response{
+			Message: err.Error(),
+		}
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	fileRepository := file.NewRepository(database.DB)
+
+	for fileType, fileToUpload := range map[string]*multipart.FileHeader{
+		"id-card":         input.IdCard,
+		"driving-licence": input.DrivingLicence,
+	} {
+		extension := utils.GetFileExtension(fileToUpload.Filename)
+		newFileName := utils.GenerateRandomString() + "." + extension
+		if err := c.SaveUploadedFile(fileToUpload, filepath.Join(dir, "public", "files", fileType+"s", newFileName)); err != nil {
+			c.JSON(http.StatusInternalServerError, &Response{Message: fmt.Sprintf("%s upload failed", fileType)})
+			return
+		}
+		fileRepository.Create(file.File{
+			Type:   fileType,
+			Path:   filepath.Join("public", "files", fileType+"s", newFileName),
+			UserID: newUser.ID,
+		})
+
+	}
+
+	c.JSON(http.StatusCreated, newUser)
+}
+
+// Login godoc
+// @Summary Login
+// @Schemes
+// @Description login a client
 // @Tags user
 // @Accept json
 // @Produce json
