@@ -5,6 +5,8 @@ definitions:
       message:
         type: string
     type: object
+  user.InputCreatePilot:
+    type: object
   user.InputCreateUser:
     properties:
       email:
@@ -128,7 +130,7 @@ paths:
     post:
       consumes:
       - application/json
-      description: register for a client
+      description: login a client
       parameters:
       - description: Message body
         in: body
@@ -143,11 +145,11 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/user.ResponseLogin'
-        "400":
-          description: Bad Request
+        "404":
+          description: Not Found
           schema:
             $ref: '#/definitions/handlers.Response'
-      summary: Register example
+      summary: Login
       tags:
       - user
   /users/me:
@@ -169,6 +171,32 @@ paths:
       security:
       - BearerAuth: []
       summary: Current user
+      tags:
+      - user
+  /users/pilot:
+    post:
+      consumes:
+      - multipart/form-data
+      description: register for a pilot
+      parameters:
+      - description: Message body
+        in: body
+        name: userInput
+        required: true
+        schema:
+          $ref: '#/definitions/user.InputCreatePilot'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/user.ResponseUser'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.Response'
+      summary: Register pilot
       tags:
       - user
 securityDefinitions:

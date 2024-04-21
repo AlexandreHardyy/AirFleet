@@ -3,3 +3,5 @@ vendor
 .env
 
 postgres-data
+
+public/files/*

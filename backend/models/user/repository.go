@@ -10,7 +10,7 @@ import (
 )
 
 type Repository interface {
-	Register(user User) (User, error)
+	Create(user User) (User, error)
 	Login(email string, password string) (string, error)
 	GetById(id int) (User, error)
 	FindAll() ([]ResponseListUser, error)
@@ -24,7 +24,7 @@ func NewRepository(db *gorm.DB) *repository {
 	return &repository{db}
 }
 
-func (r *repository) Register(user User) (User, error) {
+func (r *repository) Create(user User) (User, error) {
 
 	userErr := r.db.Where(&User{Email: user.Email}).First(&user).Error
 	if userErr == nil {
