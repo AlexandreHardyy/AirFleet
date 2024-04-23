@@ -22,6 +22,8 @@ class AirFleetMapState extends State<AirFleetMap> {
   _onMapCreated(MapboxMap mapboxMap) async {
     this.mapboxMap = mapboxMap;
 
+    this.mapboxMap.scaleBar.updateSettings(ScaleBarSettings(enabled: false));
+
     await _getPermission();
 
     // var status = await Permission.locationWhenInUse.request();
@@ -56,16 +58,20 @@ class AirFleetMapState extends State<AirFleetMap> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: FloatingActionButton(
-          heroTag: null,
-          onPressed: () {
-            setState(() {
-              trackLocation = !trackLocation;
-              refreshTrackLocation();
-            });
-          },
-          backgroundColor: trackLocation ? Colors.blue : Colors.grey,
-          child: const Icon(FontAwesomeIcons.locationCrosshairs)),
+      //TODO Improve this
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(bottom: 50),
+        child: FloatingActionButton(
+            heroTag: null,
+            onPressed: () {
+              setState(() {
+                trackLocation = !trackLocation;
+                refreshTrackLocation();
+              });
+            },
+            backgroundColor: trackLocation ? Colors.blue : Colors.grey,
+            child: const Icon(FontAwesomeIcons.locationCrosshairs)),
+      ),
         body: MapWidget(
           key: const ValueKey("mapWidget"),
           cameraOptions: CameraOptions(zoom: 3.0),
