@@ -1,0 +1,21 @@
+### Get All flights
+GET http://localhost:3001/api/flights HTTP/1.1
+
+### Create a flight
+POST http://localhost:3001/api/flights HTTP/1.1
+Content-Type: application/json
+
+{
+    "departure": {
+      "name": "Paris",
+      "address": "Charles de Gaulle Airport",
+      "latitude": 49.0097,
+      "longitude": 2.5479
+    },
+    "arrival": {
+      "name": "New York",
+      "address": "JFK Airport",
+      "latitude": 40.6413,
+      "longitude": -73.7781
+    }
+}
