@@ -1,6 +1,6 @@
 package inputs
 
-type InputCreateVehicle struct {
+type CreateVehicle struct {
 	ModelName     string `json:"model_name" binding:"required"`
 	Matriculation string `json:"matriculation" binding:"required"`
 	Seat          int    `json:"seat" binding:"required"`
@@ -8,7 +8,7 @@ type InputCreateVehicle struct {
 	UserID        int    `json:"user_id" binding:"required"`
 }
 
-type InputUpdateVehicle struct {
+type UpdateVehicle struct {
 	ModelName     string `json:"model_name"`
 	Matriculation string `json:"matriculation"`
 	Seat          int    `json:"seat"`

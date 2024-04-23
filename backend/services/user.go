@@ -1,8 +1,8 @@
 package services
 
 import (
-	"backend/entities"
 	"backend/inputs"
+	"backend/models"
 	"backend/repositories"
 	"backend/responses"
 	"backend/utils"
@@ -10,10 +10,10 @@ import (
 )
 
 type UserService interface {
-	Register(user entities.User) (responses.ResponseUser, error)
-	Login(input inputs.InputLoginUser) (string, error)
-	GetById(id int) (entities.User, error)
-	GetAll() ([]responses.ResponseListUser, error)
+	Register(user models.User) (responses.User, error)
+	Login(input inputs.LoginUser) (string, error)
+	GetById(id int) (models.User, error)
+	GetAll() ([]responses.ListUser, error)
 }
 
 type userService struct {
@@ -24,14 +24,14 @@ func NewUserService(r repositories.UserRepository) *userService {
 	return &userService{r}
 }
 
-func (s *userService) Register(input entities.User) (responses.ResponseUser, error) {
-	var user entities.User = input
+func (s *userService) Register(input models.User) (responses.User, error) {
+	var user = input
 	user.Password = utils.HashPassword(input.Password)
 	user.IsVerified = false
 	user.IsPilotVerified = false
 
 	user, err := s.repository.Create(user)
-	formattedUser := responses.ResponseUser{
+	formattedUser := responses.User{
 		ID:        user.ID,
 		FirstName: user.FirstName,
 		LastName:  user.LastName,
@@ -47,7 +47,7 @@ func (s *userService) Register(input entities.User) (responses.ResponseUser, err
 	return formattedUser, nil
 }
 
-func (s *userService) Login(input inputs.InputLoginUser) (string, error) {
+func (s *userService) Login(input inputs.LoginUser) (string, error) {
 
 	token, err := s.repository.Login(input.Email, input.Password)
 	if err != nil {
@@ -57,8 +57,8 @@ func (s *userService) Login(input inputs.InputLoginUser) (string, error) {
 	return token, nil
 }
 
-func (s *userService) GetById(id int) (entities.User, error) {
-	user, err := s.repository.GetUserById(id)
+func (s *userService) GetById(id int) (models.User, error) {
+	user, err := s.repository.GetById(id)
 	if err != nil {
 		return user, err
 	}
@@ -66,8 +66,8 @@ func (s *userService) GetById(id int) (entities.User, error) {
 	return user, nil
 }
 
-func (s *userService) GetAll() ([]responses.ResponseListUser, error) {
-	users, err := s.repository.FindAllUsers()
+func (s *userService) GetAll() ([]responses.ListUser, error) {
+	users, err := s.repository.FindAll()
 	if err != nil {
 		return users, err
 	}

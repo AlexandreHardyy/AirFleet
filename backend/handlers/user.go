@@ -3,8 +3,8 @@ package handlers
 import (
 	"backend/data/roles"
 	"backend/database"
-	"backend/entities"
 	"backend/inputs"
+	"backend/models"
 	"backend/repositories"
 	"backend/responses"
 	"backend/services"
@@ -43,13 +43,13 @@ func NewUserHandler(userService services.UserService) *userHandler {
 // @Accept json
 // @Produce json
 //
-//	@Param		userInput	body		inputs.InputCreateUser	true	"Message body"
-//	@Success	201			{object}	responses.ResponseUser
+//	@Param		userInput	body		inputs.CreateUser	true	"Message body"
+//	@Success	201			{object}	responses.User
 //	@Failure	400			{object}	Response
 //
 // @Router /users [post]
 func (th *userHandler) Register(c *gin.Context) {
-	var input inputs.InputCreateUser
+	var input inputs.CreateUser
 	err := c.ShouldBindJSON(&input)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, &Response{
@@ -58,7 +58,7 @@ func (th *userHandler) Register(c *gin.Context) {
 		return
 	}
 
-	newUser, err := th.userService.Register(entities.User{
+	newUser, err := th.userService.Register(models.User{
 		Email:     input.Email,
 		LastName:  input.LastName,
 		FirstName: input.FirstName,
@@ -84,13 +84,13 @@ func (th *userHandler) Register(c *gin.Context) {
 // @Accept multipart/form-data
 // @Produce json
 //
-//	@Param		userInput	body		inputs.InputCreatePilot	true	"Message body"
-//	@Success	201			{object}	responses.ResponseUser
+//	@Param		userInput	body		inputs.CreatePilot	true	"Message body"
+//	@Success	201			{object}	responses.User
 //	@Failure	400			{object}	Response
 //
 // @Router /users/pilot [post]
 func (th *userHandler) RegisterPilot(c *gin.Context) {
-	var input inputs.InputCreatePilot
+	var input inputs.CreatePilot
 	if err := c.ShouldBind(&input); err != nil {
 		println(err.Error())
 		c.JSON(http.StatusBadRequest, &Response{
@@ -106,7 +106,7 @@ func (th *userHandler) RegisterPilot(c *gin.Context) {
 	}
 
 	dir, _ := os.Getwd()
-	newUser, err := th.userService.Register(entities.User{
+	newUser, err := th.userService.Register(models.User{
 		Email:     input.Email,
 		FirstName: input.FirstName,
 		LastName:  input.LastName,
@@ -134,7 +134,7 @@ func (th *userHandler) RegisterPilot(c *gin.Context) {
 			c.JSON(http.StatusInternalServerError, &Response{Message: fmt.Sprintf("%s upload failed", fileType)})
 			return
 		}
-		fileRepository.Create(entities.File{
+		fileRepository.Create(models.File{
 			Type:   fileType,
 			Path:   filepath.Join("public", "files", fileType+"s", newFileName),
 			UserID: newUser.ID,
@@ -153,13 +153,13 @@ func (th *userHandler) RegisterPilot(c *gin.Context) {
 // @Accept json
 // @Produce json
 //
-//	@Param		userInput	body		inputs.InputLoginUser	true	"Message body"
-//	@Success	200			{object}	responses.ResponseLogin
-//	@Failure	404			{object}	Response
+//	@Param		userInput	body		inputs.LoginUser	true	"Message body"
+//	@Success	200			{object}	responses.Login
+//	@Failure	400			{object}	Response
 //
 // @Router /users/login [post]
 func (th *userHandler) Login(c *gin.Context) {
-	var input inputs.InputLoginUser
+	var input inputs.LoginUser
 	err := c.ShouldBindJSON(&input)
 	if err != nil {
 		response := &Response{
@@ -192,7 +192,7 @@ func (th *userHandler) Login(c *gin.Context) {
 // @Accept json
 // @Produce json
 //
-//	@Success	200			{object}	responses.ResponseUser
+//	@Success	200			{object}	responses.User
 //	@Failure	401         {object}	Response
 //
 // @Router /users/me [get]
@@ -214,7 +214,7 @@ func (th *userHandler) CurrentUser(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, responses.ResponseUser{
+	c.JSON(http.StatusOK, responses.User{
 		ID:        userById.ID,
 		Email:     userById.Email,
 		FirstName: userById.FirstName,
@@ -234,7 +234,7 @@ func (th *userHandler) CurrentUser(c *gin.Context) {
 // @Accept json
 // @Produce json
 //
-//	@Success	200			{object}	[]responses.ResponseListUser
+//	@Success	200			{object}	[]responses.ListUser
 //	@Failure	401         {object}	Response
 //
 // @Router /users [get]
