@@ -32,7 +32,7 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/responses.ResponseListUser"
+                                "$ref": "#/definitions/responses.ListUser"
                             }
                         }
                     },
@@ -63,7 +63,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/inputs.InputCreateUser"
+                            "$ref": "#/definitions/inputs.CreateUser"
                         }
                     }
                 ],
@@ -71,7 +71,7 @@
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/responses.ResponseUser"
+                            "$ref": "#/definitions/responses.User"
                         }
                     },
                     "400": {
@@ -103,7 +103,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/inputs.InputLoginUser"
+                            "$ref": "#/definitions/inputs.LoginUser"
                         }
                     }
                 ],
@@ -111,11 +111,11 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/responses.ResponseLogin"
+                            "$ref": "#/definitions/responses.Login"
                         }
                     },
-                    "404": {
-                        "description": "Not Found",
+                    "400": {
+                        "description": "Bad Request",
                         "schema": {
                             "$ref": "#/definitions/handlers.Response"
                         }
@@ -145,7 +145,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/responses.ResponseUser"
+                            "$ref": "#/definitions/responses.User"
                         }
                     },
                     "401": {
@@ -177,7 +177,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/inputs.InputCreatePilot"
+                            "$ref": "#/definitions/inputs.CreatePilot"
                         }
                     }
                 ],
@@ -185,7 +185,7 @@
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/responses.ResponseUser"
+                            "$ref": "#/definitions/responses.User"
                         }
                     },
                     "400": {
@@ -221,7 +221,7 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/responses.ResponseVehicle"
+                                "$ref": "#/definitions/responses.Vehicle"
                             }
                         }
                     },
@@ -252,7 +252,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/inputs.InputCreateVehicle"
+                            "$ref": "#/definitions/inputs.CreateVehicle"
                         }
                     }
                 ],
@@ -260,7 +260,7 @@
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/responses.ResponseVehicle"
+                            "$ref": "#/definitions/responses.Vehicle"
                         }
                     },
                     "400": {
@@ -298,7 +298,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/responses.ResponseVehicle"
+                            "$ref": "#/definitions/responses.Vehicle"
                         }
                     },
                     "404": {
@@ -371,7 +371,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/inputs.InputUpdateVehicle"
+                            "$ref": "#/definitions/inputs.UpdateVehicle"
                         }
                     }
                 ],
@@ -379,7 +379,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/responses.ResponseVehicle"
+                            "$ref": "#/definitions/responses.Vehicle"
                         }
                     },
                     "404": {
@@ -401,10 +401,10 @@
                 }
             }
         },
-        "inputs.InputCreatePilot": {
+        "inputs.CreatePilot": {
             "type": "object"
         },
-        "inputs.InputCreateUser": {
+        "inputs.CreateUser": {
             "type": "object",
             "required": [
                 "email",
@@ -427,7 +427,7 @@
                 }
             }
         },
-        "inputs.InputCreateVehicle": {
+        "inputs.CreateVehicle": {
             "type": "object",
             "required": [
                 "matriculation",
@@ -454,7 +454,7 @@
                 }
             }
         },
-        "inputs.InputLoginUser": {
+        "inputs.LoginUser": {
             "type": "object",
             "required": [
                 "email",
@@ -469,7 +469,7 @@
                 }
             }
         },
-        "inputs.InputUpdateVehicle": {
+        "inputs.UpdateVehicle": {
             "type": "object",
             "properties": {
                 "matriculation": {
@@ -489,7 +489,7 @@
                 }
             }
         },
-        "responses.ResponseListUser": {
+        "responses.ListUser": {
             "type": "object",
             "properties": {
                 "created_at": {
@@ -515,7 +515,7 @@
                 }
             }
         },
-        "responses.ResponseLogin": {
+        "responses.Login": {
             "type": "object",
             "properties": {
                 "token": {
@@ -523,7 +523,7 @@
                 }
             }
         },
-        "responses.ResponseUser": {
+        "responses.User": {
             "type": "object",
             "properties": {
                 "created_at": {
@@ -550,12 +550,12 @@
                 "vehicles": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/responses.ResponseVehicle"
+                        "$ref": "#/definitions/responses.Vehicle"
                     }
                 }
             }
         },
-        "responses.ResponseVehicle": {
+        "responses.Vehicle": {
             "type": "object",
             "properties": {
                 "created_at": {

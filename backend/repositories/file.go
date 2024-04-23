@@ -1,12 +1,12 @@
 package repositories
 
 import (
-	"backend/entities"
+	"backend/models"
 	"gorm.io/gorm"
 )
 
 type Repository interface {
-	Create(file entities.File) (entities.File, error)
+	Create(file models.File) (models.File, error)
 }
 
 type repository struct {
@@ -17,7 +17,7 @@ func NewFileRepository(db *gorm.DB) *repository {
 	return &repository{db}
 }
 
-func (r *repository) Create(file entities.File) (entities.File, error) {
+func (r *repository) Create(file models.File) (models.File, error) {
 	err := r.db.Create(&file).Error
 	if err != nil {
 		return file, err

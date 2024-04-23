@@ -5,9 +5,9 @@ definitions:
       message:
         type: string
     type: object
-  inputs.InputCreatePilot:
+  inputs.CreatePilot:
     type: object
-  inputs.InputCreateUser:
+  inputs.CreateUser:
     properties:
       email:
         type: string
@@ -23,7 +23,7 @@ definitions:
     - last_name
     - password
     type: object
-  inputs.InputCreateVehicle:
+  inputs.CreateVehicle:
     properties:
       matriculation:
         type: string
@@ -42,7 +42,7 @@ definitions:
     - type
     - user_id
     type: object
-  inputs.InputLoginUser:
+  inputs.LoginUser:
     properties:
       email:
         type: string
@@ -52,7 +52,7 @@ definitions:
     - email
     - password
     type: object
-  inputs.InputUpdateVehicle:
+  inputs.UpdateVehicle:
     properties:
       matriculation:
         type: string
@@ -65,7 +65,7 @@ definitions:
       user_id:
         type: integer
     type: object
-  responses.ResponseListUser:
+  responses.ListUser:
     properties:
       created_at:
         type: string
@@ -82,12 +82,12 @@ definitions:
       updated_at:
         type: string
     type: object
-  responses.ResponseLogin:
+  responses.Login:
     properties:
       token:
         type: string
     type: object
-  responses.ResponseUser:
+  responses.User:
     properties:
       created_at:
         type: string
@@ -105,10 +105,10 @@ definitions:
         type: string
       vehicles:
         items:
-          $ref: '#/definitions/responses.ResponseVehicle'
+          $ref: '#/definitions/responses.Vehicle'
         type: array
     type: object
-  responses.ResponseVehicle:
+  responses.Vehicle:
     properties:
       created_at:
         type: string
@@ -145,7 +145,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/responses.ResponseListUser'
+              $ref: '#/definitions/responses.ListUser'
             type: array
         "401":
           description: Unauthorized
@@ -166,14 +166,14 @@ paths:
         name: userInput
         required: true
         schema:
-          $ref: '#/definitions/inputs.InputCreateUser'
+          $ref: '#/definitions/inputs.CreateUser'
       produces:
       - application/json
       responses:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/responses.ResponseUser'
+            $ref: '#/definitions/responses.User'
         "400":
           description: Bad Request
           schema:
@@ -192,16 +192,16 @@ paths:
         name: userInput
         required: true
         schema:
-          $ref: '#/definitions/inputs.InputLoginUser'
+          $ref: '#/definitions/inputs.LoginUser'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/responses.ResponseLogin'
-        "404":
-          description: Not Found
+            $ref: '#/definitions/responses.Login'
+        "400":
+          description: Bad Request
           schema:
             $ref: '#/definitions/handlers.Response'
       summary: Login
@@ -218,7 +218,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/responses.ResponseUser'
+            $ref: '#/definitions/responses.User'
         "401":
           description: Unauthorized
           schema:
@@ -239,14 +239,14 @@ paths:
         name: userInput
         required: true
         schema:
-          $ref: '#/definitions/inputs.InputCreatePilot'
+          $ref: '#/definitions/inputs.CreatePilot'
       produces:
       - application/json
       responses:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/responses.ResponseUser'
+            $ref: '#/definitions/responses.User'
         "400":
           description: Bad Request
           schema:
@@ -266,7 +266,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/responses.ResponseVehicle'
+              $ref: '#/definitions/responses.Vehicle'
             type: array
         "401":
           description: Unauthorized
@@ -287,14 +287,14 @@ paths:
         name: vehicleInput
         required: true
         schema:
-          $ref: '#/definitions/inputs.InputCreateVehicle'
+          $ref: '#/definitions/inputs.CreateVehicle'
       produces:
       - application/json
       responses:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/responses.ResponseVehicle'
+            $ref: '#/definitions/responses.Vehicle'
         "400":
           description: Bad Request
           schema:
@@ -343,7 +343,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/responses.ResponseVehicle'
+            $ref: '#/definitions/responses.Vehicle'
         "404":
           description: Not Found
           schema:
@@ -366,14 +366,14 @@ paths:
         name: vehicleInput
         required: true
         schema:
-          $ref: '#/definitions/inputs.InputUpdateVehicle'
+          $ref: '#/definitions/inputs.UpdateVehicle'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/responses.ResponseVehicle'
+            $ref: '#/definitions/responses.Vehicle'
         "404":
           description: Not Found
           schema:

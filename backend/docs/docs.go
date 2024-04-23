@@ -40,7 +40,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/responses.ResponseListUser"
+                                "$ref": "#/definitions/responses.ListUser"
                             }
                         }
                     },
@@ -71,7 +71,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/inputs.InputCreateUser"
+                            "$ref": "#/definitions/inputs.CreateUser"
                         }
                     }
                 ],
@@ -79,7 +79,7 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/responses.ResponseUser"
+                            "$ref": "#/definitions/responses.User"
                         }
                     },
                     "400": {
@@ -111,7 +111,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/inputs.InputLoginUser"
+                            "$ref": "#/definitions/inputs.LoginUser"
                         }
                     }
                 ],
@@ -119,11 +119,11 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/responses.ResponseLogin"
+                            "$ref": "#/definitions/responses.Login"
                         }
                     },
-                    "404": {
-                        "description": "Not Found",
+                    "400": {
+                        "description": "Bad Request",
                         "schema": {
                             "$ref": "#/definitions/handlers.Response"
                         }
@@ -153,7 +153,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/responses.ResponseUser"
+                            "$ref": "#/definitions/responses.User"
                         }
                     },
                     "401": {
@@ -185,7 +185,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/inputs.InputCreatePilot"
+                            "$ref": "#/definitions/inputs.CreatePilot"
                         }
                     }
                 ],
@@ -193,7 +193,7 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/responses.ResponseUser"
+                            "$ref": "#/definitions/responses.User"
                         }
                     },
                     "400": {
@@ -229,7 +229,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/responses.ResponseVehicle"
+                                "$ref": "#/definitions/responses.Vehicle"
                             }
                         }
                     },
@@ -260,7 +260,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/inputs.InputCreateVehicle"
+                            "$ref": "#/definitions/inputs.CreateVehicle"
                         }
                     }
                 ],
@@ -268,7 +268,7 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/responses.ResponseVehicle"
+                            "$ref": "#/definitions/responses.Vehicle"
                         }
                     },
                     "400": {
@@ -306,7 +306,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/responses.ResponseVehicle"
+                            "$ref": "#/definitions/responses.Vehicle"
                         }
                     },
                     "404": {
@@ -379,7 +379,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/inputs.InputUpdateVehicle"
+                            "$ref": "#/definitions/inputs.UpdateVehicle"
                         }
                     }
                 ],
@@ -387,7 +387,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/responses.ResponseVehicle"
+                            "$ref": "#/definitions/responses.Vehicle"
                         }
                     },
                     "404": {
@@ -409,10 +409,10 @@ const docTemplate = `{
                 }
             }
         },
-        "inputs.InputCreatePilot": {
+        "inputs.CreatePilot": {
             "type": "object"
         },
-        "inputs.InputCreateUser": {
+        "inputs.CreateUser": {
             "type": "object",
             "required": [
                 "email",
@@ -435,7 +435,7 @@ const docTemplate = `{
                 }
             }
         },
-        "inputs.InputCreateVehicle": {
+        "inputs.CreateVehicle": {
             "type": "object",
             "required": [
                 "matriculation",
@@ -462,7 +462,7 @@ const docTemplate = `{
                 }
             }
         },
-        "inputs.InputLoginUser": {
+        "inputs.LoginUser": {
             "type": "object",
             "required": [
                 "email",
@@ -477,7 +477,7 @@ const docTemplate = `{
                 }
             }
         },
-        "inputs.InputUpdateVehicle": {
+        "inputs.UpdateVehicle": {
             "type": "object",
             "properties": {
                 "matriculation": {
@@ -497,7 +497,7 @@ const docTemplate = `{
                 }
             }
         },
-        "responses.ResponseListUser": {
+        "responses.ListUser": {
             "type": "object",
             "properties": {
                 "created_at": {
@@ -523,7 +523,7 @@ const docTemplate = `{
                 }
             }
         },
-        "responses.ResponseLogin": {
+        "responses.Login": {
             "type": "object",
             "properties": {
                 "token": {
@@ -531,7 +531,7 @@ const docTemplate = `{
                 }
             }
         },
-        "responses.ResponseUser": {
+        "responses.User": {
             "type": "object",
             "properties": {
                 "created_at": {
@@ -558,12 +558,12 @@ const docTemplate = `{
                 "vehicles": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/responses.ResponseVehicle"
+                        "$ref": "#/definitions/responses.Vehicle"
                     }
                 }
             }
         },
-        "responses.ResponseVehicle": {
+        "responses.Vehicle": {
             "type": "object",
             "properties": {
                 "created_at": {

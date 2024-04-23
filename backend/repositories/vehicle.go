@@ -1,18 +1,18 @@
 package repositories
 
 import (
-	"backend/entities"
+	"backend/models"
 	"backend/responses"
 	"errors"
 	"gorm.io/gorm"
 )
 
 type VehicleRepository interface {
-	CreateVehicle(vehicle entities.Vehicle) (entities.Vehicle, error)
-	FindAllVehicles() ([]responses.ResponseVehicle, error)
-	GetVehicleById(id int) (entities.Vehicle, error)
+	Create(vehicle models.Vehicle) (models.Vehicle, error)
+	FindAll() ([]responses.Vehicle, error)
+	GetById(id int) (models.Vehicle, error)
 	Delete(id int) error
-	Update(id int, vehicle entities.Vehicle) (entities.Vehicle, error)
+	Update(id int, vehicle models.Vehicle) (models.Vehicle, error)
 }
 
 type vehicleRepository struct {
@@ -23,9 +23,9 @@ func NewVehicleRepository(db *gorm.DB) *vehicleRepository {
 	return &vehicleRepository{db}
 }
 
-func (r *vehicleRepository) CreateVehicle(vehicle entities.Vehicle) (entities.Vehicle, error) {
+func (r *vehicleRepository) Create(vehicle models.Vehicle) (models.Vehicle, error) {
 
-	userErr := r.db.Where(&entities.Vehicle{Matriculation: vehicle.Matriculation}).First(&vehicle).Error
+	userErr := r.db.Where(&models.Vehicle{Matriculation: vehicle.Matriculation}).First(&vehicle).Error
 	if userErr == nil {
 		return vehicle, errors.New("this vehicle already exists")
 	}
@@ -36,9 +36,9 @@ func (r *vehicleRepository) CreateVehicle(vehicle entities.Vehicle) (entities.Ve
 	return vehicle, nil
 }
 
-func (r *vehicleRepository) FindAllVehicles() ([]responses.ResponseVehicle, error) {
-	vehicles := []responses.ResponseVehicle{}
-	err := r.db.Model(&entities.Vehicle{}).Find(&vehicles).Error
+func (r *vehicleRepository) FindAll() ([]responses.Vehicle, error) {
+	vehicles := []responses.Vehicle{}
+	err := r.db.Model(&models.Vehicle{}).Find(&vehicles).Error
 	if err != nil {
 		return vehicles, err
 	}
@@ -46,9 +46,9 @@ func (r *vehicleRepository) FindAllVehicles() ([]responses.ResponseVehicle, erro
 	return vehicles, nil
 }
 
-func (r *vehicleRepository) GetVehicleById(id int) (entities.Vehicle, error) {
-	vehicle := entities.Vehicle{}
-	err := r.db.Preload("User").Where(&entities.Vehicle{ID: id}).First(&vehicle).Error
+func (r *vehicleRepository) GetById(id int) (models.Vehicle, error) {
+	vehicle := models.Vehicle{}
+	err := r.db.Preload("User").Where(&models.Vehicle{ID: id}).First(&vehicle).Error
 	if err != nil {
 		return vehicle, err
 	}
@@ -57,8 +57,8 @@ func (r *vehicleRepository) GetVehicleById(id int) (entities.Vehicle, error) {
 }
 
 func (r *vehicleRepository) Delete(id int) error {
-	vehicle := entities.Vehicle{}
-	err := r.db.Where(&entities.Vehicle{ID: id}).First(&vehicle).Error
+	vehicle := models.Vehicle{}
+	err := r.db.Where(&models.Vehicle{ID: id}).First(&vehicle).Error
 	if err != nil {
 		return err
 	}
@@ -69,9 +69,9 @@ func (r *vehicleRepository) Delete(id int) error {
 	return nil
 }
 
-func (r *vehicleRepository) Update(id int, vehicle entities.Vehicle) (entities.Vehicle, error) {
+func (r *vehicleRepository) Update(id int, vehicle models.Vehicle) (models.Vehicle, error) {
 	vehicle.ID = id
-	err := r.db.Where(&entities.Vehicle{ID: id}).Updates(&vehicle).Error
+	err := r.db.Where(&models.Vehicle{ID: id}).Updates(&vehicle).Error
 	if err != nil {
 		return vehicle, err
 	}

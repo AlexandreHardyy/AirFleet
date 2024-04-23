@@ -1,18 +1,18 @@
 package services
 
 import (
-	"backend/entities"
 	"backend/inputs"
+	"backend/models"
 	"backend/repositories"
 	"backend/responses"
 )
 
 type VehicleService interface {
-	CreateVehicle(vehicle inputs.InputCreateVehicle) (responses.ResponseVehicle, error)
-	GetAll() ([]responses.ResponseVehicle, error)
-	GetById(id int) (entities.Vehicle, error)
+	Create(vehicle inputs.CreateVehicle) (responses.Vehicle, error)
+	GetAll() ([]responses.Vehicle, error)
+	GetById(id int) (models.Vehicle, error)
 	Delete(id int) error
-	Update(id int, vehicle inputs.InputUpdateVehicle) (entities.Vehicle, error)
+	Update(id int, vehicle inputs.UpdateVehicle) (models.Vehicle, error)
 }
 
 type vehiclSservice struct {
@@ -23,8 +23,8 @@ func NewVehicleService(r repositories.VehicleRepository) *vehiclSservice {
 	return &vehiclSservice{r}
 }
 
-func (s *vehiclSservice) CreateVehicle(input inputs.InputCreateVehicle) (responses.ResponseVehicle, error) {
-	var vehicle = entities.Vehicle{
+func (s *vehiclSservice) Create(input inputs.CreateVehicle) (responses.Vehicle, error) {
+	var vehicle = models.Vehicle{
 		ModelName:     input.ModelName,
 		Matriculation: input.Matriculation,
 		Seat:          input.Seat,
@@ -32,8 +32,8 @@ func (s *vehiclSservice) CreateVehicle(input inputs.InputCreateVehicle) (respons
 		UserID:        input.UserID,
 	}
 
-	vehicle, err := s.repository.CreateVehicle(vehicle)
-	formattedVehicle := responses.ResponseVehicle{
+	vehicle, err := s.repository.Create(vehicle)
+	formattedVehicle := responses.Vehicle{
 		ID:            vehicle.ID,
 		ModelName:     vehicle.ModelName,
 		Matriculation: vehicle.Matriculation,
@@ -49,16 +49,16 @@ func (s *vehiclSservice) CreateVehicle(input inputs.InputCreateVehicle) (respons
 	return formattedVehicle, nil
 }
 
-func (s *vehiclSservice) GetAll() ([]responses.ResponseVehicle, error) {
-	vehicle, err := s.repository.FindAllVehicles()
+func (s *vehiclSservice) GetAll() ([]responses.Vehicle, error) {
+	vehicle, err := s.repository.FindAll()
 	if err != nil {
 		return vehicle, err
 	}
 	return vehicle, nil
 }
 
-func (s *vehiclSservice) GetById(id int) (entities.Vehicle, error) {
-	vehicle, err := s.repository.GetVehicleById(id)
+func (s *vehiclSservice) GetById(id int) (models.Vehicle, error) {
+	vehicle, err := s.repository.GetById(id)
 	if err != nil {
 		return vehicle, err
 	}
@@ -73,8 +73,8 @@ func (s *vehiclSservice) Delete(id int) error {
 	return nil
 }
 
-func (s *vehiclSservice) Update(id int, input inputs.InputUpdateVehicle) (entities.Vehicle, error) {
-	var vehicle = entities.Vehicle{
+func (s *vehiclSservice) Update(id int, input inputs.UpdateVehicle) (models.Vehicle, error) {
+	var vehicle = models.Vehicle{
 		ModelName:     input.ModelName,
 		Matriculation: input.Matriculation,
 		Seat:          input.Seat,

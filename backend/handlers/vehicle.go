@@ -35,13 +35,13 @@ func NewVehicleHandler(vehicleService services.VehicleService) *vehicleHandler {
 //	@Accept			json
 //	@Produce		json
 //
-//	@Param			vehicleInput	body		inputs.InputCreateVehicle	true	"Message body"
-//	@Success		201				{object}	responses.ResponseVehicle
+//	@Param			vehicleInput	body		inputs.CreateVehicle	true	"Message body"
+//	@Success		201				{object}	responses.Vehicle
 //	@Failure		400				{object}	Response
 //
 //	@Router			/vehicles [post]
 func (th *vehicleHandler) CreateVehicle(c *gin.Context) {
-	var input inputs.InputCreateVehicle
+	var input inputs.CreateVehicle
 	err := c.ShouldBindJSON(&input)
 	if err != nil {
 		response := &Response{
@@ -51,7 +51,7 @@ func (th *vehicleHandler) CreateVehicle(c *gin.Context) {
 		return
 	}
 
-	newVehicle, err := th.vehicleService.CreateVehicle(input)
+	newVehicle, err := th.vehicleService.Create(input)
 	if err != nil {
 		response := &Response{
 			Message: err.Error(),
@@ -72,7 +72,7 @@ func (th *vehicleHandler) CreateVehicle(c *gin.Context) {
 //	@Accept			json
 //	@Produce		json
 //
-//	@Success		200	{object}	[]responses.ResponseVehicle
+//	@Success		200	{object}	[]responses.Vehicle
 //	@Failure		401	{object}	Response
 //
 //	@Router			/vehicles [get]
@@ -100,7 +100,7 @@ func (th *vehicleHandler) GetAll(c *gin.Context) {
 // @Produce json
 // @Param id path int true "Vehicle ID"
 //
-//	@Success	200			{object}	responses.ResponseVehicle
+//	@Success	200			{object}	responses.Vehicle
 //	@Failure	404			{object}	Response
 //
 // @Router /vehicles/{id} [get]
@@ -173,9 +173,9 @@ func (th *vehicleHandler) DeleteVehicle(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param id path int true "Vehicle ID"
-// @Param vehicleInput body inputs.InputUpdateVehicle true "Message body"
+// @Param vehicleInput body inputs.UpdateVehicle true "Message body"
 //
-//	@Success	200			{object}	responses.ResponseVehicle
+//	@Success	200			{object}	responses.Vehicle
 //	@Failure	404			{object}	Response
 //
 // @Router /vehicles/{id} [patch]
@@ -188,7 +188,7 @@ func (th *vehicleHandler) UpdateVehicle(c *gin.Context) {
 		return
 	}
 
-	var input inputs.InputUpdateVehicle
+	var input inputs.UpdateVehicle
 	err = c.ShouldBindJSON(&input)
 	if err != nil {
 		response := &Response{

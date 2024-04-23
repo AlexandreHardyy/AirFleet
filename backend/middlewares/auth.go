@@ -37,7 +37,7 @@ func IsAdminAuth() gin.HandlerFunc {
 		userId, _ := token.ExtractTokenID(c)
 		userRepository := repositories.NewUserRepository(database.DB)
 
-		currentUser, err := userRepository.GetUserById(userId)
+		currentUser, err := userRepository.GetById(userId)
 		if err != nil || currentUser.Role != roles.ROLE_ADMIN {
 			c.Status(http.StatusForbidden)
 			c.Abort()
