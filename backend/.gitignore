@@ -7,3 +7,5 @@ bin
 postgres-data
 
 public/files/*
+
+.idea

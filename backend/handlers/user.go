@@ -20,19 +20,19 @@ import (
 	"gorm.io/gorm"
 )
 
-type userHandler struct {
+type UserHandler struct {
 	userService services.UserService
 }
 
-func GetUser(db *gorm.DB) (userHandler *userHandler) {
+func GetUser(db *gorm.DB) (userHandler *UserHandler) {
 	userRepository := repositories.NewUserRepository(db)
 	userService := services.NewUserService(userRepository)
 	userHandler = NewUserHandler(userService)
 	return userHandler
 }
 
-func NewUserHandler(userService services.UserService) *userHandler {
-	return &userHandler{userService}
+func NewUserHandler(userService services.UserService) *UserHandler {
+	return &UserHandler{userService}
 }
 
 // Register godoc
@@ -48,7 +48,7 @@ func NewUserHandler(userService services.UserService) *userHandler {
 //	@Failure	400			{object}	Response
 //
 // @Router /users [post]
-func (th *userHandler) Register(c *gin.Context) {
+func (th *UserHandler) Register(c *gin.Context) {
 	var input inputs.CreateUser
 	err := c.ShouldBindJSON(&input)
 	if err != nil {
@@ -89,7 +89,7 @@ func (th *userHandler) Register(c *gin.Context) {
 //	@Failure	400			{object}	Response
 //
 // @Router /users/pilot [post]
-func (th *userHandler) RegisterPilot(c *gin.Context) {
+func (th *UserHandler) RegisterPilot(c *gin.Context) {
 	var input inputs.CreatePilot
 	if err := c.ShouldBind(&input); err != nil {
 		println(err.Error())
@@ -158,7 +158,7 @@ func (th *userHandler) RegisterPilot(c *gin.Context) {
 //	@Failure	400			{object}	Response
 //
 // @Router /users/login [post]
-func (th *userHandler) Login(c *gin.Context) {
+func (th *UserHandler) Login(c *gin.Context) {
 	var input inputs.LoginUser
 	err := c.ShouldBindJSON(&input)
 	if err != nil {
@@ -198,7 +198,7 @@ func (th *userHandler) Login(c *gin.Context) {
 // @Router /users/me [get]
 //
 //	@Security	BearerAuth
-func (th *userHandler) CurrentUser(c *gin.Context) {
+func (th *UserHandler) CurrentUser(c *gin.Context) {
 
 	userId, err := token.ExtractTokenID(c)
 
@@ -239,8 +239,8 @@ func (th *userHandler) CurrentUser(c *gin.Context) {
 //
 // @Router /users [get]
 //
-// @Security	BearerAuth
-func (th *userHandler) GetAll(c *gin.Context) {
+//	@Security	BearerAuth
+func (th *UserHandler) GetAll(c *gin.Context) {
 
 	users, err := th.userService.GetAll()
 

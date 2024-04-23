@@ -5,5 +5,5 @@ import (
 )
 
 func Migrate() {
-	DB.AutoMigrate(&models.User{}, &models.File{}, &models.Vehicle{})
+	DB.AutoMigrate(&models.User{}, &models.File{}, &models.Vehicle{}, &models.Flight{})
 }
