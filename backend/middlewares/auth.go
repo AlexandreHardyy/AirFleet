@@ -3,7 +3,7 @@ package middlewares
 import (
 	"backend/data/roles"
 	"backend/database"
-	"backend/models/user"
+	"backend/repositories"
 	"backend/utils/token"
 	"net/http"
 
@@ -35,9 +35,9 @@ func IsAdminAuth() gin.HandlerFunc {
 			return
 		}
 		userId, _ := token.ExtractTokenID(c)
-		userRepository := user.NewRepository(database.DB)
+		userRepository := repositories.NewUserRepository(database.DB)
 
-		currentUser, err := userRepository.GetById(userId)
+		currentUser, err := userRepository.GetUserById(userId)
 		if err != nil || currentUser.Role != roles.ROLE_ADMIN {
 			c.Status(http.StatusForbidden)
 			c.Abort()

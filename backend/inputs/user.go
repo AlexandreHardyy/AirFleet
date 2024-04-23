@@ -1,4 +1,4 @@
-package user
+package inputs
 
 import "mime/multipart"
 

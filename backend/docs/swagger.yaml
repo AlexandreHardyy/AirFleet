@@ -5,9 +5,9 @@ definitions:
       message:
         type: string
     type: object
-  user.InputCreatePilot:
+  inputs.InputCreatePilot:
     type: object
-  user.InputCreateUser:
+  inputs.InputCreateUser:
     properties:
       email:
         type: string
@@ -23,7 +23,26 @@ definitions:
     - last_name
     - password
     type: object
-  user.InputLoginUser:
+  inputs.InputCreateVehicle:
+    properties:
+      matriculation:
+        type: string
+      model_name:
+        type: string
+      seat:
+        type: integer
+      type:
+        type: string
+      user_id:
+        type: integer
+    required:
+    - matriculation
+    - model_name
+    - seat
+    - type
+    - user_id
+    type: object
+  inputs.InputLoginUser:
     properties:
       email:
         type: string
@@ -33,7 +52,20 @@ definitions:
     - email
     - password
     type: object
-  user.ResponseListUser:
+  inputs.InputUpdateVehicle:
+    properties:
+      matriculation:
+        type: string
+      model_name:
+        type: string
+      seat:
+        type: integer
+      type:
+        type: string
+      user_id:
+        type: integer
+    type: object
+  responses.ResponseListUser:
     properties:
       created_at:
         type: string
@@ -50,12 +82,12 @@ definitions:
       updated_at:
         type: string
     type: object
-  user.ResponseLogin:
+  responses.ResponseLogin:
     properties:
       token:
         type: string
     type: object
-  user.ResponseUser:
+  responses.ResponseUser:
     properties:
       created_at:
         type: string
@@ -68,6 +100,29 @@ definitions:
       last_name:
         type: string
       role:
+        type: string
+      updated_at:
+        type: string
+      vehicles:
+        items:
+          $ref: '#/definitions/responses.ResponseVehicle'
+        type: array
+    type: object
+  responses.ResponseVehicle:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      is_verified:
+        type: boolean
+      matriculation:
+        type: string
+      model_name:
+        type: string
+      seat:
+        type: integer
+      type:
         type: string
       updated_at:
         type: string
@@ -90,7 +145,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/user.ResponseListUser'
+              $ref: '#/definitions/responses.ResponseListUser'
             type: array
         "401":
           description: Unauthorized
@@ -111,14 +166,14 @@ paths:
         name: userInput
         required: true
         schema:
-          $ref: '#/definitions/user.InputCreateUser'
+          $ref: '#/definitions/inputs.InputCreateUser'
       produces:
       - application/json
       responses:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/user.ResponseUser'
+            $ref: '#/definitions/responses.ResponseUser'
         "400":
           description: Bad Request
           schema:
@@ -137,14 +192,14 @@ paths:
         name: userInput
         required: true
         schema:
-          $ref: '#/definitions/user.InputLoginUser'
+          $ref: '#/definitions/inputs.InputLoginUser'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/user.ResponseLogin'
+            $ref: '#/definitions/responses.ResponseLogin'
         "404":
           description: Not Found
           schema:
@@ -163,7 +218,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/user.ResponseUser'
+            $ref: '#/definitions/responses.ResponseUser'
         "401":
           description: Unauthorized
           schema:
@@ -184,14 +239,14 @@ paths:
         name: userInput
         required: true
         schema:
-          $ref: '#/definitions/user.InputCreatePilot'
+          $ref: '#/definitions/inputs.InputCreatePilot'
       produces:
       - application/json
       responses:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/user.ResponseUser'
+            $ref: '#/definitions/responses.ResponseUser'
         "400":
           description: Bad Request
           schema:
@@ -199,6 +254,133 @@ paths:
       summary: Register pilot
       tags:
       - user
+  /vehicles:
+    get:
+      consumes:
+      - application/json
+      description: get all vehicles
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/responses.ResponseVehicle'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.Response'
+      security:
+      - BearerAuth: []
+      summary: Get all vehicles
+      tags:
+      - vehicle
+    post:
+      consumes:
+      - application/json
+      description: create a new vehicle for a pilot
+      parameters:
+      - description: Message body
+        in: body
+        name: vehicleInput
+        required: true
+        schema:
+          $ref: '#/definitions/inputs.InputCreateVehicle'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/responses.ResponseVehicle'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.Response'
+      summary: Create vehicle
+      tags:
+      - vehicle
+  /vehicles/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: delete vehicle by id
+      parameters:
+      - description: Vehicle ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.Response'
+      summary: delete vehicle by id
+      tags:
+      - vehicle
+    get:
+      consumes:
+      - application/json
+      description: get vehicle by id
+      parameters:
+      - description: Vehicle ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/responses.ResponseVehicle'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.Response'
+      summary: get vehicle by id
+      tags:
+      - vehicle
+    patch:
+      consumes:
+      - application/json
+      description: update vehicle by id
+      parameters:
+      - description: Vehicle ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Message body
+        in: body
+        name: vehicleInput
+        required: true
+        schema:
+          $ref: '#/definitions/inputs.InputUpdateVehicle'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/responses.ResponseVehicle'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.Response'
+      summary: update vehicle by id
+      tags:
+      - vehicle
 securityDefinitions:
   BearerAuth:
     in: header

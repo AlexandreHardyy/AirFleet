@@ -1,6 +1,10 @@
 package handlers_test
 
 import (
+	"backend/entities"
+	"backend/inputs"
+	"backend/responses"
+	"backend/services"
 	"bytes"
 	"encoding/json"
 	"net/http"
@@ -13,16 +17,15 @@ import (
 	"github.com/stretchr/testify/mock"
 
 	"backend/handlers"
-	"backend/models/user"
 )
 
 type MockUserRepository struct {
 	mock.Mock
 }
 
-func (m *MockUserRepository) Register(input user.User) (user.User, error) {
+func (m *MockUserRepository) Create(input entities.User) (entities.User, error) {
 	args := m.Called(input)
-	return args.Get(0).(user.User), args.Error(1)
+	return args.Get(0).(entities.User), args.Error(1)
 }
 
 func (m *MockUserRepository) Login(email string, password string) (string, error) {
@@ -30,30 +33,30 @@ func (m *MockUserRepository) Login(email string, password string) (string, error
 	return args.String(0), args.Error(1)
 }
 
-func (m *MockUserRepository) GetById(id int) (user.User, error) {
+func (m *MockUserRepository) GetUserById(id int) (entities.User, error) {
 	args := m.Called(id)
-	return args.Get(0).(user.User), args.Error(1)
+	return args.Get(0).(entities.User), args.Error(1)
 }
 
-func (m *MockUserRepository) FindAll() ([]user.ResponseListUser, error) {
+func (m *MockUserRepository) FindAllUsers() ([]responses.ResponseListUser, error) {
 	args := m.Called()
-	return args.Get(0).([]user.ResponseListUser), args.Error(1)
+	return args.Get(0).([]responses.ResponseListUser), args.Error(1)
 }
 
 func TestRegisterCreatedSuccessfully(t *testing.T) {
-	t.Log("Register: user input should be created successfully")
+	t.Log("Register: user inputs should be created successfully")
 	mockUserRepository := new(MockUserRepository)
-	userService := user.NewService(mockUserRepository)
+	userService := services.NewUserService(mockUserRepository)
 	handler := handlers.NewUserHandler(userService)
 
-	input := user.InputCreateUser{
+	input := inputs.InputCreateUser{
 		Email:     "quoi@feur.com",
 		FirstName: "quoi",
 		LastName:  "feur",
 		Password:  "password123",
 	}
 
-	mockUser := user.User{
+	mockUser := entities.User{
 		ID:        1,
 		Email:     "quoi@feur.com",
 		FirstName: "quoi",
@@ -77,10 +80,10 @@ func TestRegisterCreatedSuccessfully(t *testing.T) {
 
 	assert.Equal(t, http.StatusCreated, w.Code)
 
-	var responseUser user.ResponseUser
+	var responseUser responses.ResponseUser
 	err := json.Unmarshal(w.Body.Bytes(), &responseUser)
 	assert.NoError(t, err)
-	assert.Equal(t, user.ResponseUser{
+	assert.Equal(t, responses.ResponseUser{
 		ID:        1,
 		Email:     "quoi@feur.com",
 		FirstName: "quoi",
@@ -94,12 +97,12 @@ func TestRegisterCreatedSuccessfully(t *testing.T) {
 }
 
 func TestRegisterWrongArguments(t *testing.T) {
-	t.Log("Register: user input should be created successfully")
+	t.Log("Register: user inputs should be created successfully")
 	mockUserRepository := new(MockUserRepository)
-	userService := user.NewService(mockUserRepository)
+	userService := services.NewUserService(mockUserRepository)
 	handler := handlers.NewUserHandler(userService)
 
-	input := user.InputCreateUser{
+	input := inputs.InputCreateUser{
 		Email:    "quoi@feur.com",
 		Password: "password123",
 	}
@@ -115,6 +118,6 @@ func TestRegisterWrongArguments(t *testing.T) {
 	// Execute the handler
 	handler.Register(c)
 
-	// Verify the response
+	// Verify the responses
 	assert.Equal(t, http.StatusBadRequest, w.Code)
 }

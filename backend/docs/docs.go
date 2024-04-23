@@ -40,7 +40,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/user.ResponseListUser"
+                                "$ref": "#/definitions/responses.ResponseListUser"
                             }
                         }
                     },
@@ -71,7 +71,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/user.InputCreateUser"
+                            "$ref": "#/definitions/inputs.InputCreateUser"
                         }
                     }
                 ],
@@ -79,7 +79,7 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/user.ResponseUser"
+                            "$ref": "#/definitions/responses.ResponseUser"
                         }
                     },
                     "400": {
@@ -111,7 +111,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/user.InputLoginUser"
+                            "$ref": "#/definitions/inputs.InputLoginUser"
                         }
                     }
                 ],
@@ -119,7 +119,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/user.ResponseLogin"
+                            "$ref": "#/definitions/responses.ResponseLogin"
                         }
                     },
                     "404": {
@@ -153,7 +153,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/user.ResponseUser"
+                            "$ref": "#/definitions/responses.ResponseUser"
                         }
                     },
                     "401": {
@@ -185,7 +185,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/user.InputCreatePilot"
+                            "$ref": "#/definitions/inputs.InputCreatePilot"
                         }
                     }
                 ],
@@ -193,11 +193,205 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/user.ResponseUser"
+                            "$ref": "#/definitions/responses.ResponseUser"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/vehicles": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "get all vehicles",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "vehicle"
+                ],
+                "summary": "Get all vehicles",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/responses.ResponseVehicle"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Response"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "create a new vehicle for a pilot",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "vehicle"
+                ],
+                "summary": "Create vehicle",
+                "parameters": [
+                    {
+                        "description": "Message body",
+                        "name": "vehicleInput",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/inputs.InputCreateVehicle"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/responses.ResponseVehicle"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/vehicles/{id}": {
+            "get": {
+                "description": "get vehicle by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "vehicle"
+                ],
+                "summary": "get vehicle by id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Vehicle ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/responses.ResponseVehicle"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Response"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "delete vehicle by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "vehicle"
+                ],
+                "summary": "delete vehicle by id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Vehicle ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Response"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "description": "update vehicle by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "vehicle"
+                ],
+                "summary": "update vehicle by id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Vehicle ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Message body",
+                        "name": "vehicleInput",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/inputs.InputUpdateVehicle"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/responses.ResponseVehicle"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
                         "schema": {
                             "$ref": "#/definitions/handlers.Response"
                         }
@@ -215,10 +409,10 @@ const docTemplate = `{
                 }
             }
         },
-        "user.InputCreatePilot": {
+        "inputs.InputCreatePilot": {
             "type": "object"
         },
-        "user.InputCreateUser": {
+        "inputs.InputCreateUser": {
             "type": "object",
             "required": [
                 "email",
@@ -241,7 +435,34 @@ const docTemplate = `{
                 }
             }
         },
-        "user.InputLoginUser": {
+        "inputs.InputCreateVehicle": {
+            "type": "object",
+            "required": [
+                "matriculation",
+                "model_name",
+                "seat",
+                "type",
+                "user_id"
+            ],
+            "properties": {
+                "matriculation": {
+                    "type": "string"
+                },
+                "model_name": {
+                    "type": "string"
+                },
+                "seat": {
+                    "type": "integer"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "inputs.InputLoginUser": {
             "type": "object",
             "required": [
                 "email",
@@ -256,7 +477,27 @@ const docTemplate = `{
                 }
             }
         },
-        "user.ResponseListUser": {
+        "inputs.InputUpdateVehicle": {
+            "type": "object",
+            "properties": {
+                "matriculation": {
+                    "type": "string"
+                },
+                "model_name": {
+                    "type": "string"
+                },
+                "seat": {
+                    "type": "integer"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "responses.ResponseListUser": {
             "type": "object",
             "properties": {
                 "created_at": {
@@ -282,7 +523,7 @@ const docTemplate = `{
                 }
             }
         },
-        "user.ResponseLogin": {
+        "responses.ResponseLogin": {
             "type": "object",
             "properties": {
                 "token": {
@@ -290,7 +531,7 @@ const docTemplate = `{
                 }
             }
         },
-        "user.ResponseUser": {
+        "responses.ResponseUser": {
             "type": "object",
             "properties": {
                 "created_at": {
@@ -309,6 +550,41 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "role": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "vehicles": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/responses.ResponseVehicle"
+                    }
+                }
+            }
+        },
+        "responses.ResponseVehicle": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "is_verified": {
+                    "type": "boolean"
+                },
+                "matriculation": {
+                    "type": "string"
+                },
+                "model_name": {
+                    "type": "string"
+                },
+                "seat": {
+                    "type": "integer"
+                },
+                "type": {
                     "type": "string"
                 },
                 "updated_at": {

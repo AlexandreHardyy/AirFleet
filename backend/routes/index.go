@@ -12,4 +12,5 @@ func InitRoutes(router *gin.Engine) {
 	// protected.Use(middlewares.JwtAuthMiddleware())
 
 	initUserRoutes(api)
+	initVehicleRoutes(api)
 }

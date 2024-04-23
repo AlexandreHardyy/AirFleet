@@ -1,10 +1,9 @@
 package database
 
 import (
-	"backend/models/file"
-	"backend/models/user"
+	"backend/entities"
 )
 
 func Migrate() {
-	DB.AutoMigrate(&user.User{}, &file.File{})
+	DB.AutoMigrate(&entities.User{}, &entities.File{}, &entities.Vehicle{})
 }

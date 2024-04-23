@@ -19,11 +19,11 @@ import (
 //	@version		1.0
 //	@description	this is the go project.
 
-// @BasePath					/api
+//	@BasePath					/api
 //
-// @securityDefinitions.apikey	BearerAuth
-// @in							header
-// @name						Authorization
+//	@securityDefinitions.apikey	BearerAuth
+//	@in							header
+//	@name						Authorization
 
 func main() {
 	err := godotenv.Load()
