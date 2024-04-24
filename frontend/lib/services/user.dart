@@ -1,42 +1,89 @@
-import 'dart:convert';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:http/http.dart' as http;
+import 'package:dio/dio.dart';
+import 'package:frontend/services/dio.dart';
 
 class UserService {
-  final String? baseUrl = dotenv.env['API_URL'];
-
   Future<Map<String, dynamic>> register(
       String email, String firstName, String lastName, String password) async {
-    final url = Uri.parse('$baseUrl/users');
+    try {
+      final response = await dio.post(
+        '/users',
+        data: {
+          'email': email,
+          'first_name': firstName,
+          'last_name': lastName,
+          'password': password,
+        },
+        options: Options(
+          headers: {
+            'Content-Type': 'application/json; charset=UTF-8',
+          },
+        ),
+      );
 
-    final response = await http.post(
-      url,
-      headers: {
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-      body: jsonEncode({
+      return response.data;
+    } catch (error) {
+      if (error is DioException) {
+        return error.response?.data;
+      } else {
+        throw Exception('Failed to login: $error');
+      }
+    }
+  }
+
+  Future<Map<String, dynamic>> registerPilot(
+      String email,
+      String firstName,
+      String lastName,
+      String password,
+      String idCardPath,
+      String drivingLicencePath) async {
+    try {
+      final formData = FormData.fromMap({
         'email': email,
         'first_name': firstName,
         'last_name': lastName,
         'password': password,
-      }),
-    );
+        'id_card': await MultipartFile.fromFile(idCardPath),
+        'driving_licence': await MultipartFile.fromFile(drivingLicencePath)
+      });
 
-    return json.decode(response.body);
+      final response = await dio.post(
+        '/users/pilot',
+        data: formData,
+      );
+
+      return response.data;
+    } catch (error) {
+      if (error is DioException) {
+        return error.response?.data ?? { 'message': error.message };
+      } else {
+        throw Exception('Failed to register pilot: $error');
+      }
+    }
   }
 
-  Future login(String email, String password) async {
-    final url = Uri.parse('$baseUrl/users/login');
-    final response = await http.post(
-      url,
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-      body: jsonEncode(<String, String>{
-        'email': email,
-        'password': password,
-      }),
-    );
-    return json.decode(response.body);
+  Future<Map<String, dynamic>> login(String email, String password) async {
+    try {
+      final response = await dio.post(
+        '/users/login',
+        data: {
+          'email': email,
+          'password': password,
+        },
+        options: Options(
+          headers: {
+            'Content-Type': 'application/json; charset=UTF-8',
+          },
+        ),
+      );
+
+      return response.data;
+    } catch (error) {
+      if (error is DioException) {
+        return error.response?.data;
+      } else {
+        throw Exception('Failed to login: $error');
+      }
+    }
   }
 }
