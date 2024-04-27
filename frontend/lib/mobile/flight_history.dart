@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
-import 'package:frontend/http.dart';
+import 'package:frontend/services/dio.dart';
 
 class FlightHistoryScreen extends StatefulWidget {
   const FlightHistoryScreen({super.key});

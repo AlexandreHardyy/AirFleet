@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:dio/dio.dart';
-import 'package:frontend/http.dart';
 import 'package:uuid/uuid.dart';
 
-import 'mapbox_endpoint/retrieve.dart';
-import 'mapbox_endpoint/suggest.dart';
-import 'dart:math' as math;
+import '../../../services/dio.dart';
+import '../../../services/flight.dart';
+import '../../map/mapbox_endpoint/retrieve.dart';
+import '../../map/mapbox_endpoint/suggest.dart';
 
 const uuid = Uuid();
 
@@ -198,47 +198,6 @@ class Flight {
       'arrival': arrival.toJson(),
     };
   }
-}
-
-class Airport {
-  final String name;
-  final String address;
-  final double latitude;
-  final double longitude;
-
-  Airport({
-    required this.name,
-    required this.address,
-    required this.latitude,
-    required this.longitude
-  });
-
-  Map<String, dynamic> toJson() {
-    return {
-      'name': name,
-      'address': address,
-      'latitude': latitude,
-      'longitude': longitude,
-    };
-  }
-}
-
-double getDistanceFromLatLonInKm(double lat1, double lon1, double lat2, double lon2) {
-  var R = 6371; // Radius of the earth in km
-  var dLat = deg2rad(lat2-lat1);  // deg2rad below
-  var dLon = deg2rad(lon2-lon1);
-  var a =
-      math.sin(dLat/2) * math.sin(dLat/2) +
-          math.cos(deg2rad(lat1)) * math.cos(deg2rad(lat2)) *
-              math.sin(dLon/2) * math.sin(dLon/2)
-  ;
-  var c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a));
-  var d = R * c; // Distance in km
-  return d;
-}
-
-double deg2rad(double deg) {
-  return deg * (math.pi/180);
 }
 
 
