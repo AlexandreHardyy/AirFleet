@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-
-import '../flight_history.dart';
+import 'package:frontend/routes.dart';
+import 'package:frontend/services/user.dart';
 
 class HomeDrawer extends StatelessWidget {
   const HomeDrawer({super.key});
@@ -21,9 +21,16 @@ class HomeDrawer extends StatelessWidget {
             leading: const Icon(FontAwesomeIcons.clockRotateLeft),
             title: const Text('Flight history'),
             onTap: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const FlightHistoryScreen()));
+              Navigator.of(context).push(Routes.flightHistory(context));
+            },
+          ),
+          ListTile(
+            leading: const Icon(FontAwesomeIcons.rightFromBracket),
+            title: const Text("Log out"),
+            onTap: () async {
+              Navigator.of(context).popUntil((route) => false);
+              Navigator.of(context).push(Routes.login(context));
+              UserService.logOut();
             },
           )
         ],

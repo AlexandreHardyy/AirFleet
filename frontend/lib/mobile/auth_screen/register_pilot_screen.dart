@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
+import 'package:frontend/routes.dart';
 import 'package:frontend/services/user.dart';
 import 'package:form_builder_file_picker/form_builder_file_picker.dart';
 
@@ -64,7 +65,7 @@ class _RegisterPilotScreenState extends State<RegisterPilotScreen> {
                   ),
                   FormBuilderFilePicker(
                       name: "id_card",
-                      decoration: InputDecoration(labelText: "card ID"),
+                      decoration: const InputDecoration(labelText: "card ID"),
                       maxFiles: 1,
                       validator: FormBuilderValidators.compose([
                         FormBuilderValidators.required(),
@@ -86,7 +87,8 @@ class _RegisterPilotScreenState extends State<RegisterPilotScreen> {
                       ]),
                   FormBuilderFilePicker(
                       name: "driving_licence",
-                      decoration: InputDecoration(labelText: "driving licence"),
+                      decoration:
+                          const InputDecoration(labelText: "driving licence"),
                       maxFiles: 1,
                       validator: FormBuilderValidators.compose([
                         FormBuilderValidators.required(),
@@ -106,7 +108,7 @@ class _RegisterPilotScreenState extends State<RegisterPilotScreen> {
                           ),
                         ),
                       ]),
-                  MaterialButton(
+                  ElevatedButton(
                     // : Theme.of(context).colorScheme.secondary,
                     onPressed: () async {
                       final state = _formKey.currentState;
@@ -121,7 +123,7 @@ class _RegisterPilotScreenState extends State<RegisterPilotScreen> {
                       state.validate();
                       final formValues = state.instantValue;
 
-                      final result = await UserService().registerPilot(
+                      final result = await UserService.registerPilot(
                         formValues['email'],
                         formValues['first_name'],
                         formValues['last_name'],
@@ -133,6 +135,7 @@ class _RegisterPilotScreenState extends State<RegisterPilotScreen> {
                       setState(() {
                         if (result['message'] == null) {
                           _apiMessage = 'Register success !';
+                          Navigator.of(context).push(Routes.login(context));
                         } else if (result['message'] != null) {
                           _apiMessage = result['message'];
                         } else {
@@ -142,7 +145,17 @@ class _RegisterPilotScreenState extends State<RegisterPilotScreen> {
                     },
                     child: const Text('Register'),
                   ),
-                  Text(_apiMessage)
+                  Text(_apiMessage),
+                  MaterialButton(
+                      onPressed: () {
+                        Navigator.of(context).push(Routes.login(context));
+                      },
+                      child: const Text("already registered ? login here")),
+                  MaterialButton(
+                      onPressed: () {
+                        Navigator.of(context).push(Routes.register(context));
+                      },
+                      child: const Text("normal register here"))
                 ],
               ),
             ),

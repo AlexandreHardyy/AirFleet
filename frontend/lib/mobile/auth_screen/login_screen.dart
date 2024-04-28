@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
+import 'package:frontend/routes.dart';
 import 'package:frontend/services/user.dart';
+import 'package:frontend/storage/user.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -44,7 +46,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   FormBuilderValidators.required(),
                 ]),
               ),
-              MaterialButton(
+              ElevatedButton(
                 onPressed: () async {
                   final state = _formKey.currentState;
                   if (state == null) {
@@ -58,12 +60,18 @@ class _LoginScreenState extends State<LoginScreen> {
 
                   state.validate();
                   final formValues = state.instantValue;
-                  final result = await UserService()
-                      .login(formValues['email'], formValues['password']);
+                  final result = await UserService.login(
+                      formValues['email'], formValues['password']);
+
+                  if (result['token'] != null) {
+                    await UserStore.setToken(result['token']);
+                  }
 
                   setState(() {
                     if (result['token'] != null) {
                       _apiMessage = 'Login success !';
+                      Navigator.of(context).popUntil((route) => false);
+                      Navigator.of(context).push(Routes.home(context));
                     } else if (result['message'] != null) {
                       _apiMessage = result['message'];
                     } else {
@@ -73,7 +81,12 @@ class _LoginScreenState extends State<LoginScreen> {
                 },
                 child: const Text('Login'),
               ),
-              Text(_apiMessage)
+              Text(_apiMessage),
+              MaterialButton(
+                  onPressed: () {
+                    Navigator.of(context).push(Routes.register(context));
+                  },
+                  child: const Text("no account yet ? register"))
             ],
           ),
         ),

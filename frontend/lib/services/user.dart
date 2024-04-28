@@ -1,8 +1,10 @@
 import 'package:dio/dio.dart';
+import 'package:frontend/models/user.dart';
 import 'package:frontend/services/dio.dart';
+import 'package:frontend/storage/user.dart';
 
 class UserService {
-  Future<Map<String, dynamic>> register(
+  static Future<Map<String, dynamic>> register(
       String email, String firstName, String lastName, String password) async {
     try {
       final response = await dioApi.post(
@@ -30,7 +32,7 @@ class UserService {
     }
   }
 
-  Future<Map<String, dynamic>> registerPilot(
+  static Future<Map<String, dynamic>> registerPilot(
       String email,
       String firstName,
       String lastName,
@@ -62,7 +64,7 @@ class UserService {
     }
   }
 
-  Future<Map<String, dynamic>> login(String email, String password) async {
+  static Future<Map<String, dynamic>> login(String email, String password) async {
     try {
       final response = await dioApi.post(
         '/users/login',
@@ -85,5 +87,33 @@ class UserService {
         throw Exception('Failed to login: $error');
       }
     }
+  }
+
+  static Future<User?> getCurrentUser() async {
+    try {
+      final response = await dioApi.get(
+        '/users/me',
+        options: Options(
+          headers: {
+            'Content-Type': 'application/json; charset=UTF-8',
+          },
+        ),
+      );
+
+      if (response.statusCode == 401 || response.statusCode == 403) {
+        return null;
+      }
+      return User.fromJson(response.data);
+    } catch (error) {
+      if (error is DioException) {
+        return null;
+      } else {
+        throw Exception('Failed to getcurrent user: $error');
+      }
+    }
+  }
+
+  static Future logOut() async {
+    await UserStore.removeToken();
   }
 }

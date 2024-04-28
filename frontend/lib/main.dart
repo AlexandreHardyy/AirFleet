@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:frontend/layouts/mobile_layout.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
-
-import 'mobile/home/home.dart';
 
 Future<void> main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
@@ -22,6 +21,7 @@ Future<void> main() async {
   await Future.delayed(const Duration(seconds: 3));
 
   FlutterNativeSplash.remove();
+
   runApp(const App());
 }
 
@@ -31,15 +31,14 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: const Home(),
+      home: const MobileLayout(),
       theme: ThemeData(
         textTheme: TextTheme(
-          displayLarge: GoogleFonts.prostoOne(
-            color: const Color(0xFFDCA200),
-            fontSize: 32,
-            fontWeight: FontWeight.bold,
-          )
-        ),
+            displayLarge: GoogleFonts.prostoOne(
+          color: const Color(0xFFDCA200),
+          fontSize: 32,
+          fontWeight: FontWeight.bold,
+        )),
         // ALTERNATIVE
         /*textTheme: GoogleFonts.prostoOneTextTheme(),*/
       ),

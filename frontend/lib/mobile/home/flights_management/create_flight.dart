@@ -4,7 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../services/dio.dart';
-import '../../../services/flight.dart';
+import '../../../models/flight.dart';
 import '../../map/mapbox_endpoint/retrieve.dart';
 import '../../map/mapbox_endpoint/suggest.dart';
 
