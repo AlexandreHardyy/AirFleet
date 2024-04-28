@@ -108,12 +108,72 @@ class UserService {
       if (error is DioException) {
         return null;
       } else {
-        throw Exception('Failed to getcurrent user: $error');
+        throw Exception('Failed to getCurrent user: $error');
       }
     }
   }
 
   static Future logOut() async {
     await UserStore.removeToken();
+  }
+
+  static Future<Response> createUser(Map<String, dynamic> data) async {
+    try {
+      final Response response = await dioApi.post(
+        '/users',
+        data: data,
+        options: Options(
+          headers: {
+            'Content-Type': 'application/json; charset=UTF-8',
+            // 'Access-Control-Allow-Origin': '*',
+          },
+        ),
+      );
+      return response;
+    } catch (error) {
+      throw Exception('Failed to create user: $error');
+    }
+  }
+
+  static Future<List<User>> getUsers() async {
+    try {
+      final response = await dioApi.get(
+        '/users',
+        options: Options(
+          headers: {
+            'Content-Type': 'application/json; charset=UTF-8',
+          },
+        ),
+      );
+
+      final List<dynamic> data = response.data;
+      return data.map((user) => User.fromJson(user)).toList();
+    } catch (error) {
+      throw Exception('Failed to get users: $error');
+    }
+  }
+
+  static Future<void> update(int id, Map<String, dynamic> data) async {
+    try {
+      await dioApi.put('/users/$id', data: data);
+    } catch (error) {
+      if (error is DioException) {
+        throw Exception('Failed to update user: ${error.message}');
+      } else {
+        throw Exception('Unexpected error: $error');
+      }
+    }
+  }
+
+  static Future<void> delete(int id) async {
+    try {
+      await dioApi.delete('/users/$id');
+    } catch (error) {
+      if (error is DioException) {
+        throw Exception('Failed to delete user: ${error.message}');
+      } else {
+        throw Exception('Unexpected error: $error');
+      }
+    }
   }
 }

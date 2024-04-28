@@ -1,6 +1,8 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:frontend/layouts/mobile_layout.dart';
+import 'package:frontend/layouts/web_layout.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
@@ -30,20 +32,34 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: const MobileLayout(),
-      theme: ThemeData(
-        primaryColor: const Color(0xFF131141),
-        textTheme: TextTheme(
-          displayLarge: GoogleFonts.prostoOne(
-            color: const Color(0xFFDCA200),
-            fontSize: 32,
-            fontWeight: FontWeight.bold,
+    if (kIsWeb) {
+      return MaterialApp(
+          home: const WebLayout(),
+          theme: ThemeData(
+            textTheme: TextTheme(
+                displayLarge: GoogleFonts.prostoOne(
+                  color: const Color(0xFFDCA200),
+                  fontSize: 32,
+                  fontWeight: FontWeight.bold,
+                )
+            ),
+          )
+      );
+    } else {
+      return MaterialApp(
+        home: const MobileLayout(),
+        theme: ThemeData(
+          textTheme: TextTheme(
+              displayLarge: GoogleFonts.prostoOne(
+                color: const Color(0xFFDCA200),
+                fontSize: 32,
+                fontWeight: FontWeight.bold,
+              )
           ),
+          // ALTERNATIVE
+          /*textTheme: GoogleFonts.prostoOneTextTheme(),*/
         ),
-        // ALTERNATIVE
-        /*textTheme: GoogleFonts.prostoOneTextTheme(),*/
-      ),
-    );
+      );
+    }
   }
 }

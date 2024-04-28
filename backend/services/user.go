@@ -17,6 +17,7 @@ type UserService interface {
 	GetById(id int) (models.User, error)
 	GetAll() ([]responses.ListUser, error)
 	Update(id int, userFields inputs.UpdateUser) (responses.User, error)
+	Delete(id int) error
 }
 
 type userService struct {
@@ -114,4 +115,14 @@ func (s *userService) Update(id int, userFields inputs.UpdateUser) (responses.Us
 	}
 
 	return formattedUser, err
+}
+
+func (s *userService) Delete(id int) error {
+	user, err := s.repository.GetById(id)
+	if err != nil {
+		return err
+	}
+
+	err = s.repository.Delete(user)
+	return err
 }

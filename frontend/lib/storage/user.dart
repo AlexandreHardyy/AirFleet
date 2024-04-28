@@ -2,7 +2,6 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:frontend/models/user.dart';
 import 'package:frontend/services/user.dart';
 
-
 class UserStore {
   static const storage = FlutterSecureStorage();
 

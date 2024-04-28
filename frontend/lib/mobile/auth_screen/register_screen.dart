@@ -86,7 +86,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       } else if (result['message'] != null) {
                         _apiMessage = result['message'];
                       } else {
-                        _apiMessage = 'An error occured';
+                        _apiMessage = 'An error occurred';
                       }
                     });
                   },

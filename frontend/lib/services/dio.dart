@@ -1,9 +1,10 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:frontend/storage/user.dart';
 import 'dart:io' show Platform;
 
-final String? apiUrl =  Platform.isAndroid ? dotenv.env['API_URL_ANDROID'] : dotenv.env['API_URL'];
+final String? apiUrl = kIsWeb ? dotenv.env['API_URL'] : (Platform.isAndroid ? dotenv.env['API_URL_ANDROID'] : dotenv.env['API_URL']);
 
 final dioMapbox = Dio(
   BaseOptions(

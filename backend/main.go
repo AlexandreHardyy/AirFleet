@@ -5,6 +5,7 @@ import (
 	"backend/routes"
 	"backend/services/brevo"
 	"backend/websocket"
+	"github.com/gin-contrib/cors"
 	"log"
 	"os"
 
@@ -52,5 +53,8 @@ func main() {
 	router.POST("/socket.io/*any", gin.WrapH(socketIoServer))
 
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	config := cors.DefaultConfig()
+	config.AllowAllOrigins = true
+	router.Use(cors.New(config))
 	router.Run(":3001")
 }

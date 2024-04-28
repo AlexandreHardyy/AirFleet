@@ -5,7 +5,6 @@ import (
 )
 
 func InitRoutes(router *gin.Engine) {
-
 	api := router.Group("/api")
 
 	// protected := router.Group("/api/protected")

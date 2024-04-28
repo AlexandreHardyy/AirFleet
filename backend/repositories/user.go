@@ -18,8 +18,9 @@ type UserRepository interface {
 	Login(email string, password string) (string, error)
 	GetById(id int) (models.User, error)
 	FindAll() ([]responses.ListUser, error)
-	FindOne(models.User) (models.User, error)
+	FindOne(user models.User) (models.User, error)
 	Update(user *models.User, userFields inputs.UpdateUser) error
+	Delete(user models.User) error
 }
 
 type userRepository struct {
@@ -79,7 +80,7 @@ func (r *userRepository) GetById(id int) (models.User, error) {
 }
 
 func (r *userRepository) FindAll() ([]responses.ListUser, error) {
-	users := []responses.ListUser{}
+	var users []responses.ListUser
 	err := r.db.Model(&models.User{}).Find(&users).Error
 	if err != nil {
 		return users, err
@@ -102,6 +103,14 @@ func (r *userRepository) Update(user *models.User, userFields inputs.UpdateUser)
 	err := r.db.Model(&user).Updates(userFields).Error
 	if err != nil {
 		return err
+	}
+
+	return nil
+}
+func (r *userRepository) Delete(user models.User) error {
+	result := r.db.Delete(&user)
+	if result.Error != nil {
+		return result.Error
 	}
 
 	return nil

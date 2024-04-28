@@ -82,7 +82,7 @@ func (th *UserHandler) Register(c *gin.Context) {
 	c.JSON(http.StatusCreated, newUser)
 }
 
-// RegisterPilot Register godoc
+// RegisterPilot godoc
 // @Summary Register pilot
 // @Schemes
 // @Description register for a pilot
@@ -142,11 +142,14 @@ func (th *UserHandler) RegisterPilot(c *gin.Context) {
 			c.JSON(http.StatusInternalServerError, &Response{Message: fmt.Sprintf("%s upload failed", fileType)})
 			return
 		}
-		fileRepository.Create(models.File{
+		_, err := fileRepository.Create(models.File{
 			Type:   fileType,
 			Path:   filepath.Join("public", "files", fileType+"s", newFileName),
 			UserID: newUser.ID,
 		})
+		if err != nil {
+			return
+		}
 
 	}
 
@@ -193,7 +196,7 @@ func (th *UserHandler) Login(c *gin.Context) {
 	})
 }
 
-// Validate Account godoc
+// ValidateAccount godoc
 //
 // @Summary Validate Account
 // @Schemes
@@ -209,15 +212,15 @@ func (th *UserHandler) Login(c *gin.Context) {
 //
 // @Router /users/validate/{token} [get]
 func (th *UserHandler) ValidateAccount(c *gin.Context) {
-	token := c.Param("token")
-	if token == "" {
+	tokenParam := c.Param("token")
+	if tokenParam == "" {
 		c.JSON(http.StatusBadRequest, &Response{
 			Message: "Wrong token parameter",
 		})
 		return
 	}
 
-	err := th.userService.ValidateAccount(token)
+	err := th.userService.ValidateAccount(tokenParam)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, &Response{
 			Message: "Wrong token parameter",
@@ -232,7 +235,7 @@ func (th *UserHandler) ValidateAccount(c *gin.Context) {
 
 // Update User godoc
 //
-// @Summary User User
+// @Summary User
 // @Schemes
 // @Description Update user
 // @Tags user
@@ -283,7 +286,7 @@ func (th *UserHandler) Update(c *gin.Context) {
 	c.JSON(http.StatusOK, user)
 }
 
-// Validate Pilot Account godoc
+// ValidatePilotAccount godoc
 //
 // @Summary Validate Pilot Account
 // @Schemes
@@ -322,7 +325,7 @@ func (th *UserHandler) ValidatePilotAccount(c *gin.Context) {
 	c.JSON(http.StatusOK, user)
 }
 
-// CurrentUser Current godoc
+// CurrentUser godoc
 //
 // @Summary Current user
 // @Schemes
@@ -364,7 +367,7 @@ func (th *UserHandler) CurrentUser(c *gin.Context) {
 	})
 }
 
-// GetAll Get all godoc
+// GetAll godoc
 //
 // @Summary Get all users
 // @Schemes
@@ -389,4 +392,38 @@ func (th *UserHandler) GetAll(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, users)
+}
+
+// Delete godoc
+// @Summary Delete user
+// @Schemes
+// @Description delete a user
+// @Tags user
+// @Accept json
+// @Produce json
+//
+//	@Param		id		path		int	true	"User ID"
+//	@Success	204			{object}	nil
+//	@Failure	400			{object}	Response
+//
+// @Router /users/{id} [delete]
+func (th *UserHandler) Delete(c *gin.Context) {
+	userId, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, &Response{
+			Message: "Error: invalid user ID",
+		})
+		return
+	}
+
+	err = th.userService.Delete(userId)
+	if err != nil {
+		response := &Response{
+			Message: err.Error(),
+		}
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	c.JSON(http.StatusNoContent, nil)
 }
