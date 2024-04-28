@@ -1,15 +1,17 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/map/map.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
+import 'widgets/create_user_form.dart';
 
 Future<void> main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
-  const String MAPBOX_ACCESS_TOKEN = String.fromEnvironment("PUBLIC_ACCESS_TOKEN");
-  MapboxOptions.setAccessToken(MAPBOX_ACCESS_TOKEN);
+  const String mapboxAccessToken = String.fromEnvironment("PUBLIC_ACCESS_TOKEN");
+  MapboxOptions.setAccessToken(mapboxAccessToken);
 
   await Future.delayed(const Duration(seconds: 3));
 
@@ -26,11 +28,11 @@ class App extends StatelessWidget {
       home: const Home(),
       theme: ThemeData(
         textTheme: TextTheme(
-          displayLarge: GoogleFonts.prostoOne(
-            color: const Color(0xFFDCA200),
-            fontSize: 32,
-            fontWeight: FontWeight.bold,
-          )
+            displayLarge: GoogleFonts.prostoOne(
+              color: const Color(0xFFDCA200),
+              fontSize: 32,
+              fontWeight: FontWeight.bold,
+            )
         ),
         // ALTERNATIVE
         /*textTheme: GoogleFonts.prostoOneTextTheme(),*/
@@ -38,6 +40,7 @@ class App extends StatelessWidget {
     );
   }
 }
+
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -49,42 +52,46 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFF131141),
-      body: Column(
-        children: [
-          const Expanded(
-            flex: 2,
-            child: AirFleetMap(),
-          ),
-          Expanded(
-            flex: 1,
-            child:
-              Column(
-                children: [
-                  Expanded(
-                    flex: 1,
-                    child: Container(
-                      color: Colors.blue,
-                    ),
-                  ),
-                  Expanded(
-                    flex: 1,
-                    child: Container(
-                      color: Colors.pink,
-                    ),
-                  ),
-                  Expanded(
-                    flex: 1,
-                    child: Container(
-                      color: Colors.red,
-                    ),
-                  ),
-                ]
+    if (kIsWeb) {
+      return const CreateUserForm();
+    } else {
+      return Scaffold(
+          backgroundColor: const Color(0xFF131141),
+          body: Column(
+            children: [
+              const Expanded(
+                flex: 2,
+                child: AirFleetMap(),
               ),
+              Expanded(
+                flex: 1,
+                child:
+                Column(
+                    children: [
+                      Expanded(
+                        flex: 1,
+                        child: Container(
+                          color: Colors.blue,
+                        ),
+                      ),
+                      Expanded(
+                        flex: 1,
+                        child: Container(
+                          color: Colors.pink,
+                        ),
+                      ),
+                      Expanded(
+                        flex: 1,
+                        child: Container(
+                          color: Colors.red,
+                        ),
+                      ),
+                    ]
+                ),
+              )
+            ],
           )
-        ],
-      )
-    );
+      );
+    }
   }
 }

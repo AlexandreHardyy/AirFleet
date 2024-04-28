@@ -14,3 +14,42 @@ A few resources to get you started if this is your first Flutter project:
 For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
+
+## How to run
+
+- Install dependencies
+```
+flutter pub get
+```
+
+- Run the app
+```
+flutter run
+```
+
+- Run the web app on Chrome
+```
+flutter run -d chrome
+```
+
+- Run the web app on Arc
+```
+flutter run -d arc
+```
+
+- Run tests
+```
+flutter test
+```
+
+- Update swagger here: http://localhost:3001/swagger/index.html
+```
+## Contributors
+
+- Armand DE FARIA LEITE
+- Noé PIGEAU
+- Théo HERVÉ
+- Alexandre HARDY
+```
+
+[]: # (end)
