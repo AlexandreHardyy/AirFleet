@@ -5,7 +5,7 @@ class UserService {
   Future<Map<String, dynamic>> register(
       String email, String firstName, String lastName, String password) async {
     try {
-      final response = await dio.post(
+      final response = await dioApi.post(
         '/users',
         data: {
           'email': email,
@@ -47,7 +47,7 @@ class UserService {
         'driving_licence': await MultipartFile.fromFile(drivingLicencePath)
       });
 
-      final response = await dio.post(
+      final response = await dioApi.post(
         '/users/pilot',
         data: formData,
       );
@@ -64,7 +64,7 @@ class UserService {
 
   Future<Map<String, dynamic>> login(String email, String password) async {
     try {
-      final response = await dio.post(
+      final response = await dioApi.post(
         '/users/login',
         data: {
           'email': email,

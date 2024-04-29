@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:frontend/home/flights_management/flights_management.dart';
 
 import '../map/map.dart';
+import 'flights_management/flights_management.dart';
 import 'home_drawer.dart';
 
 class Home extends StatefulWidget {
