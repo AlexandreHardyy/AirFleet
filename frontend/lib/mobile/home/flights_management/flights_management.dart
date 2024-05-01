@@ -21,10 +21,18 @@ class _FlightsManagementState extends State<FlightsManagement> {
       if (departureTextFieldFocusNode.hasFocus) {
         draggableController.animateTo(0.8, duration: const Duration(microseconds: 500), curve: Curves.ease);
       }
+
+      if(!departureTextFieldFocusNode.hasFocus && !arrivalTextFieldFocusNode.hasFocus) {
+        draggableController.animateTo(0.4, duration: const Duration(microseconds: 500), curve: Curves.ease);
+      }
     });
     arrivalTextFieldFocusNode.addListener(() {
       if (arrivalTextFieldFocusNode.hasFocus) {
         draggableController.animateTo(0.8, duration: const Duration(microseconds: 500), curve: Curves.ease);
+      }
+
+      if(!departureTextFieldFocusNode.hasFocus && !arrivalTextFieldFocusNode.hasFocus) {
+        draggableController.animateTo(0.4, duration: const Duration(microseconds: 500), curve: Curves.ease);
       }
     });
   }

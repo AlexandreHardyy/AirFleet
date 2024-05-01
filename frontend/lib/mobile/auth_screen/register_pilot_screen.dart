@@ -8,7 +8,7 @@ import 'package:form_builder_file_picker/form_builder_file_picker.dart';
 class RegisterPilotScreen extends StatefulWidget {
   const RegisterPilotScreen({super.key});
   @override
-  _RegisterPilotScreenState createState() => _RegisterPilotScreenState();
+  State<RegisterPilotScreen> createState() => _RegisterPilotScreenState();
 }
 
 class _RegisterPilotScreenState extends State<RegisterPilotScreen> {

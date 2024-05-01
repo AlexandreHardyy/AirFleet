@@ -3,26 +3,43 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:frontend/mobile/map/utils.dart';
+import 'package:frontend/mobile/provider/current_flight.dart';
+import 'package:frontend/models/flight.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
-
+import 'package:provider/provider.dart';
 
 class AirFleetMap extends StatefulWidget {
-  const AirFleetMap({super.key});
+  final Flight? currentFlight;
+
+  const AirFleetMap({super.key, this.currentFlight});
 
   @override
   State createState() => AirFleetMapState();
 }
 
 class AirFleetMapState extends State<AirFleetMap> {
-  late MapboxMap mapboxMap;
-  Timer? timer;
-  var trackLocation = true;
+  Timer? _timer;
+  PointAnnotationManager? _pointAnnotationManager;
+  PolylineAnnotationManager? _polylineAnnotationManager;
+
+  var _trackLocation = true;
+
+  late MapboxMap _mapboxMap;
 
   _onMapCreated(MapboxMap mapboxMap) async {
-    this.mapboxMap = mapboxMap;
+    _mapboxMap = mapboxMap;
 
-    this.mapboxMap.scaleBar.updateSettings(ScaleBarSettings(enabled: false));
+    _mapboxMap.scaleBar.updateSettings(ScaleBarSettings(enabled: false));
+
+    _mapboxMap.annotations.createPointAnnotationManager().then((value) async {
+      _pointAnnotationManager = value;
+    });
+
+    _mapboxMap.annotations.createPolylineAnnotationManager().then((value) async {
+      _polylineAnnotationManager = value;
+    });
+
 
     await _getPermission();
 
@@ -42,21 +59,121 @@ class AirFleetMapState extends State<AirFleetMap> {
   }
 
   _onStyleLoadedCallback(StyleLoadedEventData data) {
-      setLocationComponent();
-      refreshTrackLocation();
+    _setLocationComponent();
+    _refreshTrackLocation();
   }
 
   _onScrollListener(ScreenCoordinate coordinates) {
+    if (_trackLocation) {
+      setState(() {
+          _timer?.cancel();
+          _trackLocation = false;
+      });
+    }
+  }
+
+  void _createOnePointAnnotation(Position position) {
+    _pointAnnotationManager
+        ?.create(PointAnnotationOptions(
+        geometry: Point(
+            coordinates: position).toJson(),
+        textField: "custom-icon",
+        textOffset: [0.0, -2.0],
+        textColor: Colors.red.value,
+        iconSize: 1.3,
+        iconOffset: [0.0, -5.0],
+        symbolSortKey: 10
+    ));
+  }
+
+  void _createOneLineAnnotation(Position position1, Position position2) {
+    _polylineAnnotationManager
+        ?.create(PolylineAnnotationOptions(
+        geometry: LineString(coordinates: [
+          position1,
+          position2
+        ]).toJson(),
+        lineColor: Colors.red.value,
+        lineWidth: 2));
+  }
+
+  void _setLocationComponent() async {
+    await _mapboxMap.location.updateSettings(
+      LocationComponentSettings(
+        enabled: true,
+      ),
+    );
+  }
+
+  void _refreshTrackLocation() async {
+    _timer?.cancel();
+    if (_trackLocation) {
+      _timer = Timer.periodic(const Duration(seconds: 1), (timer) async {
+        final position = await _mapboxMap.style.getPuckPosition();
+        _setCameraPosition(position);
+      });
+    }
+  }
+
+  void _setCameraPosition(Position position) {
+    _mapboxMap.flyTo(
+        CameraOptions(
+          center: Point(coordinates: position).toJson(),
+          zoom: 10,
+        ),
+        null);
+  }
+
+  void _createRouteOnMap(Flight currentFlight) {
+    final departurePosition = Position(currentFlight.departure.longitude, currentFlight.departure.latitude);
+    final arrivalPosition = Position(currentFlight.arrival.longitude, currentFlight.arrival.latitude);
+
+    _createOnePointAnnotation(departurePosition);
+    _createOnePointAnnotation(arrivalPosition);
+    _createOneLineAnnotation(departurePosition, arrivalPosition);
+
     setState(() {
-      if (trackLocation) {
-        timer?.cancel();
-        trackLocation = false;
-      }
+      _trackLocation = false;
+      _refreshTrackLocation();
     });
+
+    _mapboxMap.cameraForCoordinateBounds(
+        CoordinateBounds(
+          southwest: Point(
+              coordinates: departurePosition
+          ).toJson(),
+          northeast: Point(
+              coordinates: arrivalPosition
+          ).toJson(),
+          infiniteBounds: true
+        ),
+        MbxEdgeInsets(top: 1, left: 2, bottom: 3, right: 4),
+        10,
+        20,
+        null,
+        null
+    ).then((value) => _mapboxMap.flyTo(value, null));
+  }
+
+  void _clearMap() {
+    _pointAnnotationManager?.deleteAll();
+    _polylineAnnotationManager?.deleteAll();
   }
 
   @override
   Widget build(BuildContext context) {
+    final currentFlight = Provider.of<CurrentFlight>(context, listen: true).flight;
+
+    if (currentFlight != null) {
+      _createRouteOnMap(currentFlight);
+    } else {
+      _clearMap();
+      setState(() {
+        _trackLocation = true;
+      });
+      _refreshTrackLocation();
+    }
+
     return Scaffold(
       //TODO Improve this
       floatingActionButton: Padding(
@@ -64,12 +181,12 @@ class AirFleetMapState extends State<AirFleetMap> {
         child: FloatingActionButton(
             heroTag: null,
             onPressed: () {
-              setState(() {
-                trackLocation = !trackLocation;
-                refreshTrackLocation();
+              setState(()  {
+                _trackLocation = !_trackLocation;
+                _refreshTrackLocation();
               });
             },
-            backgroundColor: trackLocation ? Colors.blue : Colors.grey,
+            backgroundColor: _trackLocation ? Colors.blue : Colors.grey,
             child: const Icon(FontAwesomeIcons.locationCrosshairs)),
       ),
         body: MapWidget(
@@ -78,34 +195,8 @@ class AirFleetMapState extends State<AirFleetMap> {
           onMapCreated: _onMapCreated,
           onStyleLoadedListener: _onStyleLoadedCallback,
           onScrollListener: _onScrollListener,
+
         )
     );
-  }
-
-  setLocationComponent() async {
-    await mapboxMap.location.updateSettings(
-      LocationComponentSettings(
-        enabled: true,
-      ),
-    );
-  }
-
-  refreshTrackLocation() async {
-    timer?.cancel();
-    if (trackLocation) {
-      timer = Timer.periodic(const Duration(seconds: 1), (timer) async {
-        final position = await mapboxMap.style.getPuckPosition();
-        setCameraPosition(position);
-      });
-    }
-  }
-
-  setCameraPosition(Position position) {
-    mapboxMap.flyTo(
-        CameraOptions(
-          center: Point(coordinates: position).toJson(),
-          zoom: 10,
-        ),
-        null);
   }
 }

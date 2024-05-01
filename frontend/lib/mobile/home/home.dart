@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:frontend/mobile/provider/current_flight.dart';
+import 'package:provider/provider.dart';
 
 import '../map/map.dart';
 import 'flights_management/flights_management.dart';
@@ -46,14 +48,17 @@ class _HomeState extends State<Home> {
                 }
             ),
           ),
-          body: Stack(
-            children: [
-              SizedBox(
-                height: MediaQuery.of(context).size.height * (2/3),
-                child: const AirFleetMap(),
-              ),
-              const FlightsManagement()
-            ],
+          body: ChangeNotifierProvider(
+            create: (context) => CurrentFlight(),
+            child: Stack(
+              children: [
+                SizedBox(
+                  height: MediaQuery.of(context).size.height * (2/3),
+                  child: const AirFleetMap(),
+                ),
+                const FlightsManagement()
+              ],
+            ),
           )
       ),
     );
