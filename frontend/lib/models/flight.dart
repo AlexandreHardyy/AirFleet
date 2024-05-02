@@ -1,3 +1,20 @@
+class Flight {
+  Airport departure;
+  Airport arrival;
+
+  Flight({
+    required this.departure,
+    required this.arrival,
+  });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'departure': departure.toJson(),
+      'arrival': arrival.toJson(),
+    };
+  }
+}
+
 class Airport {
   final String name;
   final String address;

@@ -269,7 +269,7 @@ class RoutablePoint {
 }
 
 class ExternalIds {
-  String foursquare;
+  String? foursquare;
 
   ExternalIds({
     required this.foursquare,

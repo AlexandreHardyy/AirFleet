@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/mobile/provider/current_flight.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:dio/dio.dart';
+import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../services/dio.dart';
@@ -22,7 +24,10 @@ class CreateFlightWidget extends StatefulWidget {
 
 class _CreateFlightWidgetState extends State<CreateFlightWidget> {
   late Position userLocation;
+
   String mapboxSessionToken = uuid.v4();
+  final TextEditingController departureController = TextEditingController();
+  final TextEditingController arrivalController = TextEditingController();
 
   List<Suggestion>? searchResults;
   Airport? departure;
@@ -35,6 +40,15 @@ class _CreateFlightWidgetState extends State<CreateFlightWidget> {
     _determinePosition().then((value) => setState(() {
       userLocation = value;
     }));
+  }
+
+  void _checkFlightValidity() {
+    if (departure != null && arrival != null) {
+      Provider.of<CurrentFlight>(context, listen: false).setFlight(Flight(departure: departure!, arrival: arrival!));
+
+      widget.departureTextFieldFocusNode.unfocus();
+      widget.arrivalTextFieldFocusNode.unfocus();
+    }
   }
 
   Future<List<Suggestion>> _retrieveNearbyAirport(String searchValue) async {
@@ -80,80 +94,107 @@ class _CreateFlightWidgetState extends State<CreateFlightWidget> {
   
   Future<void> _createFlight(Flight flight) async {
     try {
-      await dioApi.post("flights", data: flight.toJson());
+      await dioApi.post("/flights", data: flight.toJson());
     } on DioException catch (e) {
       throw Exception('Something went wrong during flight creation: ${e.response}');
     }
   }
 
+  Future<void> _onSelectAirport(Suggestion suggestion) async {
+    final feature = await _retrieveAirportData(suggestion.mapboxId);
+    final airport = Airport(
+      name: feature.properties.name,
+      address: feature.properties.fullAddress ?? "",
+      longitude: feature.geometry.coordinates[0],
+      latitude: feature.geometry.coordinates[1]
+    );
+
+    setState(() {
+      searchResults = null;
+      if (widget.departureTextFieldFocusNode.hasFocus) {
+        departure = airport;
+        departureController.text = departure!.name;
+      } else if (widget.arrivalTextFieldFocusNode.hasFocus) {
+        arrival = airport;
+        arrivalController.text = arrival!.name;
+      }
+    });
+
+    _checkFlightValidity();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        TextField(
-          focusNode: widget.departureTextFieldFocusNode,
-          onChanged: (value) async {
-            final suggestions = await _retrieveNearbyAirport(value);
-            setState(() {
-              searchResults = suggestions;
-            });
-          },
-        ),
-        TextField(
-          focusNode: widget.arrivalTextFieldFocusNode,
-          onChanged: (value) async {
-            final suggestions = await _retrieveNearbyAirport(value);
-            setState(() {
-              searchResults = suggestions;
-            });
-          },
-        ),
-        Expanded(
-          child: searchResults != null ? ListView.builder(
-            itemCount: searchResults?.length,
-            itemBuilder: (BuildContext context, int index) {
-              final airportSuggestion = searchResults![index];
-
-              return GestureDetector(
-                onTap: () async {
-                  final feature = await _retrieveAirportData(airportSuggestion.mapboxId);
-                  final airport = Airport(
-                      name: feature.properties.name,
-                      address: feature.properties.fullAddress ?? "",
-                      latitude: feature.geometry.coordinates[0],
-                      longitude: feature.geometry.coordinates[1]
-                  );
-
-                  setState(() {
-                    if (widget.departureTextFieldFocusNode.hasFocus) {
-                      departure = airport;
-                    } else if (widget.arrivalTextFieldFocusNode.hasFocus) {
-                      arrival = airport;
-                    }
-                  });
-                },
-                child: Card(
-                  child: ListTile(
-                    title: Text(airportSuggestion.name),
-                    subtitle: Text(airportSuggestion.fullAddress ?? ""),
-                  ),
-                ),
-              );
+    return departure == null || arrival == null ?
+      Column(
+        children: [
+          TextField(
+            focusNode: widget.departureTextFieldFocusNode,
+            controller: departureController,
+            onChanged: (value) async {
+              final suggestions = await _retrieveNearbyAirport(value);
+              setState(() {
+                searchResults = suggestions;
+              });
             },
-          ) : const Text("Type something"),
-        ),
-        if (departure != null && arrival != null)
-          Center(
-          child: ElevatedButton(
+          ),
+          TextField(
+            focusNode: widget.arrivalTextFieldFocusNode,
+          controller: arrivalController,
+            onChanged: (value) async {
+              final suggestions = await _retrieveNearbyAirport(value);
+              setState(() {
+                searchResults = suggestions;
+              });
+            },
+          ),
+          Expanded(
+            child: searchResults != null ? ListView.builder(
+              itemCount: searchResults?.length,
+              itemBuilder: (BuildContext context, int index) {
+                final airportSuggestion = searchResults![index];
+
+                return GestureDetector(
+                  onTap: () => _onSelectAirport(airportSuggestion),
+                  child: Card(
+                    child: ListTile(
+                      title: Text(airportSuggestion.name),
+                      subtitle: Text(airportSuggestion.fullAddress ?? ""),
+                    ),
+                  ),
+                );
+              },
+            ) : const Text("Type something"),
+          ),
+        ],
+      )
+    :
+      Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          ElevatedButton(
             onPressed: () {
               final Flight flight = Flight(departure: departure!, arrival: arrival!);
               _createFlight(flight);
             },
             child: const Text("Create Flight"),
           ),
-        )
-      ],
-    );
+          const SizedBox(width: 10),
+          ElevatedButton(
+            onPressed: () {
+              setState(() {
+                departure = null;
+                arrival = null;
+              });
+
+              Provider.of<CurrentFlight>(context, listen: false).setFlight(null);
+              departureController.clear();
+              arrivalController.clear();
+            },
+            child: const Text("Cancel Selection"),
+          ),
+        ]
+      );
   }
 }
 
@@ -181,23 +222,6 @@ Future<Position> _determinePosition() async {
   }
 
   return await Geolocator.getCurrentPosition();
-}
-
-class Flight {
-  Airport departure;
-  Airport arrival;
-
-  Flight({
-    required this.departure,
-    required this.arrival,
-  });
-
-  Map<String, dynamic> toJson() {
-    return {
-      'departure': departure.toJson(),
-      'arrival': arrival.toJson(),
-    };
-  }
 }
 
 
