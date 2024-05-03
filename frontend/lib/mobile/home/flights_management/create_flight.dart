@@ -7,6 +7,7 @@ import 'package:uuid/uuid.dart';
 
 import '../../../services/dio.dart';
 import '../../../models/flight.dart';
+import '../../../services/flight.dart';
 import '../../map/mapbox_endpoint/retrieve.dart';
 import '../../map/mapbox_endpoint/suggest.dart';
 
@@ -91,14 +92,6 @@ class _CreateFlightWidgetState extends State<CreateFlightWidget> {
       throw Exception('Something went wrong: ${e.response}');
     }
   }
-  
-  Future<void> _createFlight(Flight flight) async {
-    try {
-      await dioApi.post("/flights", data: flight.toJson());
-    } on DioException catch (e) {
-      throw Exception('Something went wrong during flight creation: ${e.response}');
-    }
-  }
 
   Future<void> _onSelectAirport(Suggestion suggestion) async {
     final feature = await _retrieveAirportData(suggestion.mapboxId);
@@ -173,9 +166,9 @@ class _CreateFlightWidgetState extends State<CreateFlightWidget> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           ElevatedButton(
-            onPressed: () {
+            onPressed: () async {
               final Flight flight = Flight(departure: departure!, arrival: arrival!);
-              _createFlight(flight);
+              await FlightService.createFlight(flight);
             },
             child: const Text("Create Flight"),
           ),

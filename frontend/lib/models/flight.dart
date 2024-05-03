@@ -7,6 +7,13 @@ class Flight {
     required this.arrival,
   });
 
+  factory Flight.fromJson(Map<String, dynamic> json) {
+    return Flight(
+      departure: Airport.fromJson(json['departure']),
+      arrival: Airport.fromJson(json['arrival']),
+    );
+  }
+
   Map<String, dynamic> toJson() {
     return {
       'departure': departure.toJson(),
@@ -27,6 +34,15 @@ class Airport {
     required this.latitude,
     required this.longitude
   });
+
+  factory Airport.fromJson(Map<String, dynamic> json) {
+    return Airport(
+      name: json['name'],
+      address: json['address'],
+      latitude: json['latitude'],
+      longitude: json['longitude'],
+    );
+  }
 
   Map<String, dynamic> toJson() {
     return {
