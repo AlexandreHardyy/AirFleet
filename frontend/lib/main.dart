@@ -33,12 +33,14 @@ class App extends StatelessWidget {
     return MaterialApp(
       home: const MobileLayout(),
       theme: ThemeData(
+        primaryColor: const Color(0xFF131141),
         textTheme: TextTheme(
             displayLarge: GoogleFonts.prostoOne(
-          color: const Color(0xFFDCA200),
-          fontSize: 32,
-          fontWeight: FontWeight.bold,
-        )),
+              color: const Color(0xFFDCA200),
+              fontSize: 32,
+              fontWeight: FontWeight.bold,
+            ),
+        ),
         // ALTERNATIVE
         /*textTheme: GoogleFonts.prostoOneTextTheme(),*/
       ),

@@ -25,6 +25,13 @@ class HomeDrawer extends StatelessWidget {
             },
           ),
           ListTile(
+            leading: const Icon(FontAwesomeIcons.jetFighter),
+            title: const Text("Vehicle"),
+            onTap: () async {
+              Navigator.of(context).push(Routes.vehiclesManagement(context));
+            },
+          ),
+          ListTile(
             leading: const Icon(FontAwesomeIcons.rightFromBracket),
             title: const Text("Log out"),
             onTap: () async {
