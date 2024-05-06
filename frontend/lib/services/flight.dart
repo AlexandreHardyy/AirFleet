@@ -9,12 +9,10 @@ class FlightService {
       final response = await dioApi.post("/flights", data: flight.toJson());
 
       return Flight.fromJson(response.data);
-    }  catch (error) {
-      if (error is DioException) {
-        return error.response?.data;
-      } else {
-        throw Exception('Failed to create a flight: $error');
-      }
+    } on DioException catch (e) {
+      throw Exception('Something went wrong during flight creation: ${e.response}');
+    } catch (e) {
+      throw Exception('Something went wrong: $e');
     }
   }
 }
