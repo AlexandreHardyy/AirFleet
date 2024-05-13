@@ -1,13 +1,13 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:frontend/mobile/home/blocs/current_flight_bloc.dart';
 import 'package:frontend/mobile/map/utils.dart';
-import 'package:frontend/mobile/provider/current_flight.dart';
 import 'package:frontend/models/flight.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:provider/provider.dart';
 
 class AirFleetMap extends StatefulWidget {
   final Flight? currentFlight;
@@ -162,41 +162,45 @@ class AirFleetMapState extends State<AirFleetMap> {
 
   @override
   Widget build(BuildContext context) {
-    final currentFlight = Provider.of<CurrentFlight>(context, listen: true).flight;
+    return BlocListener<CurrentFlightBloc, CurrentFlightState>(
+      listener: (context, state) {
+        if (state.status == CurrentFlightStatus.loaded) {
+          _clearMap();
+          final flight = state.flight;
+          if (flight != null) {
+            _createRouteOnMap(flight);
+          } else {
+            setState(() {
+              _trackLocation = true;
+              _refreshTrackLocation();
+            });
+          }
+        }
+      },
+      child: Scaffold(
+        //TODO Improve this
+        floatingActionButton: Padding(
+          padding: const EdgeInsets.only(bottom: 50),
+          child: FloatingActionButton(
+              heroTag: null,
+              onPressed: () {
+                setState(()  {
+                  _trackLocation = !_trackLocation;
+                  _refreshTrackLocation();
+                });
+              },
+              backgroundColor: _trackLocation ? Colors.blue : Colors.grey,
+              child: const Icon(FontAwesomeIcons.locationCrosshairs)),
+        ),
+          body: MapWidget(
+            key: const ValueKey("mapWidget"),
+            cameraOptions: CameraOptions(zoom: 3.0),
+            onMapCreated: _onMapCreated,
+            onStyleLoadedListener: _onStyleLoadedCallback,
+            onScrollListener: _onScrollListener,
 
-    if (currentFlight != null) {
-      _createRouteOnMap(currentFlight);
-    } else {
-      _clearMap();
-      setState(() {
-        _trackLocation = true;
-      });
-      _refreshTrackLocation();
-    }
-
-    return Scaffold(
-      //TODO Improve this
-      floatingActionButton: Padding(
-        padding: const EdgeInsets.only(bottom: 50),
-        child: FloatingActionButton(
-            heroTag: null,
-            onPressed: () {
-              setState(()  {
-                _trackLocation = !_trackLocation;
-                _refreshTrackLocation();
-              });
-            },
-            backgroundColor: _trackLocation ? Colors.blue : Colors.grey,
-            child: const Icon(FontAwesomeIcons.locationCrosshairs)),
+          )
       ),
-        body: MapWidget(
-          key: const ValueKey("mapWidget"),
-          cameraOptions: CameraOptions(zoom: 3.0),
-          onMapCreated: _onMapCreated,
-          onStyleLoadedListener: _onStyleLoadedCallback,
-          onScrollListener: _onScrollListener,
-
-        )
     );
   }
 }

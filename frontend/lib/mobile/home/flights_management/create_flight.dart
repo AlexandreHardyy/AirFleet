@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/mobile/provider/current_flight.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:frontend/mobile/home/blocs/current_flight_bloc.dart';
+import 'package:frontend/mobile/map/mapbox_endpoint/retrieve.dart';
+import 'package:frontend/mobile/map/mapbox_endpoint/suggest.dart';
+import 'package:frontend/models/flight.dart';
+import 'package:frontend/services/dio.dart';
+import 'package:frontend/services/flight.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:dio/dio.dart';
-import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
-
-import '../../../services/dio.dart';
-import '../../../models/flight.dart';
-import '../../../services/flight.dart';
-import '../../map/mapbox_endpoint/retrieve.dart';
-import '../../map/mapbox_endpoint/suggest.dart';
 
 const uuid = Uuid();
 
@@ -45,10 +44,10 @@ class _CreateFlightWidgetState extends State<CreateFlightWidget> {
 
   void _checkFlightValidity() {
     if (departure != null && arrival != null) {
-      Provider.of<CurrentFlight>(context, listen: false).setFlight(Flight(departure: departure!, arrival: arrival!));
-
       widget.departureTextFieldFocusNode.unfocus();
       widget.arrivalTextFieldFocusNode.unfocus();
+
+      context.read<CurrentFlightBloc>().add(CurrentFlightLoaded(flight: Flight(departure: departure!, arrival: arrival!)));
     }
   }
 
@@ -180,7 +179,7 @@ class _CreateFlightWidgetState extends State<CreateFlightWidget> {
                 arrival = null;
               });
 
-              Provider.of<CurrentFlight>(context, listen: false).setFlight(null);
+              context.read<CurrentFlightBloc>().add(CurrentFlightCleared());
               departureController.clear();
               arrivalController.clear();
             },
