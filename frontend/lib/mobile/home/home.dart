@@ -20,7 +20,7 @@ class _HomeState extends State<Home> {
     return GestureDetector(
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
       child: BlocProvider(
-        create: (context) => CurrentFlightBloc(),
+        create: (context) => CurrentFlightBloc()..add(CurrentFlightInitialized()),
         child: Scaffold(
             backgroundColor: const Color(0xFF131141),
             drawer: const HomeDrawer(),
