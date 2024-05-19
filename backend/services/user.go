@@ -12,6 +12,7 @@ import (
 type UserService interface {
 	Register(user models.User) (responses.User, error)
 	Login(input inputs.LoginUser) (string, error)
+	ValidateAccount(token string) error
 	GetById(id int) (models.User, error)
 	GetAll() ([]responses.ListUser, error)
 }
@@ -55,6 +56,21 @@ func (s *userService) Login(input inputs.LoginUser) (string, error) {
 	}
 
 	return token, nil
+}
+
+func (s *userService) ValidateAccount(token string) error {
+
+	user, err := s.repository.FindOne(models.User{TokenVerify: token})
+	if err != nil {
+		return errors.New("wrong token email")
+	}
+
+	user.TokenVerify = ""
+	user.IsVerified = true
+
+	_, err = s.repository.Update(user, user.ID)
+
+	return err
 }
 
 func (s *userService) GetById(id int) (models.User, error) {

@@ -15,6 +15,7 @@ func initUserRoutes(api *gin.RouterGroup) {
 	api = api.Group("/users")
 	api.POST("", userHandler.Register)
 	api.POST("/login", userHandler.Login)
+	api.GET("/validate/:token", userHandler.ValidateAccount)
 	api.POST("/pilot", userHandler.RegisterPilot)
 
 	// api = protected.Group("/user")

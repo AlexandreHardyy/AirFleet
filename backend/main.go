@@ -3,10 +3,12 @@ package main
 import (
 	"backend/database"
 	"backend/routes"
+	"backend/services/brevo"
 	"backend/websocket"
-	socketio "github.com/googollee/go-socket.io"
 	"log"
 	"os"
+
+	socketio "github.com/googollee/go-socket.io"
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -32,6 +34,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("err loading: %v", err)
 	}
+	brevo.InitBrevoClient()
 
 	database.OpenConnection()
 

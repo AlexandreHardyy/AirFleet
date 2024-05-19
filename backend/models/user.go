@@ -11,6 +11,7 @@ type User struct {
 	Email           string    `json:"email" gorm:"unique;not null"`
 	Password        string    `json:"password" gorm:"not null"`
 	Role            string    `json:"role" gorm:"not null"`
+	TokenVerify     string    `json:"token_verify"`
 	IsVerified      bool      `json:"is_verified"`
 	IsPilotVerified bool      `json:"is_pilot_verified"`
 	CreatedAt       time.Time `json:"created_at"`

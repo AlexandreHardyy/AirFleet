@@ -254,6 +254,29 @@ paths:
       summary: Register pilot
       tags:
       - user
+  /users/validate/{token}:
+    get:
+      description: validate account with token
+      parameters:
+      - description: Token
+        in: path
+        name: token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.Response'
+      summary: Validate Account
+      tags:
+      - user
   /vehicles:
     get:
       consumes:

@@ -3,10 +3,10 @@ POST http://localhost:3001/api/users/ HTTP/1.1
 Content-Type: application/json
 
 {
-    "first_name": "Mimi",
-    "last_name": "Leclient",
-    "email": "mili@leclient.com",
-    "password": "Test1234!"
+    "first_name": "quoi",
+    "last_name": "feur",
+    "email": "noepigeau@gmail.com",
+    "password": "test1234"
 }
 
 ### LOGIN USER
@@ -17,6 +17,12 @@ Content-Type: application/json
     "email": "mili@leclient.com",
     "password": "Test1234!"
 }
+
+### VALIDATE ACCOUNT USER
+GET http://localhost:3001/api/users/validate/dfd HTTP/1.1
+Content-Type: application/json
+
+###
 
 ### CURRENT USER
 GET http://localhost:3001/api/users/me HTTP/1.1

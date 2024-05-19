@@ -8,6 +8,7 @@ import (
 	"backend/repositories"
 	"backend/responses"
 	"backend/services"
+	"backend/services/brevo"
 	"backend/utils"
 	"backend/utils/token"
 	"fmt"
@@ -58,12 +59,14 @@ func (th *UserHandler) Register(c *gin.Context) {
 		return
 	}
 
+	tokenVerify := utils.GenerateRandomString()
 	newUser, err := th.userService.Register(models.User{
-		Email:     input.Email,
-		LastName:  input.LastName,
-		FirstName: input.FirstName,
-		Password:  input.Password,
-		Role:      roles.ROLE_USER,
+		Email:       input.Email,
+		LastName:    input.LastName,
+		FirstName:   input.FirstName,
+		Password:    input.Password,
+		Role:        roles.ROLE_USER,
+		TokenVerify: tokenVerify,
 	})
 	if err != nil {
 		response := &Response{
@@ -72,6 +75,8 @@ func (th *UserHandler) Register(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, response)
 		return
 	}
+
+	brevo.SendEmailToVerify(newUser.Email, newUser.FirstName+" "+newUser.LastName, tokenVerify)
 
 	c.JSON(http.StatusCreated, newUser)
 }
@@ -106,12 +111,14 @@ func (th *UserHandler) RegisterPilot(c *gin.Context) {
 	}
 
 	dir, _ := os.Getwd()
+	tokenVerify := utils.GenerateRandomString()
 	newUser, err := th.userService.Register(models.User{
-		Email:     input.Email,
-		FirstName: input.FirstName,
-		LastName:  input.LastName,
-		Password:  input.Password,
-		Role:      roles.ROLE_PILOT,
+		Email:       input.Email,
+		FirstName:   input.FirstName,
+		LastName:    input.LastName,
+		Password:    input.Password,
+		Role:        roles.ROLE_PILOT,
+		TokenVerify: tokenVerify,
 	})
 
 	if err != nil {
@@ -141,6 +148,8 @@ func (th *UserHandler) RegisterPilot(c *gin.Context) {
 		})
 
 	}
+
+	brevo.SendEmailToVerify(newUser.Email, newUser.FirstName+" "+newUser.LastName, tokenVerify)
 
 	c.JSON(http.StatusCreated, newUser)
 }
@@ -180,6 +189,43 @@ func (th *UserHandler) Login(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"token": tkn,
+	})
+}
+
+// Validate Account godoc
+//
+// @Summary Validate Account
+// @Schemes
+// @Description validate account with token
+// @Tags user
+//
+//	@Param		token	path		string	true	"Token"
+//
+// @Produce json
+//
+//	@Success	200			{object}	Response
+//	@Success	400			{object}	Response
+//
+// @Router /users/validate/{token} [get]
+func (th *UserHandler) ValidateAccount(c *gin.Context) {
+	token := c.Param("token")
+	if token == "" {
+		c.JSON(http.StatusBadRequest, &Response{
+			Message: "Wrong token parameter",
+		})
+		return
+	}
+
+	err := th.userService.ValidateAccount(token)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, &Response{
+			Message: "Wrong token parameter",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, &Response{
+		Message: "Email was verified successfully",
 	})
 }
 

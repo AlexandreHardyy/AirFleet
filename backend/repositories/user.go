@@ -16,6 +16,8 @@ type UserRepository interface {
 	Login(email string, password string) (string, error)
 	GetById(id int) (models.User, error)
 	FindAll() ([]responses.ListUser, error)
+	FindOne(models.User) (models.User, error)
+	Update(user models.User, id int) (models.User, error)
 }
 
 type userRepository struct {
@@ -74,4 +76,23 @@ func (r *userRepository) FindAll() ([]responses.ListUser, error) {
 	}
 
 	return users, nil
+}
+
+func (r *userRepository) FindOne(userFilter models.User) (models.User, error) {
+	user := models.User{}
+	err := r.db.Where(&userFilter).First(&user).Error
+	if err != nil {
+		return user, err
+	}
+
+	return user, nil
+}
+
+func (r *userRepository) Update(user models.User, id int) (models.User, error) {
+	err := r.db.Where(&models.User{ID: id}).Save(&user).Error
+	if err != nil {
+		return user, err
+	}
+
+	return user, nil
 }
