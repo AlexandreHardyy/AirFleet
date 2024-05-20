@@ -4,18 +4,24 @@ GET http://localhost:3001/api/flights HTTP/1.1
 ### Create a flight
 POST http://localhost:3001/api/flights HTTP/1.1
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZXhwIjoxNzQ3MTQ0OTQyfQ.m9BkSP0KEWh5dPxWZT6zD1yA9brTX1u2TlwIfUGhlN4
 
 {
-    "departure": {
-      "name": "Paris",
-      "address": "Charles de Gaulle Airport",
-      "latitude": 49.0097,
-      "longitude": 2.5479
-    },
-    "arrival": {
-      "name": "New York",
-      "address": "JFK Airport",
-      "latitude": 40.6413,
-      "longitude": -73.7781
-    }
+  "status": "waiting_pilot",
+  "departure": {
+    "name": "Paris",
+    "address": "Charles de Gaulle Airport",
+    "latitude": 49.0097,
+    "longitude": 2.5479
+  },
+  "arrival": {
+    "name": "New York",
+    "address": "JFK Airport",
+    "latitude": 40.6413,
+    "longitude": -73.7781
+  }
 }
+
+### Get current flight
+GET http://localhost:3001/api/flights/current HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZXhwIjoxNzQ3MTQ1ODgxfQ.n96D2VpjuTIwIFxpM3M5pbaZb2zz7cdG--WzuIpVSZ8

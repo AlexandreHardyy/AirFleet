@@ -8,7 +8,8 @@ import (
 )
 
 type FlightServiceInterface interface {
-	CreateFlight(input inputs.InputCreateFlight) (responses.ResponseFlight, error)
+	CreateFlight(input inputs.InputCreateFlight, userID int) (responses.ResponseFlight, error)
+	GetCurrentFlight(userID int) (responses.ResponseFlight, error)
 }
 
 type FlightService struct {
@@ -19,8 +20,10 @@ func NewFlightService(r repositories.FlightRepositoryInterface) *FlightService {
 	return &FlightService{r}
 }
 
-func (s *FlightService) CreateFlight(input inputs.InputCreateFlight) (responses.ResponseFlight, error) {
+func (s *FlightService) CreateFlight(input inputs.InputCreateFlight, userID int) (responses.ResponseFlight, error) {
 	flight := models.Flight{
+		//TODO: Status can be different based on the user role
+		Status:             "waiting_pilot",
 		DepartureName:      input.Departure.Name,
 		DepartureAddress:   input.Departure.Address,
 		DepartureLatitude:  input.Departure.Latitude,
@@ -29,6 +32,7 @@ func (s *FlightService) CreateFlight(input inputs.InputCreateFlight) (responses.
 		ArrivalAddress:     input.Arrival.Address,
 		ArrivalLatitude:    input.Arrival.Latitude,
 		ArrivalLongitude:   input.Arrival.Longitude,
+		UserID:             userID,
 	}
 
 	flight, err := s.repository.CreateFlight(flight)
@@ -36,8 +40,26 @@ func (s *FlightService) CreateFlight(input inputs.InputCreateFlight) (responses.
 		return responses.ResponseFlight{}, err
 	}
 
-	formattedFlight := responses.ResponseFlight{
-		ID: flight.ID,
+	formattedFlight := formatFlight(flight)
+
+	return formattedFlight, nil
+}
+
+func (s *FlightService) GetCurrentFlight(userID int) (responses.ResponseFlight, error) {
+	flight, err := s.repository.GetCurrentFlight(userID)
+	if err != nil {
+		return responses.ResponseFlight{}, err
+	}
+
+	formattedFlight := formatFlight(flight)
+
+	return formattedFlight, nil
+}
+
+func formatFlight(flight models.Flight) responses.ResponseFlight {
+	return responses.ResponseFlight{
+		ID:     flight.ID,
+		Status: flight.Status,
 		Departure: responses.ResponseAirport{
 			Name:      flight.DepartureName,
 			Address:   flight.DepartureAddress,
@@ -53,6 +75,4 @@ func (s *FlightService) CreateFlight(input inputs.InputCreateFlight) (responses.
 		CreatedAt: flight.CreatedAt,
 		UpdatedAt: flight.UpdatedAt,
 	}
-
-	return formattedFlight, nil
 }

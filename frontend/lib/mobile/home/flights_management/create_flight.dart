@@ -47,7 +47,7 @@ class _CreateFlightWidgetState extends State<CreateFlightWidget> {
       widget.departureTextFieldFocusNode.unfocus();
       widget.arrivalTextFieldFocusNode.unfocus();
 
-      context.read<CurrentFlightBloc>().add(CurrentFlightLoaded(flight: Flight(departure: departure!, arrival: arrival!)));
+      context.read<CurrentFlightBloc>().add(CurrentFlightSelected(flightRequest: CreateFlightRequest(departure: departure!, arrival: arrival!)));
     }
   }
 
@@ -166,8 +166,12 @@ class _CreateFlightWidgetState extends State<CreateFlightWidget> {
         children: [
           ElevatedButton(
             onPressed: () async {
-              final Flight flight = Flight(departure: departure!, arrival: arrival!);
-              await FlightService.createFlight(flight);
+              final CreateFlightRequest flightRequest = CreateFlightRequest(departure: departure!, arrival: arrival!);
+              final flight = await FlightService.createFlight(flightRequest);
+
+              if (context.mounted) {
+                context.read<CurrentFlightBloc>().add(CurrentFlightLoaded(flight: flight));
+              }
             },
             child: const Text("Create Flight"),
           ),

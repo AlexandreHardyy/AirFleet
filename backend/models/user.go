@@ -17,4 +17,5 @@ type User struct {
 	UpdatedAt       time.Time `json:"updated_at"`
 	Files           []File    `json:"files"`
 	Vehicles        []Vehicle `json:"vehicles" gorm:"foreignkey:UserID"`
+	Flights         []Flight  `json:"flights" gorm:"foreignkey:UserID"`
 }

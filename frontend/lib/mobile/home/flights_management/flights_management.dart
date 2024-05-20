@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:frontend/mobile/home/blocs/current_flight_bloc.dart';
 
 import 'create_flight.dart';
 
@@ -84,27 +86,41 @@ class _FlightsManagementState extends State<FlightsManagement> {
                 child: MediaQuery.removePadding(
                   context: context,
                   removeTop: true,
-                  child: DefaultTabController(
-                    length: 3,
-                    child: Scaffold(
-                      appBar: AppBar(
-                        toolbarHeight: 0,
-                        bottom: const TabBar(
-                          tabs: [
-                            Text("Search"),
-                            Text("Create"),
-                            Text("List"),
-                          ],
+                  child: BlocBuilder<CurrentFlightBloc, CurrentFlightState>(
+                    builder: (context, state) {
+                      if (state.status == CurrentFlightStatus.loading) {
+                        return const Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      }
+
+                      if (state.status == CurrentFlightStatus.loaded  && state.flight != null) {
+                        return const Text("Loaded");
+                      }
+
+                      return DefaultTabController(
+                        length: 3,
+                        child: Scaffold(
+                          appBar: AppBar(
+                            toolbarHeight: 0,
+                            bottom: const TabBar(
+                              tabs: [
+                                Text("Search"),
+                                Text("Create"),
+                                Text("List"),
+                              ],
+                            ),
+                          ),
+                          body: TabBarView(
+                            children: [
+                              const Icon(Icons.directions_car),
+                              CreateFlightWidget(departureTextFieldFocusNode: departureTextFieldFocusNode, arrivalTextFieldFocusNode: arrivalTextFieldFocusNode),
+                              const Icon(Icons.directions_bike),
+                            ],
+                          ),
                         ),
-                      ),
-                      body: TabBarView(
-                        children: [
-                          const Icon(Icons.directions_car),
-                          CreateFlightWidget(departureTextFieldFocusNode: departureTextFieldFocusNode, arrivalTextFieldFocusNode: arrivalTextFieldFocusNode),
-                          const Icon(Icons.directions_bike),
-                        ],
-                      ),
-                    ),
+                      );
+                    },
                   ),
                 ),
               )

@@ -3,6 +3,16 @@ part of 'current_flight_bloc.dart';
 @immutable
 sealed class CurrentFlightEvent {}
 
+final class CurrentFlightLoading extends CurrentFlightEvent {}
+
+final class CurrentFlightInitialized extends CurrentFlightEvent {}
+
+final class CurrentFlightSelected extends CurrentFlightEvent {
+  final CreateFlightRequest flightRequest;
+
+  CurrentFlightSelected({required this.flightRequest});
+}
+
 final class CurrentFlightLoaded extends CurrentFlightEvent {
   final Flight flight;
 
@@ -16,5 +26,3 @@ final class CurrentFlightLoadingError extends CurrentFlightEvent {
 }
 
 final class CurrentFlightCleared extends CurrentFlightEvent {}
-
-final class CurrentFlightLoading extends CurrentFlightEvent {}

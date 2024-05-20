@@ -124,9 +124,9 @@ class AirFleetMapState extends State<AirFleetMap> {
         null);
   }
 
-  void _createRouteOnMap(Flight currentFlight) {
-    final departurePosition = Position(currentFlight.departure.longitude, currentFlight.departure.latitude);
-    final arrivalPosition = Position(currentFlight.arrival.longitude, currentFlight.arrival.latitude);
+  void _createRouteOnMap(Airport departure, Airport arrival) {
+    final departurePosition = Position(departure.longitude, departure.latitude);
+    final arrivalPosition = Position(arrival.longitude, arrival.latitude);
 
     _createOnePointAnnotation(departurePosition);
     _createOnePointAnnotation(arrivalPosition);
@@ -164,11 +164,29 @@ class AirFleetMapState extends State<AirFleetMap> {
   Widget build(BuildContext context) {
     return BlocListener<CurrentFlightBloc, CurrentFlightState>(
       listener: (context, state) {
+        //TODO Remove duplicated code
         if (state.status == CurrentFlightStatus.loaded) {
           _clearMap();
           final flight = state.flight;
           if (flight != null) {
-            _createRouteOnMap(flight);
+            final departure = flight.departure;
+            final arrival = flight.arrival;
+            _createRouteOnMap(departure, arrival);
+          } else {
+            setState(() {
+              _trackLocation = true;
+              _refreshTrackLocation();
+            });
+          }
+        }
+
+        if (state.status == CurrentFlightStatus.selected) {
+          _clearMap();
+          final flightRequest = state.flightRequest;
+          if (flightRequest != null) {
+            final departure = flightRequest.departure;
+            final arrival = flightRequest.arrival;
+            _createRouteOnMap(departure, arrival);
           } else {
             setState(() {
               _trackLocation = true;

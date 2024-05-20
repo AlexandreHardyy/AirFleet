@@ -4,6 +4,7 @@ import (
 	"backend/inputs"
 	"backend/repositories"
 	"backend/services"
+	"backend/utils/token"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 	"net/http"
@@ -41,7 +42,16 @@ func (h *FlightHandler) Create(c *gin.Context) {
 		return
 	}
 
-	newFlight, err := h.flightService.CreateFlight(input)
+	userID, err := token.ExtractTokenID(c)
+	if err != nil {
+		response := &Response{
+			Message: "Error: cannot extract user ID from token",
+		}
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	newFlight, err := h.flightService.CreateFlight(input, userID)
 	if err != nil {
 		response := &Response{
 			Message: err.Error(),
@@ -51,4 +61,28 @@ func (h *FlightHandler) Create(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, newFlight)
+}
+
+func (h *FlightHandler) GetCurrentFlight(c *gin.Context) {
+	userID, err := token.ExtractTokenID(c)
+	if err != nil {
+		response := &Response{
+			Message: "Error: cannot extract user ID from token",
+		}
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	currentFlight, err := h.flightService.GetCurrentFlight(userID)
+	if err != nil {
+		response := &Response{
+			Message: err.Error(),
+		}
+
+		//TODO status can be different
+		c.JSON(http.StatusNotFound, response)
+		return
+	}
+
+	c.JSON(http.StatusOK, currentFlight)
 }

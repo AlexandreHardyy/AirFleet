@@ -1,24 +1,40 @@
-class Flight {
-  Airport departure;
-  Airport arrival;
+class CreateFlightRequest {
+  final Airport departure;
+  final Airport arrival;
 
-  Flight({
+  CreateFlightRequest({
     required this.departure,
     required this.arrival,
   });
-
-  factory Flight.fromJson(Map<String, dynamic> json) {
-    return Flight(
-      departure: Airport.fromJson(json['departure']),
-      arrival: Airport.fromJson(json['arrival']),
-    );
-  }
 
   Map<String, dynamic> toJson() {
     return {
       'departure': departure.toJson(),
       'arrival': arrival.toJson(),
     };
+  }
+}
+
+class Flight {
+  int id;
+  String status;
+  Airport departure;
+  Airport arrival;
+
+  Flight({
+    required this.id,
+    required this.status,
+    required this.departure,
+    required this.arrival,
+  });
+
+  factory Flight.fromJson(Map<String, dynamic> json) {
+    return Flight(
+      id: json['id'],
+      status: json['status'],
+      departure: Airport.fromJson(json['departure']),
+      arrival: Airport.fromJson(json['arrival']),
+    );
   }
 }
 
