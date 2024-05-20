@@ -18,6 +18,16 @@ type CreatePilot struct {
 	DrivingLicence *multipart.FileHeader `form:"driving_licence" binding:"required"`
 }
 
+type UpdateUser struct {
+	Email           string `json:"email" binding:"email"`
+	FirstName       string `json:"first_name"`
+	LastName        string `json:"last_name"`
+	IsVerified      bool   `json:"is_verified"`
+	IsPilotVerified bool   `json:"is_pilot_verified"`
+	TokenVerify     string `json:"token_verify"`
+	Role            string `json:"role" gorm:"not null"`
+}
+
 type LoginUser struct {
 	Email    string `json:"email" binding:"required,email"`
 	Password string `json:"password" binding:"required"`

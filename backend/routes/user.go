@@ -18,7 +18,9 @@ func initUserRoutes(api *gin.RouterGroup) {
 	api.GET("/validate/:token", userHandler.ValidateAccount)
 	api.POST("/pilot", userHandler.RegisterPilot)
 
-	// api = protected.Group("/user")
+	api.PATCH("/:id", middlewares.IsAdminAuth(), userHandler.Update)
+	api.PATCH("/pilot-validate/:id", middlewares.IsAdminAuth(), userHandler.ValidatePilotAccount)
+
 	api.GET("/me", middlewares.IsAuth(), userHandler.CurrentUser)
 	api.GET("", middlewares.IsAdminAuth(), userHandler.GetAll)
 }

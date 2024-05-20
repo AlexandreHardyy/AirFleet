@@ -1,6 +1,7 @@
 package repositories
 
 import (
+	"backend/inputs"
 	"backend/models"
 	"backend/responses"
 	"backend/utils"
@@ -17,7 +18,7 @@ type UserRepository interface {
 	GetById(id int) (models.User, error)
 	FindAll() ([]responses.ListUser, error)
 	FindOne(models.User) (models.User, error)
-	Update(user models.User, id int) (models.User, error)
+	Update(user *models.User, userFields inputs.UpdateUser) error
 }
 
 type userRepository struct {
@@ -88,11 +89,11 @@ func (r *userRepository) FindOne(userFilter models.User) (models.User, error) {
 	return user, nil
 }
 
-func (r *userRepository) Update(user models.User, id int) (models.User, error) {
-	err := r.db.Where(&models.User{ID: id}).Save(&user).Error
+func (r *userRepository) Update(user *models.User, userFields inputs.UpdateUser) error {
+	err := r.db.Model(&user).Updates(userFields).Error
 	if err != nil {
-		return user, err
+		return err
 	}
 
-	return user, nil
+	return nil
 }

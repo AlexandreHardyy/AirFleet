@@ -52,6 +52,23 @@ definitions:
     - email
     - password
     type: object
+  inputs.UpdateUser:
+    properties:
+      email:
+        type: string
+      first_name:
+        type: string
+      is_pilot_verified:
+        type: boolean
+      is_verified:
+        type: boolean
+      last_name:
+        type: string
+      role:
+        type: string
+      token_verify:
+        type: string
+    type: object
   inputs.UpdateVehicle:
     properties:
       matriculation:
@@ -181,6 +198,39 @@ paths:
       summary: Register user
       tags:
       - user
+  /users/{id}:
+    patch:
+      consumes:
+      - application/json
+      description: Update user
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Body...
+        in: body
+        name: userInput
+        required: true
+        schema:
+          $ref: '#/definitions/inputs.UpdateUser'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/responses.User'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.Response'
+      security:
+      - BearerAuth: []
+      summary: User User
+      tags:
+      - user
   /users/login:
     post:
       consumes:
@@ -252,6 +302,35 @@ paths:
           schema:
             $ref: '#/definitions/handlers.Response'
       summary: Register pilot
+      tags:
+      - user
+  /users/pilot-validate/{id}:
+    patch:
+      description: Update user
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/responses.User'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.Response'
+      security:
+      - BearerAuth: []
+      summary: Validate Pilot Account
       tags:
       - user
   /users/validate/{token}:

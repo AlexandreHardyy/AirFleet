@@ -1,6 +1,7 @@
 package services
 
 import (
+	"backend/data/roles"
 	"backend/inputs"
 	"backend/models"
 	"backend/repositories"
@@ -15,6 +16,7 @@ type UserService interface {
 	ValidateAccount(token string) error
 	GetById(id int) (models.User, error)
 	GetAll() ([]responses.ListUser, error)
+	Update(id int, userFields inputs.UpdateUser) (responses.User, error)
 }
 
 type userService struct {
@@ -60,7 +62,7 @@ func (s *userService) Login(input inputs.LoginUser) (string, error) {
 
 func (s *userService) ValidateAccount(token string) error {
 
-	user, err := s.repository.FindOne(models.User{TokenVerify: token})
+	user, err := s.repository.FindOne(models.User{TokenVerify: token, Role: roles.ROLE_PILOT})
 	if err != nil {
 		return errors.New("wrong token email")
 	}
@@ -68,7 +70,10 @@ func (s *userService) ValidateAccount(token string) error {
 	user.TokenVerify = ""
 	user.IsVerified = true
 
-	_, err = s.repository.Update(user, user.ID)
+	err = s.repository.Update(&user, inputs.UpdateUser{
+		TokenVerify: "",
+		IsVerified:  true,
+	})
 
 	return err
 }
@@ -88,4 +93,25 @@ func (s *userService) GetAll() ([]responses.ListUser, error) {
 		return users, err
 	}
 	return users, nil
+}
+
+func (s *userService) Update(id int, userFields inputs.UpdateUser) (responses.User, error) {
+	user, err := s.repository.GetById(id)
+	if err != nil {
+		return responses.User{}, err
+	}
+
+	err = s.repository.Update(&user, userFields)
+
+	formattedUser := responses.User{
+		ID:        user.ID,
+		FirstName: user.FirstName,
+		LastName:  user.LastName,
+		Email:     user.Email,
+		Role:      user.Role,
+		CreatedAt: user.CreatedAt,
+		UpdatedAt: user.UpdatedAt,
+	}
+
+	return formattedUser, err
 }

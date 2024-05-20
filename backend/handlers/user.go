@@ -16,6 +16,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -227,6 +228,98 @@ func (th *UserHandler) ValidateAccount(c *gin.Context) {
 	c.JSON(http.StatusOK, &Response{
 		Message: "Email was verified successfully",
 	})
+}
+
+// Update User godoc
+//
+// @Summary User User
+// @Schemes
+// @Description Update user
+// @Tags user
+// @Produce json
+// @Accept  json
+//
+//	@Param		id	path		string	true	"ID"
+//	@Param		userInput	body		inputs.UpdateUser	true	"Body..."
+//
+//
+//	@Success	200			{object}	responses.User
+//	@Success	400			{object}	Response
+//
+// @Router /users/{id} [patch]
+//
+//	@Security	BearerAuth
+func (th *UserHandler) Update(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, &Response{
+			Message: "Wrong id parameter",
+		})
+		return
+	}
+
+	println(id)
+
+	var input inputs.UpdateUser
+	err = c.ShouldBindJSON(&input)
+
+	if err != nil {
+		response := &Response{
+			Message: "Cannot extract JSON body",
+		}
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+	println(input.Email)
+
+	user, err := th.userService.Update(id, input)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, &Response{
+			Message: "Wrong id parameter",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, user)
+}
+
+// Validate Pilot Account godoc
+//
+// @Summary Validate Pilot Account
+// @Schemes
+// @Description Update user
+// @Tags user
+// @Produce json
+//
+//	@Param		id	path		string	true	"ID"
+//
+//	@Success	200			{object}	responses.User
+//	@Success	400			{object}	Response
+//	@Success	404			{object}	Response
+//
+// @Router /users/pilot-validate/{id} [patch]
+//
+//	@Security	BearerAuth
+func (th *UserHandler) ValidatePilotAccount(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, &Response{
+			Message: "Wrong id parameter",
+		})
+		return
+	}
+
+	user, err := th.userService.Update(id, inputs.UpdateUser{IsPilotVerified: true})
+	if err != nil {
+		c.JSON(http.StatusNotFound, &Response{
+			Message: "User not found",
+		})
+		return
+	}
+
+	brevo.SendEmailPilotAccountValidate(user.Email, user.FirstName)
+
+	c.JSON(http.StatusOK, user)
 }
 
 // CurrentUser Current godoc

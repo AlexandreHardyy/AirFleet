@@ -44,3 +44,24 @@ func SendEmailToVerify(email string, name string, token string) {
 		},
 	})
 }
+
+func SendEmailPilotAccountValidate(email string, name string) {
+	var ctx context.Context
+
+	brevoClient.TransactionalEmailsApi.SendTransacEmail(ctx, brevo.SendSmtpEmail{
+		Sender: &brevo.SendSmtpEmailSender{
+			Name:  "AirFleet",
+			Email: "mail@airfleet.com",
+		},
+		To: []brevo.SendSmtpEmailTo{
+			{
+				Email: email,
+				Name:  name,
+			},
+		},
+		TemplateId: 5,
+		Params: map[string]interface{}{
+			"NAME": name,
+		},
+	})
+}
