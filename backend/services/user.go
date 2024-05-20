@@ -54,7 +54,7 @@ func (s *userService) Login(input inputs.LoginUser) (string, error) {
 
 	token, err := s.repository.Login(input.Email, input.Password)
 	if err != nil {
-		return "", errors.New("credentials invalid")
+		return "", err
 	}
 
 	return token, nil

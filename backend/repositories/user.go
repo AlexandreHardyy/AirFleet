@@ -1,6 +1,7 @@
 package repositories
 
 import (
+	"backend/data/roles"
 	"backend/inputs"
 	"backend/models"
 	"backend/responses"
@@ -52,7 +53,15 @@ func (r *userRepository) Login(email string, password string) (string, error) {
 	err = utils.VerifyPassword(password, user.Password)
 
 	if err != nil && err == bcrypt.ErrMismatchedHashAndPassword {
-		return "", err
+		return "", errors.New("credentials errors")
+	}
+
+	if !user.IsVerified {
+		return "", errors.New("account not validate")
+	}
+
+	if !user.IsPilotVerified && user.Role == roles.ROLE_PILOT {
+		return "", errors.New("your pilot account is not validate yet")
 	}
 
 	token, _ := token.GenerateToken(user.ID)

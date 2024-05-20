@@ -182,7 +182,7 @@ func (th *UserHandler) Login(c *gin.Context) {
 	tkn, err := th.userService.Login(input)
 	if err != nil {
 		response := &Response{
-			Message: "Invalid credentials",
+			Message: err.Error(),
 		}
 		c.JSON(http.StatusNotFound, response)
 		return
