@@ -3,6 +3,8 @@ package main
 import (
 	"backend/database"
 	"backend/routes"
+	"backend/websocket"
+	socketio "github.com/googollee/go-socket.io"
 	"log"
 	"os"
 
@@ -32,9 +34,19 @@ func main() {
 	}
 
 	database.OpenConnection()
+
 	gin.SetMode(os.Getenv("GIN_MODE"))
 	router := gin.Default()
+
+	socketIoServer := socketio.NewServer(nil)
+
+	defer socketIoServer.Close()
+
 	routes.InitRoutes(router)
+	websocket.InitWebSocket(socketIoServer)
+
+	router.GET("/socket.io/*any", gin.WrapH(socketIoServer))
+	router.POST("/socket.io/*any", gin.WrapH(socketIoServer))
 
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	router.Run(":3001")

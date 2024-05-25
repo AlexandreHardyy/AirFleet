@@ -112,7 +112,7 @@ SPEC CHECKSUMS:
   MapboxCommon: e6d0d15f1e34278e21bae28bdc548d378757b51e
   MapboxCoreMaps: 0e3eab0bd5787e833d48261fa1d01f356d6c4ad8
   MapboxMaps: 5aba2ba70a85d08e0ea00ad011ca3d2965e69a59
-  path_provider_foundation: 3784922295ac71e43754bd15e0653ccfd36a147c
+  path_provider_foundation: 2b6b4c569c0fb62ec74538f866245ac84301af46
   permission_handler_apple: 9878588469a2b0d0fc1e048d9f43605f92e6cec2
   SDWebImage: 40b0b4053e36c660a764958bff99eed16610acbb
   SwiftyGif: 706c60cf65fa2bc5ee0313beece843c8eb8194d4

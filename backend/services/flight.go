@@ -5,11 +5,19 @@ import (
 	"backend/models"
 	"backend/repositories"
 	"backend/responses"
+	"errors"
+	"gorm.io/gorm"
+	"log"
 )
 
 type FlightServiceInterface interface {
+	//REST
 	CreateFlight(input inputs.InputCreateFlight, userID int) (responses.ResponseFlight, error)
 	GetCurrentFlight(userID int) (responses.ResponseFlight, error)
+	//WEBSOCKET
+	JoinFlightSession(flightID int, userID int) error
+	MakeFlightPriceProposal(input inputs.InputCreateFlightProposal, userID int) error
+	FlightProposalChoice(input inputs.InputFlightProposalChoice, userID int) error
 }
 
 type FlightService struct {
@@ -19,6 +27,8 @@ type FlightService struct {
 func NewFlightService(r repositories.FlightRepositoryInterface) *FlightService {
 	return &FlightService{r}
 }
+
+//REST
 
 func (s *FlightService) CreateFlight(input inputs.InputCreateFlight, userID int) (responses.ResponseFlight, error) {
 	flight := models.Flight{
@@ -57,9 +67,23 @@ func (s *FlightService) GetCurrentFlight(userID int) (responses.ResponseFlight, 
 }
 
 func formatFlight(flight models.Flight) responses.ResponseFlight {
+	var price float64
+	var pilotID int
+
+	if flight.Price != nil {
+		price = *flight.Price
+	}
+
+	if flight.PilotID != nil {
+		pilotID = *flight.PilotID
+	}
+
 	return responses.ResponseFlight{
-		ID:     flight.ID,
-		Status: flight.Status,
+		ID:      flight.ID,
+		Status:  flight.Status,
+		Price:   price,
+		UserID:  flight.UserID,
+		PilotID: pilotID,
 		Departure: responses.ResponseAirport{
 			Name:      flight.DepartureName,
 			Address:   flight.DepartureAddress,
@@ -75,4 +99,75 @@ func formatFlight(flight models.Flight) responses.ResponseFlight {
 		CreatedAt: flight.CreatedAt,
 		UpdatedAt: flight.UpdatedAt,
 	}
+}
+
+//WEBSOCKET
+
+func (s *FlightService) JoinFlightSession(flightID int, userID int) error {
+	flight, err := s.repository.GetFlightByID(flightID)
+	if err != nil {
+		return err
+	}
+
+	if flight.Status == "waiting_pilot" && flight.UserID == userID {
+		return nil
+	}
+
+	return nil
+}
+
+func (s *FlightService) MakeFlightPriceProposal(input inputs.InputCreateFlightProposal, userID int) error {
+	flight, err := s.repository.GetFlightByID(input.FlightId)
+	if err != nil {
+		return err
+	}
+
+	currentFlight, err := s.repository.GetCurrentFlight(userID)
+	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+		return err
+	}
+
+	if flight.Status != "waiting_pilot" || currentFlight.ID != 0 {
+		return errors.New("flight is not available for price proposal")
+	}
+
+	flight.Status = "waiting_proposal_approval"
+	flight.Price = &input.Price
+	flight.PilotID = &userID
+	_, err = s.repository.UpdateFlight(flight)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *FlightService) FlightProposalChoice(input inputs.InputFlightProposalChoice, userID int) error {
+	flight, err := s.repository.GetFlightByID(input.FlightId)
+	if err != nil {
+		return err
+	}
+
+	if flight.Status != "waiting_proposal_approval" || flight.UserID != userID {
+		return errors.New("flight is not available for proposal choice")
+	}
+
+	if input.Choice == "accepted" {
+		flight.Status = "waiting_takeoff"
+		log.Println(flight)
+	} else if input.Choice == "rejected" {
+		flight.Status = "waiting_pilot"
+		flight.PilotID = nil
+		flight.Price = nil
+	}
+
+	log.Println(flight)
+
+	_, err = s.repository.UpdateFlight(flight)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

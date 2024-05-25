@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend/mobile/home/blocs/current_flight_bloc.dart';
 
 import 'create_flight.dart';
+import 'current_flight_management.dart';
 
 class FlightsManagement extends StatefulWidget {
   const FlightsManagement({super.key});
@@ -95,7 +96,7 @@ class _FlightsManagementState extends State<FlightsManagement> {
                       }
 
                       if (state.status == CurrentFlightStatus.loaded  && state.flight != null) {
-                        return const Text("Loaded");
+                        return const CurrentFlightManagement();
                       }
 
                       return DefaultTabController(

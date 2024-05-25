@@ -12,6 +12,7 @@ class CurrentFlightBloc extends Bloc<CurrentFlightEvent, CurrentFlightState> {
     on<CurrentFlightSelected>(_onCurrentFlightSelected);
     on<CurrentFlightLoading>(_onCurrentFlightLoading);
     on<CurrentFlightLoaded>(_onCurrentFlightLoaded);
+    on<CurrentFlightUpdated>(_onCurrentFlightUpdated);
     on<CurrentFlightCleared>(_onCurrentFlightCleared);
     on<CurrentFlightLoadingError>(_onCurrentFlightLoadingError);
   }
@@ -33,6 +34,15 @@ class CurrentFlightBloc extends Bloc<CurrentFlightEvent, CurrentFlightState> {
     emit(state.copyWith(
       status: CurrentFlightStatus.selected,
       flightRequest: event.flightRequest,
+    ));
+  }
+
+  Future<void> _onCurrentFlightUpdated(CurrentFlightUpdated event, Emitter<CurrentFlightState> emit) async {
+    final flight = await FlightService.getCurrentFlight();
+
+    emit(state.copyWith(
+      status: CurrentFlightStatus.loaded,
+      flight: flight,
     ));
   }
 

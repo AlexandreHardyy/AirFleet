@@ -19,6 +19,8 @@ final class CurrentFlightLoaded extends CurrentFlightEvent {
   CurrentFlightLoaded({required this.flight});
 }
 
+final class CurrentFlightUpdated extends CurrentFlightEvent {}
+
 final class CurrentFlightLoadingError extends CurrentFlightEvent {
   final String errorMessage;
 

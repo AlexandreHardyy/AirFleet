@@ -18,12 +18,14 @@ class CreateFlightRequest {
 class Flight {
   int id;
   String status;
+  num? price;
   Airport departure;
   Airport arrival;
 
   Flight({
     required this.id,
     required this.status,
+    this.price,
     required this.departure,
     required this.arrival,
   });
@@ -32,6 +34,7 @@ class Flight {
     return Flight(
       id: json['id'],
       status: json['status'],
+      price: json['price'],
       departure: Airport.fromJson(json['departure']),
       arrival: Airport.fromJson(json['arrival']),
     );
