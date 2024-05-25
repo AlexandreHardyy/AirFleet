@@ -5,7 +5,6 @@ type CreateVehicle struct {
 	Matriculation string `json:"matriculation" binding:"required"`
 	Seat          int    `json:"seat" binding:"required"`
 	Type          string `json:"type" binding:"required"`
-	UserID        int    `json:"user_id" binding:"required"`
 }
 
 type UpdateVehicle struct {
