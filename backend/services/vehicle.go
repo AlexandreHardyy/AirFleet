@@ -8,8 +8,9 @@ import (
 )
 
 type VehicleService interface {
-	Create(vehicle inputs.CreateVehicle) (responses.Vehicle, error)
+	Create(vehicle inputs.CreateVehicle, userID int) (responses.Vehicle, error)
 	GetAll() ([]responses.Vehicle, error)
+	GetAllMe(userID int) ([]responses.Vehicle, error)
 	GetById(id int) (models.Vehicle, error)
 	Delete(id int) error
 	Update(id int, vehicle inputs.UpdateVehicle) (models.Vehicle, error)
@@ -23,13 +24,13 @@ func NewVehicleService(r repositories.VehicleRepository) *vehiclSservice {
 	return &vehiclSservice{r}
 }
 
-func (s *vehiclSservice) Create(input inputs.CreateVehicle) (responses.Vehicle, error) {
+func (s *vehiclSservice) Create(input inputs.CreateVehicle, userID int) (responses.Vehicle, error) {
 	var vehicle = models.Vehicle{
 		ModelName:     input.ModelName,
 		Matriculation: input.Matriculation,
 		Seat:          input.Seat,
 		Type:          input.Type,
-		UserID:        input.UserID,
+		UserID:        userID,
 	}
 
 	vehicle, err := s.repository.Create(vehicle)
@@ -55,6 +56,15 @@ func (s *vehiclSservice) GetAll() ([]responses.Vehicle, error) {
 		return vehicle, err
 	}
 	return vehicle, nil
+}
+
+func (s *vehiclSservice) GetAllMe(userID int) ([]responses.Vehicle, error) {
+	vehicle, err := s.repository.FindAllMe(userID)
+	if err != nil {
+		return vehicle, err
+	}
+	return vehicle, nil
+
 }
 
 func (s *vehiclSservice) GetById(id int) (models.Vehicle, error) {

@@ -4,9 +4,11 @@ import (
 	"backend/inputs"
 	"backend/repositories"
 	"backend/services"
+	"backend/utils/token"
 	"errors"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
+	"log"
 	"net/http"
 	"strconv"
 )
@@ -40,9 +42,13 @@ func NewVehicleHandler(vehicleService services.VehicleService) *vehicleHandler {
 //	@Failure		400				{object}	Response
 //
 //	@Router			/vehicles [post]
+//
+//	@Security	BearerAuth
 func (th *vehicleHandler) CreateVehicle(c *gin.Context) {
 	var input inputs.CreateVehicle
 	err := c.ShouldBindJSON(&input)
+
+	log.Println("We are logging in Golang!", input)
 	if err != nil {
 		response := &Response{
 			Message: "Error: cannot extract JSON body",
@@ -51,7 +57,16 @@ func (th *vehicleHandler) CreateVehicle(c *gin.Context) {
 		return
 	}
 
-	newVehicle, err := th.vehicleService.Create(input)
+	userID, err := token.ExtractTokenID(c)
+	if err != nil {
+		response := &Response{
+			Message: "Error: cannot extract user ID",
+		}
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	newVehicle, err := th.vehicleService.Create(input, userID)
 	if err != nil {
 		response := &Response{
 			Message: err.Error(),
@@ -81,6 +96,42 @@ func (th *vehicleHandler) CreateVehicle(c *gin.Context) {
 func (th *vehicleHandler) GetAll(c *gin.Context) {
 
 	vehicles, err := th.vehicleService.GetAll()
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, vehicles)
+}
+
+// GetAllMe Get allMe godoc
+//
+//	@Summary	Get all vehicles for current user
+//	@Schemes
+//	@Description	get all vehicles for current user
+//	@Tags			vehicle
+//	@Accept			json
+//	@Produce		json
+//
+//	@Success		200	{object}	[]responses.Vehicle
+//	@Failure		401	{object}	Response
+//
+//	@Router			/vehicles/me [get]
+//
+//	@Security	BearerAuth
+func (th *vehicleHandler) GetAllMe(c *gin.Context) {
+
+	userID, err := token.ExtractTokenID(c)
+	if err != nil {
+		response := &Response{
+			Message: "Error: cannot extract user ID",
+		}
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	vehicles, err := th.vehicleService.GetAllMe(userID)
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})

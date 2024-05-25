@@ -12,9 +12,10 @@ func initVehicleRoutes(api *gin.RouterGroup) {
 	vehicleHandler := handlers.GetVehicle(database.DB)
 
 	api = api.Group("/vehicles")
-	api.POST("", vehicleHandler.CreateVehicle)
 	api.GET("", middlewares.IsAdminAuth(), vehicleHandler.GetAll)
-	api.GET("/:id", vehicleHandler.VehcileById)
-	api.DELETE("/:id", vehicleHandler.DeleteVehicle)
-	api.PATCH("/:id", vehicleHandler.UpdateVehicle)
+	api.GET("/me", middlewares.IsAuth(), vehicleHandler.GetAllMe)
+	api.GET("/:id", middlewares.IsAuth(), vehicleHandler.VehcileById)
+	api.POST("", middlewares.IsAuth(), vehicleHandler.CreateVehicle)
+	api.DELETE("/:id", middlewares.IsAuth(), vehicleHandler.DeleteVehicle)
+	api.PATCH("/:id", middlewares.IsAuth(), vehicleHandler.UpdateVehicle)
 }

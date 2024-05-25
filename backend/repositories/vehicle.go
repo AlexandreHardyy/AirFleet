@@ -10,6 +10,7 @@ import (
 type VehicleRepository interface {
 	Create(vehicle models.Vehicle) (models.Vehicle, error)
 	FindAll() ([]responses.Vehicle, error)
+	FindAllMe(userID int) ([]responses.Vehicle, error)
 	GetById(id int) (models.Vehicle, error)
 	Delete(id int) error
 	Update(id int, vehicle models.Vehicle) (models.Vehicle, error)
@@ -44,6 +45,17 @@ func (r *vehicleRepository) FindAll() ([]responses.Vehicle, error) {
 	}
 
 	return vehicles, nil
+}
+
+func (r *vehicleRepository) FindAllMe(userID int) ([]responses.Vehicle, error) {
+	vehicles := []responses.Vehicle{}
+	err := r.db.Model(&models.Vehicle{}).Where(&models.Vehicle{UserID: userID}).Find(&vehicles).Error
+	if err != nil {
+		return vehicles, err
+	}
+
+	return vehicles, nil
+
 }
 
 func (r *vehicleRepository) GetById(id int) (models.Vehicle, error) {
