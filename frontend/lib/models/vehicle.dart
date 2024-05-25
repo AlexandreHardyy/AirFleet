@@ -1,22 +1,22 @@
 class Vehicle {
-  final int id;
-  final String matriculation;
-  final String modelName;
-  final int seat;
-  final String type;
-  final bool isVerified;
-  final String createdAt;
-  final String updatedAt;
+  final int? id;
+  String matriculation;
+  String modelName;
+  int seat;
+  String type;
+  final bool? isVerified;
+  final String? createdAt;
+  final String? updatedAt;
 
   Vehicle({
-    required this.id,
+    this.id,
     required this.matriculation,
     required this.modelName,
     required this.seat,
     required this.type,
-    required this.isVerified,
-    required this.createdAt,
-    required this.updatedAt,
+    this.isVerified,
+    this.createdAt,
+    this.updatedAt,
   });
 
   factory Vehicle.fromJson(Map<String, dynamic> json) {
@@ -30,5 +30,18 @@ class Vehicle {
       createdAt: json['created_at'],
       updatedAt: json['updated_at'],
     );
+  }
+
+  toJson() {
+    return {
+      'id': id,
+      'matriculation': matriculation,
+      'model_name': modelName,
+      'seat': seat,
+      'type': type,
+      'is_verified': isVerified,
+      'created_at': createdAt,
+      'updated_at': updatedAt,
+    };
   }
 }

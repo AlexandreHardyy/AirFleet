@@ -45,7 +45,7 @@ class Routes {
     );
   }
 
-  static vehicleDetail(context, {required int vehicleId}) {
+  static vehicleDetail(context, {int? vehicleId}) {
     return MaterialPageRoute(
       builder: (context) => VehicleDetailsPage(vehicleId: vehicleId),
     );

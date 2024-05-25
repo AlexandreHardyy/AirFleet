@@ -25,7 +25,7 @@ class HomeDrawer extends StatelessWidget {
             },
           ),
           ListTile(
-            leading: const Icon(FontAwesomeIcons.jetFighter),
+            leading: const Icon(FontAwesomeIcons.plane),
             title: const Text("Vehicle"),
             onTap: () async {
               Navigator.of(context).push(Routes.vehiclesManagement(context));
