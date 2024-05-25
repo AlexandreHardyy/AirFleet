@@ -3,10 +3,10 @@ POST http://localhost:3001/api/users/ HTTP/1.1
 Content-Type: application/json
 
 {
-    "first_name": "quoi",
-    "last_name": "feur",
-    "email": "quoi@feur.fr",
-    "password": "test1234"
+    "first_name": "Mimi",
+    "last_name": "Leclient",
+    "email": "mili@leclient.com",
+    "password": "Test1234!"
 }
 
 ### LOGIN USER
@@ -14,8 +14,8 @@ POST http://localhost:3001/api/users/login HTTP/1.1
 Content-Type: application/json
 
 {
-    "email": "test@pilot4.fr",
-    "password": "test1234"
+    "email": "mili@leclient.com",
+    "password": "Test1234!"
 }
 
 ### CURRENT USER

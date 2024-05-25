@@ -15,6 +15,9 @@ type Flight struct {
 	ArrivalLongitude   float64   `json:"arrival_longitude" gorm:"not null"`
 	CreatedAt          time.Time `json:"created_at"`
 	UpdatedAt          time.Time `json:"updated_at"`
+	Price              *float64  `json:"price"`
 	UserID             int       `json:"user_id"`
 	User               User      `json:"user" gorm:"foreignkey:UserID"`
+	PilotID            *int      `json:"pilot_id"`
+	Pilot              User      `json:"pilot" gorm:"foreignkey:PilotID"`
 }

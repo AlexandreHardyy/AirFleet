@@ -11,3 +11,13 @@ type InputCreateFlight struct {
 	Departure Airport `json:"departure" binding:"required"`
 	Arrival   Airport `json:"arrival" binding:"required"`
 }
+
+type InputCreateFlightProposal struct {
+	FlightId int     `json:"flightId" binding:"required"`
+	Price    float64 `json:"price" binding:"required"`
+}
+
+type InputFlightProposalChoice struct {
+	FlightId int    `json:"flightId" binding:"required"`
+	Choice   string `json:"choice" binding:"required"`
+}

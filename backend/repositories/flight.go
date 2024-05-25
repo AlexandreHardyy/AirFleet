@@ -7,8 +7,10 @@ import (
 )
 
 type FlightRepositoryInterface interface {
+	GetFlightByID(flightID int) (models.Flight, error)
 	CreateFlight(flight models.Flight) (models.Flight, error)
 	GetCurrentFlight(userID int) (models.Flight, error)
+	UpdateFlight(flight models.Flight) (models.Flight, error)
 }
 
 type FlightRepository struct {
@@ -17,6 +19,15 @@ type FlightRepository struct {
 
 func NewFlightRepository(db *gorm.DB) *FlightRepository {
 	return &FlightRepository{db}
+}
+
+func (r *FlightRepository) GetFlightByID(flightID int) (models.Flight, error) {
+	var flight models.Flight
+	err := r.db.Where("id = ?", flightID).First(&flight).Error
+	if err != nil {
+		return flight, err
+	}
+	return flight, nil
 }
 
 func (r *FlightRepository) GetCurrentFlight(userID int) (models.Flight, error) {
@@ -40,6 +51,14 @@ func (r *FlightRepository) CreateFlight(flight models.Flight) (models.Flight, er
 	}
 
 	err = r.db.Create(&flight).Error
+	if err != nil {
+		return flight, err
+	}
+	return flight, nil
+}
+
+func (r *FlightRepository) UpdateFlight(flight models.Flight) (models.Flight, error) {
+	err := r.db.Save(&flight).Error
 	if err != nil {
 		return flight, err
 	}

@@ -24,4 +24,4 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZXhwIjoxN
 
 ### Get current flight
 GET http://localhost:3001/api/flights/current HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZXhwIjoxNzQ3MTQ1ODgxfQ.n96D2VpjuTIwIFxpM3M5pbaZb2zz7cdG--WzuIpVSZ8
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZXhwIjoxNzQ3MjMyNDg2fQ.BKp6UwRWJrEnccxfUvIwrt_BS8A21SHA_Ub_eU61RVI
