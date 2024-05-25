@@ -4,8 +4,27 @@ import 'package:frontend/models/vehicle.dart';
 
 import '../routes.dart';
 
-class VehiclesManagementScreen extends StatelessWidget {
-  const VehiclesManagementScreen({super.key});
+class VehiclesManagementScreen extends StatefulWidget {
+  const VehiclesManagementScreen({Key? key}) : super(key: key);
+
+  @override
+  _VehiclesManagementScreenState createState() => _VehiclesManagementScreenState();
+}
+
+class _VehiclesManagementScreenState extends State<VehiclesManagementScreen> {
+  late Future<List<Vehicle>> _vehiclesFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _vehiclesFuture = VehicleService.getVehiclesForMe();
+  }
+
+  void refreshVehicles() {
+    setState(() {
+      _vehiclesFuture = VehicleService.getVehiclesForMe();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -14,21 +33,16 @@ class VehiclesManagementScreen extends StatelessWidget {
         title: const Text("My vehicles"),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // onPressed
+        onPressed: () async {
+          await Navigator.of(context).push(Routes.vehicleDetail(context));
+          refreshVehicles();
         },
-        foregroundColor: Theme
-            .of(context)
-            .textTheme
-            .displayLarge
-            ?.color,
-        backgroundColor: Theme
-            .of(context)
-            .primaryColor,
+        foregroundColor: Theme.of(context).textTheme.displayLarge?.color,
+        backgroundColor: Theme.of(context).primaryColor,
         child: const Icon(Icons.add),
       ),
       body: FutureBuilder<List<Vehicle>>(
-        future: VehicleService.getVehicles(),
+        future: _vehiclesFuture,
         builder: (BuildContext context, AsyncSnapshot<List<Vehicle>> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -46,9 +60,13 @@ class VehiclesManagementScreen extends StatelessWidget {
                   child: ListTile(
                     title: Text(vehicle.modelName),
                     subtitle: Text('Matriculation: ${vehicle.matriculation}'),
-                    onTap: () {
-                      Navigator.of(context).push(Routes.vehicleDetail(
+                    leading: vehicle.isVerified!
+                        ? const Icon(Icons.check_circle, color: Colors.green)
+                        : const Icon(Icons.cancel, color: Colors.red),
+                    onTap: () async {
+                      await Navigator.of(context).push(Routes.vehicleDetail(
                           context, vehicleId: vehicle.id));
+                      refreshVehicles();
                     },
                   ),
                 );
