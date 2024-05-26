@@ -8,7 +8,6 @@ import (
 	"errors"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
-	"log"
 	"net/http"
 	"strconv"
 )
@@ -48,7 +47,6 @@ func (th *vehicleHandler) CreateVehicle(c *gin.Context) {
 	var input inputs.CreateVehicle
 	err := c.ShouldBindJSON(&input)
 
-	log.Println("We are logging in Golang!", input)
 	if err != nil {
 		response := &Response{
 			Message: "Error: cannot extract JSON body",
