@@ -43,7 +43,11 @@ class _HomeState extends State<Home> {
                     return IconButton(
                       onPressed: () => Scaffold.of(context).openDrawer(),
                       icon: const CircleAvatar(
-                        child: Icon(FontAwesomeIcons.user),
+                        backgroundColor: Color(0xFF131141),
+                        child: Icon(
+                            FontAwesomeIcons.user,
+                            color: Color(0xFFDCA200)
+                        ),
                       ),
                     );
                   }

@@ -69,7 +69,41 @@ class _CurrentFlightManagementState extends State<CurrentFlightManagement> {
         },
         builder: (context, state) {
           if (state.flight!.status == 'waiting_pilot') {
-            return const Text('Waiting for pilot');
+            return Column(
+              children: [
+                ElevatedButton(
+                    onPressed: () {
+                      context.read<CurrentFlightBloc>().add(CurrentFlightLoaded(flight: state.flight!));
+                    },
+                    child: const Text("Focus on route")
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Column(
+                      children: [
+                        const Text("Departure:", style: TextStyle(fontWeight: FontWeight.bold)),
+                        Text(state.flight!.departure.name)
+                      ]
+                    ),
+                    Column(
+                      children: [
+                        const Text("Arrival:", style: TextStyle(fontWeight: FontWeight.bold)),
+                        Text(state.flight!.arrival.name)
+                      ]
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 30),
+                const Text("Waiting for a pilot to accept the flight"),
+                const LinearProgressIndicator(),
+                ElevatedButton(
+                    onPressed: () {
+                      _socket.emit("cancelFlight", "${state.flight!.id}");
+                    },
+                    child: const Text("Cancel flight"))
+              ]
+            );
           }
 
           if (state.flight!.status == 'waiting_proposal_approval') {
@@ -104,6 +138,9 @@ class _CurrentFlightManagementState extends State<CurrentFlightManagement> {
             return const Text("Waiting for takeoff");
           }
 
+          if (state.flight!.status == 'in_progress') {
+            return const Text("In flight");
+          }
 
           return const Text('No flight selected');
         }

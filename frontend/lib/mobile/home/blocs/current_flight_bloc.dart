@@ -40,6 +40,15 @@ class CurrentFlightBloc extends Bloc<CurrentFlightEvent, CurrentFlightState> {
   Future<void> _onCurrentFlightUpdated(CurrentFlightUpdated event, Emitter<CurrentFlightState> emit) async {
     final flight = await FlightService.getCurrentFlight();
 
+    if (flight == null) {
+      emit(CurrentFlightState(
+        status: CurrentFlightStatus.loaded,
+        flight: null,
+        flightRequest: null,
+        errorMessage: null
+      ));
+    }
+
     emit(state.copyWith(
       status: CurrentFlightStatus.loaded,
       flight: flight,

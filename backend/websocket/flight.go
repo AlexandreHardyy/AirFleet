@@ -16,6 +16,12 @@ func InitFlightSession(socketIoServer *socketio.Server) {
 
 	socketIoServer.OnEvent("/flights", "flightProposalChoice", flightSocketHandler.FlightProposalChoice)
 
+	socketIoServer.OnEvent("/flights", "flightTakeoff", flightSocketHandler.FlightTakeoff)
+
+	socketIoServer.OnEvent("/flights", "flightLanding", flightSocketHandler.FlightLanding)
+
+	socketIoServer.OnEvent("/flights", "cancelFlight", flightSocketHandler.CancelFlight)
+
 	socketIoServer.OnEvent("/flights", "bye", func(s socketio.Conn) {
 		s.Close()
 	})

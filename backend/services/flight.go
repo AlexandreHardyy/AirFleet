@@ -18,6 +18,9 @@ type FlightServiceInterface interface {
 	JoinFlightSession(flightID int, userID int) error
 	MakeFlightPriceProposal(input inputs.InputCreateFlightProposal, userID int) error
 	FlightProposalChoice(input inputs.InputFlightProposalChoice, userID int) error
+	FlightTakeoff(flightID int, pilotId int) error
+	FlightLanding(flightID int, pilotId int) error
+	CancelFlight(flightID int, userId int) error
 }
 
 type FlightService struct {
@@ -162,6 +165,81 @@ func (s *FlightService) FlightProposalChoice(input inputs.InputFlightProposalCho
 	}
 
 	log.Println(flight)
+
+	_, err = s.repository.UpdateFlight(flight)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *FlightService) FlightTakeoff(flightID int, pilotId int) error {
+	flight, err := s.repository.GetFlightByID(flightID)
+	if err != nil {
+		return err
+	}
+
+	flightPilotId := flight.PilotID
+	if flightPilotId == nil {
+		return errors.New("flight has no pilot assigned")
+	}
+
+	if flight.Status != "waiting_takeoff" || *flightPilotId != pilotId {
+		return errors.New("flight is not available for takeoff")
+	}
+
+	flight.Status = "in_progress"
+
+	_, err = s.repository.UpdateFlight(flight)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *FlightService) FlightLanding(flightID int, pilotId int) error {
+	flight, err := s.repository.GetFlightByID(flightID)
+	if err != nil {
+		return err
+	}
+
+	flightPilotId := flight.PilotID
+	if flightPilotId == nil {
+		return errors.New("flight has no pilot assigned")
+	}
+
+	if flight.Status != "in_progress" || *flightPilotId != pilotId {
+		return errors.New("flight is not available for landing")
+	}
+
+	flight.Status = "finished"
+
+	_, err = s.repository.UpdateFlight(flight)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *FlightService) CancelFlight(flightID int, userID int) error {
+	flight, err := s.repository.GetFlightByID(flightID)
+	if err != nil {
+		return err
+	}
+
+	if (flight.Status != "waiting_pilot" && flight.Status != "waiting_takeoff") || flight.UserID != userID {
+		return errors.New("flight is not available for cancel")
+	}
+
+	flight.Status = "cancelled"
+	flight.PilotID = nil
+	flight.Price = nil
 
 	_, err = s.repository.UpdateFlight(flight)
 
