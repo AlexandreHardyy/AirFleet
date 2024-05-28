@@ -3,6 +3,7 @@ package handlers
 import (
 	"backend/inputs"
 	"backend/repositories"
+	"backend/responses"
 	"backend/services"
 	"backend/utils/token"
 	"encoding/json"
@@ -12,6 +13,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"time"
 )
 
 // REST
@@ -98,6 +100,7 @@ func (h *FlightHandler) GetCurrentFlight(c *gin.Context) {
 type FlightSocketHandler struct {
 	flightService  services.FlightServiceInterface
 	socketIoServer *socketio.Server
+	stopChans      map[string]chan struct{}
 }
 
 func GetFlightSocketHandler(db *gorm.DB, server *socketio.Server) *FlightSocketHandler {
@@ -111,11 +114,31 @@ func NewFlightSocketHandler(flightService services.FlightServiceInterface, serve
 	return &FlightSocketHandler{
 		flightService:  flightService,
 		socketIoServer: server,
+		stopChans:      make(map[string]chan struct{}),
 	}
 }
 
 func (h *FlightSocketHandler) CreateFlightSession(s socketio.Conn, flightId string) {
 	log.Println("Flight session created")
+
+	convertedFlightId, err := strconv.Atoi(flightId)
+	if err != nil {
+		s.Emit("error", err.Error())
+		log.Println("Error extracting flight ID", err.Error())
+		return
+	}
+
+	flight, err := h.flightService.GetFlight(convertedFlightId)
+	if err != nil {
+		s.Emit("error", err.Error())
+		log.Println("Error getting flight", err.Error())
+		return
+	}
+
+	if flight.Status == "waiting_takeoff" || flight.Status == "in_progress" {
+		h.startPilotPositionUpdate(s, flightId)
+	}
+
 	s.Join(flightId)
 }
 
@@ -170,7 +193,11 @@ func (h *FlightSocketHandler) FlightProposalChoice(s socketio.Conn, msg string) 
 	}
 
 	h.socketIoServer.BroadcastToRoom("/flights", strconv.Itoa(flightProposalChoice.FlightId), "flightUpdated", "flight updated")
-	s.Join(strconv.Itoa(flightProposalChoice.FlightId))
+	if flightProposalChoice.Choice == "accepted" {
+		s.Join(strconv.Itoa(flightProposalChoice.FlightId))
+
+		h.startPilotPositionUpdate(s, strconv.Itoa(flightProposalChoice.FlightId))
+	}
 
 	return nil
 }
@@ -246,10 +273,75 @@ func (h *FlightSocketHandler) CancelFlight(s socketio.Conn, flightId string) err
 	}
 
 	h.socketIoServer.BroadcastToRoom("/flights", flightId, "flightUpdated", "flight updated")
+	h.StopGoroutine(s.ID())
 
 	h.socketIoServer.ClearRoom("/flights", flightId)
 
 	return nil
+}
+
+func (h *FlightSocketHandler) startPilotPositionUpdate(s socketio.Conn, flightId string) {
+	if oldStopChan, ok := h.stopChans[s.ID()]; ok {
+		log.Println("Stopping old goroutine")
+		close(oldStopChan)
+	}
+
+	stopChan := make(chan struct{})
+	h.stopChans[s.ID()] = stopChan
+
+	convertedFlightId, err := strconv.Atoi(flightId)
+	if err != nil {
+		s.Emit("error", err.Error())
+		log.Println("Error extracting flight ID", err.Error())
+		return
+	}
+
+	flight, err := h.flightService.GetFlight(convertedFlightId)
+	if err != nil {
+		s.Emit("error", err.Error())
+		log.Println("Error getting flight", err.Error())
+		return
+	}
+
+	pilotPosition := responses.ResponsePilotPosition{
+		Latitude:  flight.Departure.Latitude,
+		Longitude: flight.Departure.Longitude,
+	}
+
+	pilotPositionBytes, err := json.Marshal(pilotPosition)
+	if err != nil {
+		log.Println("Error marshalling pilot position:", err)
+		return
+	}
+
+	pilotPositionString := string(pilotPositionBytes)
+
+	h.socketIoServer.BroadcastToRoom("/flights", flightId, "pilotPositionUpdate", pilotPositionString)
+	go func() {
+		ticker := time.NewTicker(30 * time.Second)
+		defer ticker.Stop()
+
+		for {
+			select {
+			case <-ticker.C:
+				h.socketIoServer.BroadcastToRoom("/flights", flightId, "pilotPositionUpdate", pilotPositionString)
+				log.Println("sent pilot position update")
+			case <-stopChan:
+				return
+			}
+		}
+	}()
+
+	log.Println("Go routine started")
+
+}
+
+func (h *FlightSocketHandler) StopGoroutine(chanId string) {
+	if stopChan, ok := h.stopChans[chanId]; ok {
+		close(stopChan)
+		delete(h.stopChans, chanId)
+		log.Println("Goroutine stopped")
+	}
 }
 
 func ExtractIdFromWebSocketHeader(s socketio.Conn) (int, error) {

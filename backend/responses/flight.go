@@ -20,3 +20,10 @@ type ResponseFlight struct {
 	CreatedAt time.Time       `json:"created_at"`
 	UpdatedAt time.Time       `json:"updated_at"`
 }
+
+// WEBSOCKET
+
+type ResponsePilotPosition struct {
+	Latitude  float64 `json:"latitude"`
+	Longitude float64 `json:"longitude"`
+}

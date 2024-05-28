@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:frontend/mobile/map/map.dart';
+import 'package:frontend/services/socketio.dart';
+import 'package:frontend/storage/user.dart';
+import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'blocs/current_flight_bloc.dart';
 import 'flights_management/flights_management.dart';
 import 'home_drawer.dart';
@@ -14,12 +17,43 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  late IO.Socket _socket;
+
+  @override
+  void initState() {
+    super.initState();
+
+    initSocket().then((socket) {
+      setState(() {
+        _socket = socket;
+      });
+    });
+  }
+
+  Future<IO.Socket> initSocket() async {
+    final bearerToken = await UserStore.getToken();
+    final socket = IO.io('http://localhost:3001/flights', IO.OptionBuilder()
+        .setTransports(['websocket'])
+        .disableAutoConnect()
+        .disableAutoConnect()
+        .setExtraHeaders({'Bearer': bearerToken})
+        .build()
+    );
+    socket.onConnect((_) {
+      print('Connection established');
+    });
+    socket.onDisconnect((_) => print('Connection Disconnection'));
+    socket.onConnectError((err) => print(err));
+    socket.onError((err) => print(err));
+
+    return socket;
+  }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-      child: BlocProvider(
+      child: SocketProvider(socket: _socket, child: BlocProvider(
         create: (context) => CurrentFlightBloc()..add(CurrentFlightInitialized()),
         child: Scaffold(
             backgroundColor: const Color(0xFF131141),
@@ -63,7 +97,7 @@ class _HomeState extends State<Home> {
               ],
             )
         ),
-      ),
+      ))
     );
   }
 }

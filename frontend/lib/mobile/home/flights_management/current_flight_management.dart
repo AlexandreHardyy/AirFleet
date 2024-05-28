@@ -3,9 +3,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend/mobile/home/blocs/current_flight_bloc.dart';
-import 'package:frontend/storage/user.dart';
-import 'package:socket_io_client/socket_io_client.dart' as IO;
-import 'package:socket_io_client/socket_io_client.dart';
+import 'package:frontend/services/socketio.dart';
+
 
 class CurrentFlightManagement extends StatefulWidget {
   const CurrentFlightManagement({super.key});
@@ -15,48 +14,18 @@ class CurrentFlightManagement extends StatefulWidget {
 }
 
 class _CurrentFlightManagementState extends State<CurrentFlightManagement> {
-  late IO.Socket _socket;
-
-  @override
-  void initState() {
-    super.initState();
-
-    initSocket().then((socket) {
-      setState(() {
-        _socket = socket;
-      });
-    });
-  }
-
-   Future<IO.Socket> initSocket() async {
-    final bearerToken = await UserStore.getToken();
-    final socket = IO.io('http://localhost:3001/flights', OptionBuilder()
-        .setTransports(['websocket']) // for Flutter or Dart VM
-        .disableAutoConnect()
-        .disableAutoConnect()// disable auto-connection
-        .setExtraHeaders({'Bearer': bearerToken}) // optional
-        .build()
-    );
-    socket.connect();
-    socket.onConnect((_) {
-      print('Connection established');
-    });
-    socket.onDisconnect((_) => print('Connection Disconnection'));
-    socket.onConnectError((err) => print(err));
-    socket.onError((err) => print(err));
-
-    return socket;
-  }
 
 
   @override
   Widget build(BuildContext context) {
     if (context.mounted) {
-      final currentFlightState = context.read<CurrentFlightBloc>().state;
-      
-      _socket.emit("createSession", "${currentFlightState.flight!.id}");
+      SocketProvider.of(context)!.socket.connect();
 
-      _socket.on("flightUpdated", (_) {
+      final currentFlightState = context.read<CurrentFlightBloc>().state;
+
+      SocketProvider.of(context)!.socket.emit("createSession", "${currentFlightState.flight!.id}");
+
+      SocketProvider.of(context)!.socket.on("flightUpdated", (_) {
         context.read<CurrentFlightBloc>().add(CurrentFlightUpdated());
       });
     }
@@ -99,7 +68,7 @@ class _CurrentFlightManagementState extends State<CurrentFlightManagement> {
                 const LinearProgressIndicator(),
                 ElevatedButton(
                     onPressed: () {
-                      _socket.emit("cancelFlight", "${state.flight!.id}");
+                      SocketProvider.of(context)!.socket.emit("cancelFlight", "${state.flight!.id}");
                     },
                     child: const Text("Cancel flight"))
               ]
@@ -118,13 +87,13 @@ class _CurrentFlightManagementState extends State<CurrentFlightManagement> {
                   children: [
                     ElevatedButton(
                       onPressed: () {
-                        _socket.emit("flightProposalChoice", jsonEncode({"flightId": state.flight!.id, "choice": "accepted"}));
+                        SocketProvider.of(context)!.socket.emit("flightProposalChoice", jsonEncode({"flightId": state.flight!.id, "choice": "accepted"}));
                       },
                       child: const Text('Accept price offer'),
                     ),
                     ElevatedButton(
                       onPressed: () {
-                        _socket.emit("flightProposalChoice", jsonEncode({"flightId": state.flight!.id, "choice": "rejected"}));
+                        SocketProvider.of(context)!.socket.emit("flightProposalChoice", jsonEncode({"flightId": state.flight!.id, "choice": "rejected"}));
                       },
                       child: const Text('Reject price offer'),
                     ),
