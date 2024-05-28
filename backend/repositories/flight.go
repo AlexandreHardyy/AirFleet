@@ -32,7 +32,7 @@ func (r *FlightRepository) GetFlightByID(flightID int) (models.Flight, error) {
 
 func (r *FlightRepository) GetCurrentFlight(userID int) (models.Flight, error) {
 	var flight models.Flight
-	err := r.db.Where("user_id = ? AND status != ?", userID, "finished").First(&flight).Error
+	err := r.db.Where("user_id = ? AND status != ? AND status != ?", userID, "finished", "cancelled").First(&flight).Error
 	if err != nil {
 		return flight, err
 	}

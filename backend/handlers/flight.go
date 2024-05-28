@@ -120,11 +120,8 @@ func (h *FlightSocketHandler) CreateFlightSession(s socketio.Conn, flightId stri
 }
 
 func (h *FlightSocketHandler) MakeFlightPriceProposal(s socketio.Conn, msg string) error {
-	tokenString := s.RemoteHeader().Get("Bearer")
-	userId, err := token.ExtractTokenIDFromToken(tokenString)
+	userId, err := ExtractIdFromWebSocketHeader(s)
 	if err != nil {
-		s.Emit("error", err.Error())
-		log.Println("Error extracting user ID from token", err.Error())
 		return err
 	}
 
@@ -151,11 +148,8 @@ func (h *FlightSocketHandler) MakeFlightPriceProposal(s socketio.Conn, msg strin
 }
 
 func (h *FlightSocketHandler) FlightProposalChoice(s socketio.Conn, msg string) error {
-	tokenString := s.RemoteHeader().Get("Bearer")
-	userId, err := token.ExtractTokenIDFromToken(tokenString)
+	userId, err := ExtractIdFromWebSocketHeader(s)
 	if err != nil {
-		s.Emit("error", err.Error())
-		log.Println("Error extracting user ID from token", err.Error())
 		return err
 	}
 
@@ -179,4 +173,92 @@ func (h *FlightSocketHandler) FlightProposalChoice(s socketio.Conn, msg string) 
 	s.Join(strconv.Itoa(flightProposalChoice.FlightId))
 
 	return nil
+}
+
+func (h *FlightSocketHandler) FlightTakeoff(s socketio.Conn, flightId string) error {
+	pilotId, err := ExtractIdFromWebSocketHeader(s)
+	if err != nil {
+		return err
+	}
+
+	convertedFlightId, err := strconv.Atoi(flightId)
+	if err != nil {
+		s.Emit("error", err.Error())
+		log.Println("Error extracting flight ID", err.Error())
+		return err
+	}
+
+	err = h.flightService.FlightTakeoff(convertedFlightId, pilotId)
+	if err != nil {
+		s.Emit("error", err.Error())
+		log.Println("Error taking off flight", err.Error())
+		return err
+	}
+
+	h.socketIoServer.BroadcastToRoom("/flights", flightId, "flightUpdated", "flight updated")
+	return nil
+}
+
+func (h *FlightSocketHandler) FlightLanding(s socketio.Conn, flightId string) error {
+	pilotId, err := ExtractIdFromWebSocketHeader(s)
+	if err != nil {
+		return err
+	}
+
+	convertedFlightId, err := strconv.Atoi(flightId)
+	if err != nil {
+		s.Emit("error", err.Error())
+		log.Println("Error extracting flight ID", err.Error())
+		return err
+	}
+
+	err = h.flightService.FlightLanding(convertedFlightId, pilotId)
+	if err != nil {
+		s.Emit("error", err.Error())
+		log.Println("Error landing flight", err.Error())
+		return err
+	}
+
+	h.socketIoServer.BroadcastToRoom("/flights", flightId, "flightUpdated", "flight updated")
+	h.socketIoServer.ClearRoom("/flights", flightId)
+
+	return nil
+}
+
+func (h *FlightSocketHandler) CancelFlight(s socketio.Conn, flightId string) error {
+	userId, err := ExtractIdFromWebSocketHeader(s)
+	if err != nil {
+		return err
+	}
+
+	convertedFlightId, err := strconv.Atoi(flightId)
+	if err != nil {
+		s.Emit("error", err.Error())
+		log.Println("Error extracting flight ID", err.Error())
+		return err
+	}
+
+	err = h.flightService.CancelFlight(convertedFlightId, userId)
+	if err != nil {
+		s.Emit("error", err.Error())
+		log.Println("Error cancelling flight", err.Error())
+		return err
+	}
+
+	h.socketIoServer.BroadcastToRoom("/flights", flightId, "flightUpdated", "flight updated")
+
+	h.socketIoServer.ClearRoom("/flights", flightId)
+
+	return nil
+}
+
+func ExtractIdFromWebSocketHeader(s socketio.Conn) (int, error) {
+	tokenString := s.RemoteHeader().Get("Bearer")
+	userId, err := token.ExtractTokenIDFromToken(tokenString)
+	if err != nil {
+		s.Emit("error", err.Error())
+		log.Println("Error extracting user ID from token", err.Error())
+		return 0, err
+	}
+	return userId, nil
 }

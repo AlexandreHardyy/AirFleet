@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:frontend/mobile/home/blocs/current_flight_bloc.dart';
@@ -23,6 +24,8 @@ class AirFleetMapState extends State<AirFleetMap> {
   PointAnnotationManager? _pointAnnotationManager;
   PolylineAnnotationManager? _polylineAnnotationManager;
 
+  Uint8List? _icon;
+
   var _trackLocation = true;
 
   late MapboxMap _mapboxMap;
@@ -34,6 +37,8 @@ class AirFleetMapState extends State<AirFleetMap> {
 
     _mapboxMap.annotations.createPointAnnotationManager().then((value) async {
       _pointAnnotationManager = value;
+      final ByteData bytes = await rootBundle.load('assets/symbols/location-pin.png');
+      _icon = bytes.buffer.asUint8List();
     });
 
     _mapboxMap.annotations.createPolylineAnnotationManager().then((value) async {
@@ -77,10 +82,8 @@ class AirFleetMapState extends State<AirFleetMap> {
         ?.create(PointAnnotationOptions(
         geometry: Point(
             coordinates: position).toJson(),
-        textField: "custom-icon",
-        textOffset: [0.0, -2.0],
-        textColor: Colors.red.value,
-        iconSize: 1.3,
+        image: _icon,
+        iconSize: 3.0,
         iconOffset: [0.0, -5.0],
         symbolSortKey: 10
     ));
@@ -93,8 +96,8 @@ class AirFleetMapState extends State<AirFleetMap> {
           position1,
           position2
         ]).toJson(),
-        lineColor: Colors.red.value,
-        lineWidth: 2));
+        lineColor: const Color(0xFF131141).value,
+        lineWidth: 3));
   }
 
   void _setLocationComponent() async {
@@ -207,8 +210,9 @@ class AirFleetMapState extends State<AirFleetMap> {
                   _refreshTrackLocation();
                 });
               },
-              backgroundColor: _trackLocation ? Colors.blue : Colors.grey,
-              child: const Icon(FontAwesomeIcons.locationCrosshairs)),
+              backgroundColor: _trackLocation ? const Color(0xFF131141) : Colors.grey,
+              child: Icon(FontAwesomeIcons.locationCrosshairs, color: _trackLocation ? const Color(0xFFDCA200) : Colors.black)
+          ),
         ),
           body: MapWidget(
             key: const ValueKey("mapWidget"),
