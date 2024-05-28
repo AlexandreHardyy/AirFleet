@@ -26,6 +26,11 @@ func InitFlightSession(socketIoServer *socketio.Server) {
 		s.Close()
 	})
 
+	socketIoServer.OnDisconnect("/", func(s socketio.Conn, reason string) {
+		log.Println("closed", reason)
+		flightSocketHandler.StopGoroutine(s.ID())
+	})
+
 	socketIoServer.OnError("/flights", func(s socketio.Conn, e error) {
 		log.Println("meet error:", e)
 	})

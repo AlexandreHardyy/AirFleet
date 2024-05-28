@@ -13,6 +13,7 @@ import (
 type FlightServiceInterface interface {
 	//REST
 	CreateFlight(input inputs.InputCreateFlight, userID int) (responses.ResponseFlight, error)
+	GetFlight(flightID int) (responses.ResponseFlight, error)
 	GetCurrentFlight(userID int) (responses.ResponseFlight, error)
 	//WEBSOCKET
 	JoinFlightSession(flightID int, userID int) error
@@ -56,6 +57,18 @@ func (s *FlightService) CreateFlight(input inputs.InputCreateFlight, userID int)
 	formattedFlight := formatFlight(flight)
 
 	return formattedFlight, nil
+}
+
+func (s *FlightService) GetFlight(flightID int) (responses.ResponseFlight, error) {
+	flight, err := s.repository.GetFlightByID(flightID)
+	if err != nil {
+		return responses.ResponseFlight{}, err
+	}
+
+	formattedFlight := formatFlight(flight)
+
+	return formattedFlight, nil
+
 }
 
 func (s *FlightService) GetCurrentFlight(userID int) (responses.ResponseFlight, error) {
@@ -163,8 +176,6 @@ func (s *FlightService) FlightProposalChoice(input inputs.InputFlightProposalCho
 		flight.PilotID = nil
 		flight.Price = nil
 	}
-
-	log.Println(flight)
 
 	_, err = s.repository.UpdateFlight(flight)
 

@@ -20,10 +20,6 @@ func InitWebSocket(socketIoServer *socketio.Server) {
 		return nil
 	})
 
-	socketIoServer.OnDisconnect("/", func(s socketio.Conn, reason string) {
-		log.Println("closed", reason)
-	})
-
 	go func() {
 		if err := socketIoServer.Serve(); err != nil {
 			log.Fatalf("websocket listen error: %s\n", err)

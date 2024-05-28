@@ -12,6 +12,8 @@ type InputCreateFlight struct {
 	Arrival   Airport `json:"arrival" binding:"required"`
 }
 
+// WEBSOCKET
+
 type InputCreateFlightProposal struct {
 	FlightId int     `json:"flightId" binding:"required"`
 	Price    float64 `json:"price" binding:"required"`

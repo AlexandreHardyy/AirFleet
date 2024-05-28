@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -7,6 +8,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:frontend/mobile/home/blocs/current_flight_bloc.dart';
 import 'package:frontend/mobile/map/utils.dart';
 import 'package:frontend/models/flight.dart';
+import 'package:frontend/services/socketio.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -24,7 +26,8 @@ class AirFleetMapState extends State<AirFleetMap> {
   PointAnnotationManager? _pointAnnotationManager;
   PolylineAnnotationManager? _polylineAnnotationManager;
 
-  Uint8List? _icon;
+  Uint8List? _locationPin;
+  Uint8List? _planeIcon;
 
   var _trackLocation = true;
 
@@ -37,8 +40,12 @@ class AirFleetMapState extends State<AirFleetMap> {
 
     _mapboxMap.annotations.createPointAnnotationManager().then((value) async {
       _pointAnnotationManager = value;
+
       final ByteData bytes = await rootBundle.load('assets/symbols/location-pin.png');
-      _icon = bytes.buffer.asUint8List();
+      _locationPin = bytes.buffer.asUint8List();
+
+      final ByteData planeBytes = await rootBundle.load('assets/symbols/plane-icon.png');
+      _planeIcon = planeBytes.buffer.asUint8List();
     });
 
     _mapboxMap.annotations.createPolylineAnnotationManager().then((value) async {
@@ -77,12 +84,12 @@ class AirFleetMapState extends State<AirFleetMap> {
     }
   }
 
-  void _createOnePointAnnotation(Position position) {
+  void _createOnePointAnnotation(Position position, Uint8List icon) {
     _pointAnnotationManager
         ?.create(PointAnnotationOptions(
         geometry: Point(
             coordinates: position).toJson(),
-        image: _icon,
+        image: icon,
         iconSize: 3.0,
         iconOffset: [0.0, -5.0],
         symbolSortKey: 10
@@ -131,8 +138,8 @@ class AirFleetMapState extends State<AirFleetMap> {
     final departurePosition = Position(departure.longitude, departure.latitude);
     final arrivalPosition = Position(arrival.longitude, arrival.latitude);
 
-    _createOnePointAnnotation(departurePosition);
-    _createOnePointAnnotation(arrivalPosition);
+    _createOnePointAnnotation(departurePosition, _locationPin!);
+    _createOnePointAnnotation(arrivalPosition, _locationPin!);
     _createOneLineAnnotation(departurePosition, arrivalPosition);
 
     setState(() {
@@ -157,6 +164,11 @@ class AirFleetMapState extends State<AirFleetMap> {
         null
     ).then((value) => _mapboxMap.flyTo(value, null));
   }
+  
+  void _createPilotPositionOnMap(Position position) {
+    print("lalala");
+    _createOnePointAnnotation(position, _planeIcon!);
+  }
 
   void _clearMap() {
     _pointAnnotationManager?.deleteAll();
@@ -165,6 +177,13 @@ class AirFleetMapState extends State<AirFleetMap> {
 
   @override
   Widget build(BuildContext context) {
+    
+    SocketProvider.of(context)!.socket.on("pilotPositionUpdate", (data) {
+      Map<String, dynamic> jsonData = jsonDecode(data);
+      final position = Position(jsonData['longitude'], jsonData['latitude']);
+      _createPilotPositionOnMap(position);
+    });
+    
     return BlocListener<CurrentFlightBloc, CurrentFlightState>(
       listener: (context, state) {
         //TODO Remove duplicated code
