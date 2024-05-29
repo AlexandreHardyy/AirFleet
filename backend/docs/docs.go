@@ -287,6 +287,39 @@ const docTemplate = `{
             }
         },
         "/users/{id}": {
+            "delete": {
+                "description": "delete a user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "Delete user",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "User ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Response"
+                        }
+                    }
+                }
+            },
             "patch": {
                 "security": [
                     {
@@ -303,7 +336,7 @@ const docTemplate = `{
                 "tags": [
                     "user"
                 ],
-                "summary": "User User",
+                "summary": "User",
                 "parameters": [
                     {
                         "type": "string",
@@ -375,6 +408,11 @@ const docTemplate = `{
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "create a new vehicle for a pilot",
                 "consumes": [
                     "application/json"
@@ -406,6 +444,43 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/vehicles/me": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "get all vehicles for current user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "vehicle"
+                ],
+                "summary": "Get all vehicles for current user",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/responses.Vehicle"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
                         "schema": {
                             "$ref": "#/definitions/handlers.Response"
                         }
@@ -574,8 +649,7 @@ const docTemplate = `{
                 "matriculation",
                 "model_name",
                 "seat",
-                "type",
-                "user_id"
+                "type"
             ],
             "properties": {
                 "matriculation": {
@@ -589,9 +663,6 @@ const docTemplate = `{
                 },
                 "type": {
                     "type": "string"
-                },
-                "user_id": {
-                    "type": "integer"
                 }
             }
         },
@@ -675,6 +746,9 @@ const docTemplate = `{
                     "type": "boolean"
                 },
                 "last_name": {
+                    "type": "string"
+                },
+                "role": {
                     "type": "string"
                 },
                 "updated_at": {

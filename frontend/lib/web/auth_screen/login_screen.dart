@@ -46,6 +46,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   FormBuilderValidators.required(),
                 ]),
               ),
+              const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () async {
                   final state = _formKey.currentState;
@@ -71,7 +72,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     if (result['token'] != null) {
                       _apiMessage = 'Login success !';
                       Navigator.of(context).popUntil((route) => false);
-                      Navigator.of(context).push(Routes.home(context));
+                      Navigator.of(context).push(Routes.homeWeb(context));
                     } else if (result['message'] != null) {
                       _apiMessage = result['message'];
                     } else {

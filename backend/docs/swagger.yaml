@@ -33,14 +33,11 @@ definitions:
         type: integer
       type:
         type: string
-      user_id:
-        type: integer
     required:
     - matriculation
     - model_name
     - seat
     - type
-    - user_id
     type: object
   inputs.LoginUser:
     properties:
@@ -95,6 +92,8 @@ definitions:
       is_verified:
         type: boolean
       last_name:
+        type: string
+      role:
         type: string
       updated_at:
         type: string
@@ -199,6 +198,28 @@ paths:
       tags:
       - user
   /users/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: delete a user
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.Response'
+      summary: Delete user
+      tags:
+      - user
     patch:
       consumes:
       - application/json
@@ -228,7 +249,7 @@ paths:
             $ref: '#/definitions/handlers.Response'
       security:
       - BearerAuth: []
-      summary: User User
+      summary: User
       tags:
       - user
   /users/login:
@@ -401,6 +422,8 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/handlers.Response'
+      security:
+      - BearerAuth: []
       summary: Create vehicle
       tags:
       - vehicle
@@ -481,6 +504,29 @@ paths:
           schema:
             $ref: '#/definitions/handlers.Response'
       summary: update vehicle by id
+      tags:
+      - vehicle
+  /vehicles/me:
+    get:
+      consumes:
+      - application/json
+      description: get all vehicles for current user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/responses.Vehicle'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.Response'
+      security:
+      - BearerAuth: []
+      summary: Get all vehicles for current user
       tags:
       - vehicle
 securityDefinitions:

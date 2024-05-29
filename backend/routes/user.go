@@ -23,4 +23,7 @@ func initUserRoutes(api *gin.RouterGroup) {
 
 	api.GET("/me", middlewares.IsAuth(), userHandler.CurrentUser)
 	api.GET("", middlewares.IsAdminAuth(), userHandler.GetAll)
+
+	api.PUT("/:id", middlewares.IsAdminAuth(), userHandler.Update)
+	api.DELETE("/:id", middlewares.IsAdminAuth(), userHandler.Delete)
 }

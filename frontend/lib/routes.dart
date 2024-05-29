@@ -5,6 +5,7 @@ import 'package:frontend/mobile/auth_screen/register_screen.dart';
 import 'package:frontend/mobile/flight_history.dart';
 import 'package:frontend/mobile/home/home.dart';
 import 'package:frontend/mobile/vehicles_management.dart';
+import 'package:frontend/web/home_web.dart';
 
 import 'mobile/vehicle_detail.dart';
 
@@ -12,6 +13,12 @@ class Routes {
   static home(context) {
     return MaterialPageRoute(
       builder: (context) => const Home(),
+    );
+  }
+
+  static homeWeb(context) {
+    return MaterialPageRoute(
+      builder: (context) => const HomeWeb(),
     );
   }
 
