@@ -3,7 +3,6 @@ import 'package:dio/dio.dart';
 import 'package:frontend/models/vehicle.dart';
 import 'package:frontend/services/vehicle.dart';
 
-import '../services/dio.dart';
 
 class VehicleDetailsPage extends StatefulWidget {
   final int? vehicleId;

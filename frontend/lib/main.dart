@@ -13,12 +13,12 @@ Future<void> main() async {
 
   await dotenv.load(fileName: ".env");
 
-  final String MAPBOX_ACCESS_TOKEN =
+  final String mapboxAccessToken =
       const String.fromEnvironment("PUBLIC_ACCESS_TOKEN") != ""
           ? const String.fromEnvironment("PUBLIC_ACCESS_TOKEN")
           : dotenv.get("PUBLIC_ACCESS_TOKEN_MAPBOX");
 
-  MapboxOptions.setAccessToken(MAPBOX_ACCESS_TOKEN);
+  MapboxOptions.setAccessToken(mapboxAccessToken);
 
   await Future.delayed(const Duration(seconds: 3));
 
