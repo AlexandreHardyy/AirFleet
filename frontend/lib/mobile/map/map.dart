@@ -5,10 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:frontend/mobile/home/blocs/current_flight_bloc.dart';
+import 'package:frontend/mobile/blocs/current_flight/current_flight_bloc.dart';
+import 'package:frontend/mobile/blocs/socket_io/socket_io_bloc.dart';
 import 'package:frontend/mobile/map/utils.dart';
 import 'package:frontend/models/flight.dart';
-import 'package:frontend/services/socketio.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -25,9 +25,7 @@ class AirFleetMapState extends State<AirFleetMap> {
   Timer? _timer;
   PointAnnotationManager? _pointAnnotationManager;
   PolylineAnnotationManager? _polylineAnnotationManager;
-
-  Uint8List? _locationPin;
-  Uint8List? _planeIcon;
+  PointAnnotation? _pilotAnnotation;
 
   var _trackLocation = true;
 
@@ -40,18 +38,13 @@ class AirFleetMapState extends State<AirFleetMap> {
 
     _mapboxMap.annotations.createPointAnnotationManager().then((value) async {
       _pointAnnotationManager = value;
-
-      final ByteData bytes = await rootBundle.load('assets/symbols/location-pin.png');
-      _locationPin = bytes.buffer.asUint8List();
-
-      final ByteData planeBytes = await rootBundle.load('assets/symbols/plane-icon.png');
-      _planeIcon = planeBytes.buffer.asUint8List();
     });
 
-    _mapboxMap.annotations.createPolylineAnnotationManager().then((value) async {
+    _mapboxMap.annotations
+        .createPolylineAnnotationManager()
+        .then((value) async {
       _polylineAnnotationManager = value;
     });
-
 
     await _getPermission();
 
@@ -78,33 +71,29 @@ class AirFleetMapState extends State<AirFleetMap> {
   _onScrollListener(ScreenCoordinate coordinates) {
     if (_trackLocation) {
       setState(() {
-          _timer?.cancel();
-          _trackLocation = false;
+        _timer?.cancel();
+        _trackLocation = false;
       });
     }
   }
 
-  void _createOnePointAnnotation(Position position, Uint8List icon) {
-    _pointAnnotationManager
-        ?.create(PointAnnotationOptions(
-        geometry: Point(
-            coordinates: position).toJson(),
-        image: icon,
-        iconSize: 3.0,
-        iconOffset: [0.0, -5.0],
-        symbolSortKey: 10
+  Future<PointAnnotation>? _createOnePointAnnotation(
+      Position position, Uint8List icon) {
+    return _pointAnnotationManager?.create(PointAnnotationOptions(
+      geometry: Point(coordinates: position).toJson(),
+      image: icon,
+      iconSize: 3.0,
+      iconOffset: [0.0, -5.0],
+      symbolSortKey: 10,
     ));
   }
 
   void _createOneLineAnnotation(Position position1, Position position2) {
-    _polylineAnnotationManager
-        ?.create(PolylineAnnotationOptions(
-        geometry: LineString(coordinates: [
-          position1,
-          position2
-        ]).toJson(),
-        lineColor: const Color(0xFF131141).value,
-        lineWidth: 3));
+    _polylineAnnotationManager?.create(PolylineAnnotationOptions(
+      geometry: LineString(coordinates: [position1, position2]).toJson(),
+      lineColor: const Color(0xFF131141).value,
+      lineWidth: 3,
+    ));
   }
 
   void _setLocationComponent() async {
@@ -118,10 +107,13 @@ class AirFleetMapState extends State<AirFleetMap> {
   void _refreshTrackLocation() async {
     _timer?.cancel();
     if (_trackLocation) {
-      _timer = Timer.periodic(const Duration(seconds: 1), (timer) async {
-        final position = await _mapboxMap.style.getPuckPosition();
-        _setCameraPosition(position);
-      });
+      _timer = Timer.periodic(
+        const Duration(seconds: 1),
+        (timer) async {
+          final position = await _mapboxMap.style.getPuckPosition();
+          _setCameraPosition(position);
+        },
+      );
     }
   }
 
@@ -134,12 +126,16 @@ class AirFleetMapState extends State<AirFleetMap> {
         null);
   }
 
-  void _createRouteOnMap(Airport departure, Airport arrival) {
+  Future<void> _createRouteOnMap(Airport departure, Airport arrival) async {
     final departurePosition = Position(departure.longitude, departure.latitude);
     final arrivalPosition = Position(arrival.longitude, arrival.latitude);
 
-    _createOnePointAnnotation(departurePosition, _locationPin!);
-    _createOnePointAnnotation(arrivalPosition, _locationPin!);
+    final ByteData bytes =
+        await rootBundle.load('assets/symbols/location-pin.png');
+    final locationPin = bytes.buffer.asUint8List();
+
+    _createOnePointAnnotation(departurePosition, locationPin);
+    _createOnePointAnnotation(arrivalPosition, locationPin);
     _createOneLineAnnotation(departurePosition, arrivalPosition);
 
     setState(() {
@@ -147,27 +143,38 @@ class AirFleetMapState extends State<AirFleetMap> {
       _refreshTrackLocation();
     });
 
-    _mapboxMap.cameraForCoordinateBounds(
-        CoordinateBounds(
-          southwest: Point(
-              coordinates: departurePosition
-          ).toJson(),
-          northeast: Point(
-              coordinates: arrivalPosition
-          ).toJson(),
-          infiniteBounds: true
-        ),
-        MbxEdgeInsets(top: 1, left: 2, bottom: 3, right: 4),
-        10,
-        20,
-        null,
-        null
-    ).then((value) => _mapboxMap.flyTo(value, null));
+    _mapboxMap
+        .cameraForCoordinateBounds(
+          CoordinateBounds(
+            southwest: Point(coordinates: departurePosition).toJson(),
+            northeast: Point(coordinates: arrivalPosition).toJson(),
+            infiniteBounds: true,
+          ),
+          MbxEdgeInsets(
+            top: 1,
+            left: 2,
+            bottom: 3,
+            right: 4,
+          ),
+          10,
+          20,
+          null,
+          null,
+        )
+        .then((value) => _mapboxMap.flyTo(value, null));
   }
-  
-  void _createPilotPositionOnMap(Position position) {
-    print("lalala");
-    _createOnePointAnnotation(position, _planeIcon!);
+
+  Future<void> _createPilotPositionOnMap(Position position) async {
+    final ByteData planeBytes =
+        await rootBundle.load('assets/symbols/plane-icon.png');
+    final planeIcon = planeBytes.buffer.asUint8List();
+
+    if (_pilotAnnotation != null) {
+      _pointAnnotationManager?.delete(_pilotAnnotation!);
+    }
+    _createOnePointAnnotation(position, planeIcon)?.then(
+      (value) => {_pilotAnnotation = value},
+    );
   }
 
   void _clearMap() {
@@ -177,13 +184,17 @@ class AirFleetMapState extends State<AirFleetMap> {
 
   @override
   Widget build(BuildContext context) {
-    
-    SocketProvider.of(context)!.socket.on("pilotPositionUpdate", (data) {
-      Map<String, dynamic> jsonData = jsonDecode(data);
-      final position = Position(jsonData['longitude'], jsonData['latitude']);
-      _createPilotPositionOnMap(position);
-    });
-    
+    if (context.read<SocketIoBloc>().state.socket != null) {
+      context.read<SocketIoBloc>().add(SocketIoListenEvent(
+          event: "pilotPositionUpdate",
+          callback: (data) {
+            Map<String, dynamic> jsonData = jsonDecode(data);
+            final position =
+                Position(jsonData['longitude'], jsonData['latitude']);
+            _createPilotPositionOnMap(position);
+          }));
+    }
+
     return BlocListener<CurrentFlightBloc, CurrentFlightState>(
       listener: (context, state) {
         //TODO Remove duplicated code
@@ -218,30 +229,31 @@ class AirFleetMapState extends State<AirFleetMap> {
         }
       },
       child: Scaffold(
-        //TODO Improve this
-        floatingActionButton: Padding(
-          padding: const EdgeInsets.only(bottom: 50),
-          child: FloatingActionButton(
-              heroTag: null,
-              onPressed: () {
-                setState(()  {
-                  _trackLocation = !_trackLocation;
-                  _refreshTrackLocation();
-                });
-              },
-              backgroundColor: _trackLocation ? const Color(0xFF131141) : Colors.grey,
-              child: Icon(FontAwesomeIcons.locationCrosshairs, color: _trackLocation ? const Color(0xFFDCA200) : Colors.black)
+          //TODO Improve this
+          floatingActionButton: Padding(
+            padding: const EdgeInsets.only(bottom: 50),
+            child: FloatingActionButton(
+                heroTag: null,
+                onPressed: () {
+                  setState(() {
+                    _trackLocation = !_trackLocation;
+                    _refreshTrackLocation();
+                  });
+                },
+                backgroundColor:
+                    _trackLocation ? const Color(0xFF131141) : Colors.grey,
+                child: Icon(FontAwesomeIcons.locationCrosshairs,
+                    color: _trackLocation
+                        ? const Color(0xFFDCA200)
+                        : Colors.black)),
           ),
-        ),
           body: MapWidget(
             key: const ValueKey("mapWidget"),
             cameraOptions: CameraOptions(zoom: 3.0),
             onMapCreated: _onMapCreated,
             onStyleLoadedListener: _onStyleLoadedCallback,
             onScrollListener: _onScrollListener,
-
-          )
-      ),
+          )),
     );
   }
 }

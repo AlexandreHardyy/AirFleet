@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:frontend/mobile/home/blocs/current_flight_bloc.dart';
+import 'package:frontend/mobile/blocs/current_flight/current_flight_bloc.dart';
 
 import 'create_flight.dart';
 import 'current_flight_management.dart';
@@ -15,27 +15,46 @@ class FlightsManagement extends StatefulWidget {
 class _FlightsManagementState extends State<FlightsManagement> {
   FocusNode departureTextFieldFocusNode = FocusNode();
   FocusNode arrivalTextFieldFocusNode = FocusNode();
-  final DraggableScrollableController draggableController = DraggableScrollableController();
+  final DraggableScrollableController draggableController =
+      DraggableScrollableController();
 
   @override
   void initState() {
     super.initState();
     departureTextFieldFocusNode.addListener(() {
       if (departureTextFieldFocusNode.hasFocus) {
-        draggableController.animateTo(0.8, duration: const Duration(microseconds: 500), curve: Curves.ease);
+        draggableController.animateTo(
+          0.8,
+          duration: const Duration(microseconds: 500),
+          curve: Curves.ease,
+        );
       }
 
-      if(!departureTextFieldFocusNode.hasFocus && !arrivalTextFieldFocusNode.hasFocus) {
-        draggableController.animateTo(0.4, duration: const Duration(microseconds: 500), curve: Curves.ease);
+      if (!departureTextFieldFocusNode.hasFocus &&
+          !arrivalTextFieldFocusNode.hasFocus) {
+        draggableController.animateTo(
+          0.4,
+          duration: const Duration(microseconds: 500),
+          curve: Curves.ease,
+        );
       }
     });
     arrivalTextFieldFocusNode.addListener(() {
       if (arrivalTextFieldFocusNode.hasFocus) {
-        draggableController.animateTo(0.8, duration: const Duration(microseconds: 500), curve: Curves.ease);
+        draggableController.animateTo(
+          0.8,
+          duration: const Duration(microseconds: 500),
+          curve: Curves.ease,
+        );
       }
 
-      if(!departureTextFieldFocusNode.hasFocus && !arrivalTextFieldFocusNode.hasFocus) {
-        draggableController.animateTo(0.4, duration: const Duration(microseconds: 500), curve: Curves.ease);
+      if (!departureTextFieldFocusNode.hasFocus &&
+          !arrivalTextFieldFocusNode.hasFocus) {
+        draggableController.animateTo(
+          0.4,
+          duration: const Duration(microseconds: 500),
+          curve: Curves.ease,
+        );
       }
     });
   }
@@ -56,7 +75,7 @@ class _FlightsManagementState extends State<FlightsManagement> {
       minChildSize: 0.4,
       maxChildSize: 0.8,
       snapSizes: const [0.4, 0.8],
-      snap: true ,
+      snap: true,
       builder: (BuildContext context, scrollController) {
         return Container(
           clipBehavior: Clip.hardEdge,
@@ -75,7 +94,9 @@ class _FlightsManagementState extends State<FlightsManagement> {
                   child: Container(
                     decoration: BoxDecoration(
                       color: Theme.of(context).hintColor,
-                      borderRadius: const BorderRadius.all(Radius.circular(10)),
+                      borderRadius: const BorderRadius.all(
+                        Radius.circular(10),
+                      ),
                     ),
                     height: 4,
                     width: 40,
@@ -95,7 +116,8 @@ class _FlightsManagementState extends State<FlightsManagement> {
                         );
                       }
 
-                      if (state.status == CurrentFlightStatus.loaded  && state.flight != null) {
+                      if (state.status == CurrentFlightStatus.loaded &&
+                          state.flight != null) {
                         return const CurrentFlightManagement();
                       }
 
@@ -115,7 +137,12 @@ class _FlightsManagementState extends State<FlightsManagement> {
                           body: TabBarView(
                             children: [
                               const Icon(Icons.directions_car),
-                              CreateFlightWidget(departureTextFieldFocusNode: departureTextFieldFocusNode, arrivalTextFieldFocusNode: arrivalTextFieldFocusNode),
+                              CreateFlightWidget(
+                                departureTextFieldFocusNode:
+                                    departureTextFieldFocusNode,
+                                arrivalTextFieldFocusNode:
+                                    arrivalTextFieldFocusNode,
+                              ),
                               const Icon(Icons.directions_bike),
                             ],
                           ),
