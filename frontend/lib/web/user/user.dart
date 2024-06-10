@@ -85,7 +85,18 @@ class _UserScreenState extends State<UserScreen> {
                             DataColumn(label: Text('Last Name', style: TextStyle(fontWeight: FontWeight.bold))),
                             DataColumn(label: Text('Email', style: TextStyle(fontWeight: FontWeight.bold))),
                             DataColumn(label: Text('Role', style: TextStyle(fontWeight: FontWeight.bold))),
-                            DataColumn(label: Text('Actions', style: TextStyle(fontWeight: FontWeight.bold))),
+                            DataColumn(
+                              label: Expanded(
+                                child: Padding(
+                                  padding: EdgeInsets.only(right: 28.0),
+                                  child: Text(
+                                    'Actions',
+                                    style: TextStyle(fontWeight: FontWeight.bold),
+                                    textAlign: TextAlign.end,
+                                  ),
+                                ),
+                              ),
+                            ),
                           ],
                           rows: _users.map((user) {
                             return DataRow(
@@ -95,18 +106,23 @@ class _UserScreenState extends State<UserScreen> {
                                 DataCell(Text(user.email)),
                                 DataCell(Text(user.role)),
                                 DataCell(
-                                  Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      IconButton(
-                                        icon: const Icon(Icons.edit, color: Color(0xFFDCA200)),
-                                        onPressed: () => _editUser(user),
+                                  Expanded(
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(right: 16.0),
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.end,
+                                        children: [
+                                          IconButton(
+                                            icon: const Icon(Icons.edit, color: Color(0xFFDCA200)),
+                                            onPressed: () => _editUser(user),
+                                          ),
+                                          IconButton(
+                                            icon: const Icon(Icons.delete, color: Color(0xFFDCA200)),
+                                            onPressed: () => _deleteUser(user.id),
+                                          ),
+                                        ],
                                       ),
-                                      IconButton(
-                                        icon: const Icon(Icons.delete, color: Color(0xFFDCA200)),
-                                        onPressed: () => _deleteUser(user.id),
-                                      ),
-                                    ],
+                                    ),
                                   ),
                                 ),
                               ],

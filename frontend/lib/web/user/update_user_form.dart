@@ -5,7 +5,7 @@ import 'package:frontend/services/user.dart';
 class UpdateUserForm extends StatefulWidget {
   final User user;
 
-  const UpdateUserForm({Key? key, required this.user}) : super(key: key);
+  const UpdateUserForm({super.key, required this.user});
 
   @override
   _UpdateUserFormState createState() => _UpdateUserFormState();

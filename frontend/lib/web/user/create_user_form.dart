@@ -11,7 +11,6 @@ class CreateUserForm extends StatefulWidget {
 }
 class _CreateUserFormState extends State<CreateUserForm> {
   final _formKey = GlobalKey<FormBuilderState>();
-  final _userService = UserService();
   var _apiMessage = "";
 
   @override

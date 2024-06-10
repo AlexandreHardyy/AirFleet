@@ -5,7 +5,7 @@ import 'package:frontend/models/vehicle.dart';
 import '../routes.dart';
 
 class VehiclesManagementScreen extends StatefulWidget {
-  const VehiclesManagementScreen({Key? key}) : super(key: key);
+  const VehiclesManagementScreen({super.key});
 
   @override
   _VehiclesManagementScreenState createState() => _VehiclesManagementScreenState();
