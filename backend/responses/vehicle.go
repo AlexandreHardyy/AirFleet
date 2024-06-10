@@ -15,4 +15,5 @@ type Vehicle struct {
 	IsVerified     bool      `json:"is_verified"`
 	CreatedAt      time.Time `json:"created_at"`
 	UpdatedAt      time.Time `json:"updated_at"`
+	IsSelected     bool      `json:"is_selected"`
 }

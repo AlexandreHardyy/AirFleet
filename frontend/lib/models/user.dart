@@ -7,14 +7,15 @@ class User {
   String createdAt;
   String updatedAt;
 
-  User(
-      {required this.id,
-      required this.email,
-      required this.firstName,
-      required this.lastName,
-      required this.role,
-      required this.createdAt,
-      required this.updatedAt});
+  User({
+    required this.id,
+    required this.email,
+    required this.firstName,
+    required this.lastName,
+    required this.role,
+    required this.createdAt,
+    required this.updatedAt,
+  });
 
   User.fromJson(Map<String, dynamic> json)
       : id = json['id'] as int,

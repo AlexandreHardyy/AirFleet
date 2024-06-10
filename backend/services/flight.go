@@ -1,6 +1,7 @@
 package services
 
 import (
+	flightStatus "backend/data/flight-status"
 	"backend/database"
 	"backend/inputs"
 	"backend/models"
@@ -8,8 +9,10 @@ import (
 	"backend/responses"
 	"backend/utils"
 	"errors"
-	"gorm.io/gorm"
+
 	"math"
+
+	"gorm.io/gorm"
 )
 
 const earthRadiusKm = 6371
@@ -42,7 +45,7 @@ func NewFlightService(r repositories.FlightRepositoryInterface) *FlightService {
 func (s *FlightService) CreateFlight(input inputs.InputCreateFlight, userID int) (responses.ResponseFlight, error) {
 	flight := models.Flight{
 		//TODO: Status can be different based on the user role
-		Status:             "waiting_pilot",
+		Status:             flightStatus.WAITING_PILOT,
 		DepartureName:      input.Departure.Name,
 		DepartureAddress:   input.Departure.Address,
 		DepartureLatitude:  input.Departure.Latitude,
@@ -152,7 +155,7 @@ func (s *FlightService) JoinFlightSession(flightID int, userID int) error {
 		return err
 	}
 
-	if flight.Status == "waiting_pilot" && flight.UserID == userID {
+	if flight.Status == flightStatus.WAITING_PILOT && flight.UserID == userID {
 		return nil
 	}
 
@@ -170,7 +173,7 @@ func (s *FlightService) MakeFlightPriceProposal(input inputs.InputCreateFlightPr
 		return err
 	}
 
-	if flight.Status != "waiting_pilot" || currentFlight.ID != 0 {
+	if flight.Status != flightStatus.WAITING_PILOT || currentFlight.ID != 0 {
 		return errors.New("flight is not available for price proposal")
 	}
 
@@ -188,7 +191,7 @@ func (s *FlightService) MakeFlightPriceProposal(input inputs.InputCreateFlightPr
 	// TODO: I need to pick the current selected vehicle
 	vehicleId := user.Vehicles[0].ID
 
-	flight.Status = "waiting_proposal_approval"
+	flight.Status = flightStatus.WAITING_PROPOSAL_APPROVAL
 	flight.Price = &input.Price
 	flight.PilotID = &userID
 	flight.VehicleID = &vehicleId
@@ -206,14 +209,14 @@ func (s *FlightService) FlightProposalChoice(input inputs.InputFlightProposalCho
 		return err
 	}
 
-	if flight.Status != "waiting_proposal_approval" || flight.UserID != userID {
+	if flight.Status != flightStatus.WAITING_PROPOSAL_APPROVAL || (flight.UserID != userID && (flight.PilotID == nil || *flight.PilotID != userID)) {
 		return errors.New("flight is not available for proposal choice")
 	}
 
-	if input.Choice == "accepted" {
-		flight.Status = "waiting_takeoff"
+	if input.Choice == "accepted" && flight.UserID == userID {
+		flight.Status = flightStatus.WAITING_TAKEOFF
 	} else if input.Choice == "rejected" {
-		flight.Status = "waiting_pilot"
+		flight.Status = flightStatus.WAITING_PILOT
 		flight.PilotID = nil
 		flight.Price = nil
 		flight.VehicleID = nil
@@ -290,7 +293,7 @@ func (s *FlightService) CancelFlight(flightID int, userID int) error {
 		return errors.New("flight is not available for cancel")
 	}
 
-	flight.Status = "cancelled"
+	flight.Status = flightStatus.CANCELLED
 	flight.PilotID = nil
 	flight.Price = nil
 	flight.VehicleID = nil

@@ -25,6 +25,7 @@ class MobileLayoutState extends State<MobileLayout> {
 
   @override
   Widget build(BuildContext context) {
-    return isAuth ? const Home() : const LoginScreen();
+    return isAuth ? const Home() 
+    : const LoginScreen();
   }
 }

@@ -52,7 +52,8 @@ class VehicleService {
 
   static Future<Vehicle> updateVehicle(Vehicle vehicle) async {
     try {
-      final response = await dioApi.patch("/vehicles/${vehicle.id}", data: vehicle.toJson());
+      final response =
+          await dioApi.patch("/vehicles/${vehicle.id}", data: vehicle.toJson());
       return Vehicle.fromJson(response.data);
     } on DioException catch (e) {
       throw Exception('Something went wrong: $e');

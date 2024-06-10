@@ -8,13 +8,14 @@ import (
 	"backend/utils"
 	"backend/utils/token"
 	"encoding/json"
-	"github.com/gin-gonic/gin"
-	socketio "github.com/googollee/go-socket.io"
-	"gorm.io/gorm"
 	"log"
 	"net/http"
 	"strconv"
 	"time"
+
+	"github.com/gin-gonic/gin"
+	socketio "github.com/googollee/go-socket.io"
+	"gorm.io/gorm"
 )
 
 // REST
@@ -406,16 +407,12 @@ func (h *FlightSocketHandler) startPilotPositionUpdate(s socketio.Conn, flightId
 			}
 		}
 	}()
-
-	log.Println("Go routine started")
-
 }
 
 func (h *FlightSocketHandler) StopGoroutine(chanId string) {
 	if stopChan, ok := h.stopChans[chanId]; ok {
 		close(stopChan)
 		delete(h.stopChans, chanId)
-		log.Println("Goroutine stopped")
 	}
 }
 

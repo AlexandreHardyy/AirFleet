@@ -17,4 +17,5 @@ type Vehicle struct {
 	UpdatedAt      time.Time `json:"updated_at"`
 	UserID         int       `json:"user_id"`
 	User           User      `json:"user" gorm:"foreignkey:UserID"`
+	IsSelected     *bool     `json:"is_selected"`
 }

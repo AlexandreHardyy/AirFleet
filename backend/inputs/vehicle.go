@@ -17,4 +17,5 @@ type UpdateVehicle struct {
 	CruiseSpeed    float64 `json:"cruise_speed"`
 	CruiseAltitude float64 `json:"cruise_altitude"`
 	UserID         int     `json:"user_id"`
+	IsSelected     *bool   `json:"is_selected" binding:"required"`
 }

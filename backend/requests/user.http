@@ -27,7 +27,7 @@ Content-Type: application/json
 ### CURRENT USER
 GET http://localhost:3001/api/users/me HTTP/1.1
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZXhwIjoxNzQzNzU4MTEzfQ.dtjeeBAbPnhT4IZOSCGSHbe3Wnr03AQ8Jsuy6OY7NkE
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsImV4cCI6MTc0Nzk5MTgxMn0.BiCoBclwBu68FEIR7ihVUe1GvhXN3xS8Tn_3vZ3T794
 
 ###
 

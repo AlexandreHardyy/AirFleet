@@ -4,6 +4,7 @@ import (
 	"backend/database"
 	"backend/handlers"
 	"backend/middlewares"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -16,6 +17,6 @@ func initVehicleRoutes(api *gin.RouterGroup) {
 	api.GET("/me", middlewares.IsAuth(), vehicleHandler.GetAllMe)
 	api.GET("/:id", middlewares.IsAuth(), vehicleHandler.VehcileById)
 	api.POST("", middlewares.IsAuth(), vehicleHandler.CreateVehicle)
-	api.DELETE("/:id", middlewares.IsAuth(), vehicleHandler.DeleteVehicle)
-	api.PATCH("/:id", middlewares.IsAuth(), vehicleHandler.UpdateVehicle)
+	api.DELETE("/:id", middlewares.IsPilotAuth(), vehicleHandler.DeleteVehicle)
+	api.PATCH("/:id", middlewares.IsPilotAuth(), vehicleHandler.UpdateVehicle)
 }

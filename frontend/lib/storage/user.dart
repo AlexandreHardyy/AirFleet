@@ -2,6 +2,12 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:frontend/models/user.dart';
 import 'package:frontend/services/user.dart';
 
+class Roles {
+  static const user = "ROLE_USER";
+  static const pilot = "ROLE_PILOT";
+  static const admin = "ROLE_ADMIN";
+}
+
 class UserStore {
   static const storage = FlutterSecureStorage();
 
