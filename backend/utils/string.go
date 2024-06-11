@@ -23,5 +23,4 @@ func ArrayContain(value string, array []string) bool {
 		}
 	}
 	return false
-
 }

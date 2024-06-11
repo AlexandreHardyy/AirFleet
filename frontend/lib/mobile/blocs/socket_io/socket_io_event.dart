@@ -33,3 +33,9 @@ final class SocketIoListenEvent extends SocketIoEvent {
 
   SocketIoListenEvent({required this.event, required this.callback});
 }
+
+final class SocketIoStopListeningEvent extends SocketIoEvent {
+  final String event;
+
+  SocketIoStopListeningEvent({required this.event});
+}

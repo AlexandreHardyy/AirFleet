@@ -22,6 +22,7 @@ class SocketIoBloc extends Bloc<SocketIoEvent, SocketIoState> {
     on<SocketIoError>(_onSocketIoError);
     on<SocketIoCreateSession>(_onSocketCreateSession);
     on<SocketIoListenEvent>(_onSocketListenEvent);
+    on<SocketIoStopListeningEvent>(_onSocketStopListeningEvent);
   }
 
   Future<void> _onSocketIoInitialized(
@@ -105,6 +106,18 @@ class SocketIoBloc extends Bloc<SocketIoEvent, SocketIoState> {
     state.socket!.on(event.event, event.callback);
     emit(state.copyWith(
       listenedEvents: state.listenedEvents..add(event.event),
+    ));
+  }
+
+  void _onSocketStopListeningEvent(
+      SocketIoStopListeningEvent event, Emitter<SocketIoState> emit) {
+    if (!state.listenedEvents.contains(event.event)) {
+      return;
+    }
+
+    state.socket!.off(event.event);
+    emit(state.copyWith(
+      listenedEvents: state.listenedEvents..remove(event.event),
     ));
   }
 }
