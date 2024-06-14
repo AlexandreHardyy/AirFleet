@@ -23,7 +23,7 @@ func NewFlightRepository(db *gorm.DB) *FlightRepository {
 
 func (r *FlightRepository) GetFlightByID(flightID int) (models.Flight, error) {
 	var flight models.Flight
-	err := r.db.Where("id = ?", flightID).First(&flight).Error
+	err := r.db.Preload("Pilot").Preload("Vehicle").Where("id = ?", flightID).First(&flight).Error
 	if err != nil {
 		return flight, err
 	}
@@ -32,7 +32,7 @@ func (r *FlightRepository) GetFlightByID(flightID int) (models.Flight, error) {
 
 func (r *FlightRepository) GetCurrentFlight(userID int) (models.Flight, error) {
 	var flight models.Flight
-	err := r.db.Where("user_id = ? AND status != ? AND status != ?", userID, "finished", "cancelled").First(&flight).Error
+	err := r.db.Preload("Pilot").Preload("Vehicle").Where("user_id = ? AND status != ? AND status != ?", userID, "finished", "cancelled").First(&flight).Error
 	if err != nil {
 		return flight, err
 	}

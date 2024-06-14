@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend/mobile/blocs/current_flight/current_flight_bloc.dart';
 
 import 'create_flight.dart';
-import 'current_flight_management.dart';
+import 'current_flight_management/index.dart';
 
 class FlightsManagement extends StatefulWidget {
   const FlightsManagement({super.key});

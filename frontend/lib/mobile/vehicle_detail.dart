@@ -28,6 +28,8 @@ class _VehicleDetailsPageState extends State<VehicleDetailsPage> {
         matriculation: '',
         seat: 0,
         type: 'PLANE',
+        cruiseSpeed: 0,
+        cruiseAltitude: 0,
       );
       _vehicleDetails = Future.value(_vehicle);
     } else {
@@ -111,6 +113,37 @@ class _VehicleDetailsPageState extends State<VehicleDetailsPage> {
                       style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 10),
+                    TextFormField(
+                      initialValue: _vehicle.cruiseSpeed.toString(),
+                      decoration: const InputDecoration(labelText: 'Cruise Speed'),
+                      keyboardType: TextInputType.number,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter a number';
+                        }
+                        if (num.tryParse(value) == null) {
+                          return 'Please enter a valid number';
+                        }
+                        return null;
+                      },
+                      onSaved: (value) => _vehicle.cruiseSpeed = num.parse(value!),
+                    ),
+                    const SizedBox(height: 10),
+                    TextFormField(
+                      initialValue: _vehicle.cruiseAltitude.toString(),
+                      decoration: const InputDecoration(labelText: 'Cruise Altitude'),
+                      keyboardType: TextInputType.number,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter a number';
+                        }
+                        if (num.tryParse(value) == null) {
+                          return 'Please enter a valid number';
+                        }
+                        return null;
+                      },
+                      onSaved: (value) => _vehicle.cruiseAltitude = num.parse(value!),
+                    ),
                     Row(
                       children: [
                         Expanded(

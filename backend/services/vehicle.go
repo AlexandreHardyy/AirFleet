@@ -26,22 +26,26 @@ func NewVehicleService(r repositories.VehicleRepository) *vehiclSservice {
 
 func (s *vehiclSservice) Create(input inputs.CreateVehicle, userID int) (responses.Vehicle, error) {
 	var vehicle = models.Vehicle{
-		ModelName:     input.ModelName,
-		Matriculation: input.Matriculation,
-		Seat:          input.Seat,
-		Type:          input.Type,
-		UserID:        userID,
+		ModelName:      input.ModelName,
+		Matriculation:  input.Matriculation,
+		Seat:           input.Seat,
+		Type:           input.Type,
+		CruiseSpeed:    input.CruiseSpeed,
+		CruiseAltitude: input.CruiseAltitude,
+		UserID:         userID,
 	}
 
 	vehicle, err := s.repository.Create(vehicle)
 	formattedVehicle := responses.Vehicle{
-		ID:            vehicle.ID,
-		ModelName:     vehicle.ModelName,
-		Matriculation: vehicle.Matriculation,
-		Seat:          vehicle.Seat,
-		Type:          vehicle.Type,
-		CreatedAt:     vehicle.CreatedAt,
-		UpdatedAt:     vehicle.UpdatedAt,
+		ID:             vehicle.ID,
+		ModelName:      vehicle.ModelName,
+		Matriculation:  vehicle.Matriculation,
+		Seat:           vehicle.Seat,
+		Type:           vehicle.Type,
+		CruiseSpeed:    vehicle.CruiseSpeed,
+		CruiseAltitude: vehicle.CruiseAltitude,
+		CreatedAt:      vehicle.CreatedAt,
+		UpdatedAt:      vehicle.UpdatedAt,
 	}
 	if err != nil {
 		return formattedVehicle, err
@@ -85,10 +89,12 @@ func (s *vehiclSservice) Delete(id int) error {
 
 func (s *vehiclSservice) Update(id int, input inputs.UpdateVehicle) (models.Vehicle, error) {
 	var vehicle = models.Vehicle{
-		ModelName:     input.ModelName,
-		Matriculation: input.Matriculation,
-		Seat:          input.Seat,
-		Type:          input.Type,
+		ModelName:      input.ModelName,
+		Matriculation:  input.Matriculation,
+		Seat:           input.Seat,
+		Type:           input.Type,
+		CruiseSpeed:    input.CruiseSpeed,
+		CruiseAltitude: input.CruiseAltitude,
 	}
 	vehicle, err := s.repository.Update(id, vehicle)
 	if err != nil {
