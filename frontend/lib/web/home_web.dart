@@ -5,6 +5,7 @@ import 'package:frontend/services/user.dart';
 import 'package:frontend/web/charts/bar_chart.dart';
 import 'package:frontend/web/user/user.dart';
 import 'package:frontend/web/pilot/pilot.dart';
+import 'package:frontend/web/vehicle/vehicle.dart';
 
 class HomeWeb extends StatefulWidget {
   const HomeWeb({super.key});
@@ -71,10 +72,10 @@ class _HomeWebState extends State<HomeWeb> {
                     title: const Text('Pilots',
                         style: TextStyle(color: Colors.white)),
                     onTap: () {
-                      // Navigator.push(
-                      //   context,
-                      //   MaterialPageRoute(builder: (context) => const PilotScreen()),
-                      // );
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const PilotScreen()),
+                      );
                     },
                   ),
                   ListTile(
@@ -83,7 +84,10 @@ class _HomeWebState extends State<HomeWeb> {
                     title: const Text('Vols',
                         style: TextStyle(color: Colors.white)),
                     onTap: () {
-                      // Handle navigation to Vols page
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const VehicleScreen()),
+                      );
                     },
                   ),
                 ],

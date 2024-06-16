@@ -61,7 +61,7 @@ class _VehicleDetailsPageState extends State<VehicleDetailsPage> {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
-            return Center(child: Text('Erreur: ${snapshot.error}'));
+            return Center(child: Text('Error: ${snapshot.error}'));
           } else {
             _vehicle = snapshot.data!;
             return Form(

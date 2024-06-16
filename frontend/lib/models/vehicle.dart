@@ -4,9 +4,9 @@ class Vehicle {
   String modelName;
   int seat;
   String type;
+  bool? isVerified;
   num cruiseSpeed;
   num cruiseAltitude;
-  final bool? isVerified;
   bool? isSelected;
   final String? createdAt;
   final String? updatedAt;
