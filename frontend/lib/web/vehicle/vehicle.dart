@@ -1,49 +1,49 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/models/user.dart';
-import 'package:frontend/services/user.dart';
-import 'package:frontend/web/user/create_user_form.dart';
-import 'package:frontend/web/user/update_user_form.dart';
+import 'package:frontend/models/vehicle.dart';
+import 'package:frontend/services/vehicle.dart';
+import 'package:frontend/web/vehicle/update_vehicle_form.dart';
+import 'package:frontend/web/vehicle/create_vehicle_form.dart';
 
-class PilotScreen extends StatefulWidget {
-  const PilotScreen({super.key});
+class VehicleScreen extends StatefulWidget {
+  const VehicleScreen({super.key});
 
   @override
-  _PilotScreenState createState() => _PilotScreenState();
+  _VehicleScreenState createState() => _VehicleScreenState();
 }
 
-class _PilotScreenState extends State<PilotScreen> {
-  List<User> _users = [];
+class _VehicleScreenState extends State<VehicleScreen> {
+  List<Vehicle> _vehicles = [];
 
   @override
   void initState() {
     super.initState();
-    _fetchUsers();
+    _fetchVehicles();
   }
 
-  Future<void> _fetchUsers() async {
+  Future<void> _fetchVehicles() async {
     try {
-      _users = await UserService.getUsers();
+      _vehicles = await VehicleService.getVehicles();
       setState(() {});
     } catch (e) {
       print(e);
     }
   }
 
-  Future<void> _editUser(User user) async {
+  Future<void> _editVehicle(Vehicle vehicle) async {
     final result = await Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => UpdateUserForm(user: user)),
+      MaterialPageRoute(builder: (context) => UpdateVehicleForm(vehicle: vehicle)),
     );
 
     if (result == true) {
-      _fetchUsers();
+      _fetchVehicles();
     }
   }
 
-  void _deleteUser(int id) async {
+  void _deleteVehicle(int id) async {
     try {
-      await UserService.delete(id);
-      _fetchUsers();
+      await VehicleService.deleteVehicle(id);
+      _fetchVehicles();
     } catch (e) {
       print(e);
     }
@@ -53,7 +53,7 @@ class _PilotScreenState extends State<PilotScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Users'),
+        title: const Text('Vehicles'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -63,10 +63,10 @@ class _PilotScreenState extends State<PilotScreen> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const CreateUserForm()),
+                  MaterialPageRoute(builder: (context) => const CreateVehicleForm()),
                 );
               },
-              child: const Text('Create a new User'),
+              child: const Text('Create a new Vehicle'),
             ),
             const SizedBox(height: 20),
             Expanded(
@@ -81,10 +81,11 @@ class _PilotScreenState extends State<PilotScreen> {
                         child: DataTable(
                           columnSpacing: 0,
                           columns: const [
-                            DataColumn(label: Text('First Name', style: TextStyle(fontWeight: FontWeight.bold))),
-                            DataColumn(label: Text('Last Name', style: TextStyle(fontWeight: FontWeight.bold))),
-                            DataColumn(label: Text('Email', style: TextStyle(fontWeight: FontWeight.bold))),
-                            DataColumn(label: Text('Role', style: TextStyle(fontWeight: FontWeight.bold))),
+                            DataColumn(label: Text('Model Name', style: TextStyle(fontWeight: FontWeight.bold))),
+                            DataColumn(label: Text('Matriculation', style: TextStyle(fontWeight: FontWeight.bold))),
+                            DataColumn(label: Text('Seat', style: TextStyle(fontWeight: FontWeight.bold))),
+                            DataColumn(label: Text('Type', style: TextStyle(fontWeight: FontWeight.bold))),
+                            DataColumn(label: Text('Is verified', style: TextStyle(fontWeight: FontWeight.bold))),
                             DataColumn(
                               label: Expanded(
                                 child: Padding(
@@ -98,13 +99,20 @@ class _PilotScreenState extends State<PilotScreen> {
                               ),
                             ),
                           ],
-                          rows: _users.map((user) {
+                          rows: _vehicles.map((vehicle) {
                             return DataRow(
                               cells: [
-                                DataCell(Text(user.firstName)),
-                                DataCell(Text(user.lastName)),
-                                DataCell(Text(user.email)),
-                                DataCell(Text(user.role)),
+                                DataCell(Text(vehicle.modelName)),
+                                DataCell(Text(vehicle.matriculation)),
+                                DataCell(Text(vehicle.seat.toString())),
+                                DataCell(Text(vehicle.type)),
+                                DataCell(
+                                  Checkbox(
+                                    value: vehicle.isVerified,
+                                    onChanged: null, // désactive la case à cocher
+                                    tristate: true,
+                                  ),
+                                ),
                                 DataCell(
                                   Expanded(
                                     child: Padding(
@@ -114,11 +122,11 @@ class _PilotScreenState extends State<PilotScreen> {
                                         children: [
                                           IconButton(
                                             icon: const Icon(Icons.edit, color: Color(0xFFDCA200)),
-                                            onPressed: () => _editUser(user),
+                                            onPressed: () => _editVehicle(vehicle),
                                           ),
                                           IconButton(
                                             icon: const Icon(Icons.delete, color: Color(0xFFDCA200)),
-                                            onPressed: () => _deleteUser(user.id),
+                                            onPressed: () => _deleteVehicle(vehicle.id!),
                                           ),
                                         ],
                                       ),

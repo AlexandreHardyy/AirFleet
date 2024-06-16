@@ -4,7 +4,7 @@ class Vehicle {
   String modelName;
   int seat;
   String type;
-  final bool? isVerified;
+  bool? isVerified;
   final String? createdAt;
   final String? updatedAt;
 
