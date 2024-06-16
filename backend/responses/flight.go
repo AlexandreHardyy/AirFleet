@@ -12,13 +12,16 @@ type ResponseAirport struct {
 type ResponseFlight struct {
 	ID        int             `json:"id"  binding:"required"`
 	Status    string          `json:"status"  binding:"required"`
-	Price     float64         `json:"price"`
+	Price     *float64        `json:"price"`
 	UserID    int             `json:"user_id"`
-	PilotID   int             `json:"pilot_id"`
+	PilotID   *int            `json:"pilot_id"`
+	VehicleID *int            `json:"vehicle_id"`
 	Departure ResponseAirport `json:"departure" binding:"required"`
 	Arrival   ResponseAirport `json:"arrival" binding:"required"`
 	CreatedAt time.Time       `json:"created_at"`
 	UpdatedAt time.Time       `json:"updated_at"`
+	Pilot     *ListUser       `json:"pilot"`
+	Vehicle   *Vehicle        `json:"vehicle"`
 }
 
 // WEBSOCKET

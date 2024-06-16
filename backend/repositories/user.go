@@ -71,7 +71,7 @@ func (r *userRepository) Login(email string, password string) (string, error) {
 
 func (r *userRepository) GetById(id int) (models.User, error) {
 	user := models.User{}
-	err := r.db.Where(&models.User{ID: id}).First(&user).Error
+	err := r.db.Preload("Vehicles").Where(&models.User{ID: id}).First(&user).Error
 	if err != nil {
 		return user, err
 	}

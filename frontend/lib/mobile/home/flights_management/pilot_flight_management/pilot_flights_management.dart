@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend/mobile/blocs/current_flight/current_flight_bloc.dart';
+import 'package:frontend/mobile/home/flights_management/current_flight_management/index.dart';
+import 'package:frontend/mobile/home/flights_management/pilot_flight_management/pilot_not_ready.dart';
 
-import 'create_flight.dart';
-import 'current_flight_management/index.dart';
+import '../create_flight.dart';
 
-class FlightsManagement extends StatefulWidget {
-  const FlightsManagement({super.key});
+class PilotFlightsManagement extends StatefulWidget {
+  const PilotFlightsManagement({super.key});
 
   @override
-  State<FlightsManagement> createState() => _FlightsManagementState();
+  State<PilotFlightsManagement> createState() => _PilotFlightsManagementState();
 }
 
-class _FlightsManagementState extends State<FlightsManagement> {
+class _PilotFlightsManagementState extends State<PilotFlightsManagement> {
   FocusNode departureTextFieldFocusNode = FocusNode();
   FocusNode arrivalTextFieldFocusNode = FocusNode();
   final DraggableScrollableController draggableController =
@@ -122,13 +123,12 @@ class _FlightsManagementState extends State<FlightsManagement> {
                       }
 
                       return DefaultTabController(
-                        length: 3,
+                        length: 2,
                         child: Scaffold(
                           appBar: AppBar(
                             toolbarHeight: 0,
                             bottom: const TabBar(
                               tabs: [
-                                Text("Search"),
                                 Text("Create"),
                                 Text("List"),
                               ],
@@ -136,14 +136,13 @@ class _FlightsManagementState extends State<FlightsManagement> {
                           ),
                           body: TabBarView(
                             children: [
-                              const Icon(Icons.directions_car),
                               CreateFlightWidget(
                                 departureTextFieldFocusNode:
                                     departureTextFieldFocusNode,
                                 arrivalTextFieldFocusNode:
                                     arrivalTextFieldFocusNode,
                               ),
-                               const Icon(Icons.directions_bike),
+                              PilotNotReadyScreen(),
                             ],
                           ),
                         ),

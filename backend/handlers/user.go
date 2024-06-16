@@ -98,7 +98,6 @@ func (th *UserHandler) Register(c *gin.Context) {
 func (th *UserHandler) RegisterPilot(c *gin.Context) {
 	var input inputs.CreatePilot
 	if err := c.ShouldBind(&input); err != nil {
-		println(err.Error())
 		c.JSON(http.StatusBadRequest, &Response{
 			Message: err.Error(),
 		})
@@ -261,8 +260,6 @@ func (th *UserHandler) Update(c *gin.Context) {
 		return
 	}
 
-	println(id)
-
 	var input inputs.UpdateUser
 	err = c.ShouldBindJSON(&input)
 
@@ -273,7 +270,6 @@ func (th *UserHandler) Update(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, response)
 		return
 	}
-	println(input.Email)
 
 	user, err := th.userService.Update(id, input)
 	if err != nil {

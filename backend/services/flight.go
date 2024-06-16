@@ -1,14 +1,21 @@
 package services
 
 import (
+	flightStatus "backend/data/flight-status"
+	"backend/database"
 	"backend/inputs"
 	"backend/models"
 	"backend/repositories"
 	"backend/responses"
+	"backend/utils"
 	"errors"
+
+	"math"
+
 	"gorm.io/gorm"
-	"log"
 )
+
+const earthRadiusKm = 6371
 
 type FlightServiceInterface interface {
 	//REST
@@ -22,6 +29,7 @@ type FlightServiceInterface interface {
 	FlightTakeoff(flightID int, pilotId int) error
 	FlightLanding(flightID int, pilotId int) error
 	CancelFlight(flightID int, userId int) error
+	EstimateFlightTimeInHour(flightID int, pilotPosition utils.Position) (float64, error)
 }
 
 type FlightService struct {
@@ -37,7 +45,7 @@ func NewFlightService(r repositories.FlightRepositoryInterface) *FlightService {
 func (s *FlightService) CreateFlight(input inputs.InputCreateFlight, userID int) (responses.ResponseFlight, error) {
 	flight := models.Flight{
 		//TODO: Status can be different based on the user role
-		Status:             "waiting_pilot",
+		Status:             flightStatus.WAITING_PILOT,
 		DepartureName:      input.Departure.Name,
 		DepartureAddress:   input.Departure.Address,
 		DepartureLatitude:  input.Departure.Latitude,
@@ -83,23 +91,43 @@ func (s *FlightService) GetCurrentFlight(userID int) (responses.ResponseFlight, 
 }
 
 func formatFlight(flight models.Flight) responses.ResponseFlight {
-	var price float64
-	var pilotID int
-
-	if flight.Price != nil {
-		price = *flight.Price
-	}
+	var pilot *responses.ListUser
+	var vehicle *responses.Vehicle
 
 	if flight.PilotID != nil {
-		pilotID = *flight.PilotID
+		pilot = &responses.ListUser{
+			ID:         flight.Pilot.ID,
+			FirstName:  flight.Pilot.FirstName,
+			LastName:   flight.Pilot.LastName,
+			Email:      flight.Pilot.Email,
+			Role:       flight.Pilot.Role,
+			IsVerified: flight.Pilot.IsVerified,
+			CreatedAt:  flight.Pilot.CreatedAt,
+			UpdatedAt:  flight.Pilot.UpdatedAt,
+		}
+	}
+
+	if flight.VehicleID != nil {
+		vehicle = &responses.Vehicle{
+			ID:             flight.Vehicle.ID,
+			ModelName:      flight.Vehicle.ModelName,
+			Matriculation:  flight.Vehicle.Matriculation,
+			Seat:           flight.Vehicle.Seat,
+			Type:           flight.Vehicle.Type,
+			CruiseSpeed:    flight.Vehicle.CruiseSpeed,
+			CruiseAltitude: flight.Vehicle.CruiseAltitude,
+			CreatedAt:      flight.Vehicle.CreatedAt,
+			UpdatedAt:      flight.Vehicle.UpdatedAt,
+		}
 	}
 
 	return responses.ResponseFlight{
-		ID:      flight.ID,
-		Status:  flight.Status,
-		Price:   price,
-		UserID:  flight.UserID,
-		PilotID: pilotID,
+		ID:        flight.ID,
+		Status:    flight.Status,
+		Price:     flight.Price,
+		UserID:    flight.UserID,
+		PilotID:   flight.PilotID,
+		VehicleID: flight.VehicleID,
 		Departure: responses.ResponseAirport{
 			Name:      flight.DepartureName,
 			Address:   flight.DepartureAddress,
@@ -114,6 +142,8 @@ func formatFlight(flight models.Flight) responses.ResponseFlight {
 		},
 		CreatedAt: flight.CreatedAt,
 		UpdatedAt: flight.UpdatedAt,
+		Pilot:     pilot,
+		Vehicle:   vehicle,
 	}
 }
 
@@ -125,7 +155,7 @@ func (s *FlightService) JoinFlightSession(flightID int, userID int) error {
 		return err
 	}
 
-	if flight.Status == "waiting_pilot" && flight.UserID == userID {
+	if flight.Status == flightStatus.WAITING_PILOT && flight.UserID == userID {
 		return nil
 	}
 
@@ -143,13 +173,28 @@ func (s *FlightService) MakeFlightPriceProposal(input inputs.InputCreateFlightPr
 		return err
 	}
 
-	if flight.Status != "waiting_pilot" || currentFlight.ID != 0 {
+	if flight.Status != flightStatus.WAITING_PILOT || currentFlight.ID != 0 {
 		return errors.New("flight is not available for price proposal")
 	}
 
-	flight.Status = "waiting_proposal_approval"
+	userRepository := repositories.NewUserRepository(database.DB)
+
+	user, err := userRepository.GetById(userID)
+	if err != nil {
+		return err
+	}
+
+	if len(user.Vehicles) == 0 {
+		return errors.New("user has no vehicles")
+	}
+
+	// TODO: I need to pick the current selected vehicle
+	vehicleId := user.Vehicles[0].ID
+
+	flight.Status = flightStatus.WAITING_PROPOSAL_APPROVAL
 	flight.Price = &input.Price
 	flight.PilotID = &userID
+	flight.VehicleID = &vehicleId
 	_, err = s.repository.UpdateFlight(flight)
 	if err != nil {
 		return err
@@ -164,17 +209,17 @@ func (s *FlightService) FlightProposalChoice(input inputs.InputFlightProposalCho
 		return err
 	}
 
-	if flight.Status != "waiting_proposal_approval" || flight.UserID != userID {
+	if flight.Status != flightStatus.WAITING_PROPOSAL_APPROVAL || (flight.UserID != userID && (flight.PilotID == nil || *flight.PilotID != userID)) {
 		return errors.New("flight is not available for proposal choice")
 	}
 
-	if input.Choice == "accepted" {
-		flight.Status = "waiting_takeoff"
-		log.Println(flight)
+	if input.Choice == "accepted" && flight.UserID == userID {
+		flight.Status = flightStatus.WAITING_TAKEOFF
 	} else if input.Choice == "rejected" {
-		flight.Status = "waiting_pilot"
+		flight.Status = flightStatus.WAITING_PILOT
 		flight.PilotID = nil
 		flight.Price = nil
+		flight.VehicleID = nil
 	}
 
 	_, err = s.repository.UpdateFlight(flight)
@@ -248,9 +293,10 @@ func (s *FlightService) CancelFlight(flightID int, userID int) error {
 		return errors.New("flight is not available for cancel")
 	}
 
-	flight.Status = "cancelled"
+	flight.Status = flightStatus.CANCELLED
 	flight.PilotID = nil
 	flight.Price = nil
+	flight.VehicleID = nil
 
 	_, err = s.repository.UpdateFlight(flight)
 
@@ -259,4 +305,47 @@ func (s *FlightService) CancelFlight(flightID int, userID int) error {
 	}
 
 	return nil
+}
+
+func (s *FlightService) EstimateFlightTimeInHour(flightID int, pilotPosition utils.Position) (float64, error) {
+	flight, err := s.repository.GetFlightByID(flightID)
+	if err != nil {
+		return 0, err
+	}
+
+	arrivalPosition := utils.Position{
+		Latitude:  flight.ArrivalLatitude,
+		Longitude: flight.ArrivalLongitude,
+	}
+
+	distanceInNauticalMiles := calculateDistanceInNauticalMiles(pilotPosition, arrivalPosition)
+
+	aircraftSpeed := flight.Vehicle.CruiseSpeed
+
+	estimatedTimeInHour := distanceInNauticalMiles / aircraftSpeed
+
+	return estimatedTimeInHour, nil
+}
+
+func calculateDistanceInNauticalMiles(p1, p2 utils.Position) float64 {
+	// Convert latitude and longitude from degrees to radians
+	lat1 := p1.Latitude * math.Pi / 180
+	lon1 := p1.Longitude * math.Pi / 180
+	lat2 := p2.Latitude * math.Pi / 180
+	lon2 := p2.Longitude * math.Pi / 180
+
+	// Haversine formula
+	deltaLat := lat2 - lat1
+	deltaLon := lon2 - lon1
+
+	a := math.Sin(deltaLat/2)*math.Sin(deltaLat/2) + math.Cos(lat1)*math.Cos(lat2)*math.Sin(deltaLon/2)*math.Sin(deltaLon/2)
+	c := 2 * math.Atan2(math.Sqrt(a), math.Sqrt(1-a))
+
+	// Distance in kilometers
+	distance := earthRadiusKm * c
+
+	// Convert distance to nautical miles
+	distanceNM := distance * 0.539957
+
+	return distanceNM
 }

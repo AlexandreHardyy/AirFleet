@@ -20,4 +20,6 @@ type Flight struct {
 	User               User      `json:"user" gorm:"foreignkey:UserID"`
 	PilotID            *int      `json:"pilot_id"`
 	Pilot              User      `json:"pilot" gorm:"foreignkey:PilotID"`
+	VehicleID          *int      `json:"vehicle_id"`
+	Vehicle            Vehicle   `json:"vehicle" gorm:"foreignkey:VehicleID"`
 }

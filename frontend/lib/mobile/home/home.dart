@@ -3,7 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:frontend/mobile/blocs/current_flight/current_flight_bloc.dart';
 import 'package:frontend/mobile/blocs/socket_io/socket_io_bloc.dart';
+import 'package:frontend/mobile/home/flights_management/pilot_flight_management/pilot_flights_management.dart';
 import 'package:frontend/mobile/map/map.dart';
+import 'package:frontend/storage/user.dart';
 import 'flights_management/flights_management.dart';
 import 'home_drawer.dart';
 
@@ -83,7 +85,7 @@ class _HomeState extends State<Home> {
                       height: MediaQuery.of(context).size.height * (2 / 3),
                       child: const AirFleetMap(),
                     ),
-                    const FlightsManagement()
+                    UserStore.user?.role == Roles.pilot ? const PilotFlightsManagement() : const FlightsManagement()
                   ],
                 ));
           }),

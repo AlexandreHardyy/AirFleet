@@ -5,15 +5,17 @@ import (
 	"backend/repositories"
 	"backend/responses"
 	"backend/services"
+	"backend/utils"
 	"backend/utils/token"
 	"encoding/json"
-	"github.com/gin-gonic/gin"
-	socketio "github.com/googollee/go-socket.io"
-	"gorm.io/gorm"
 	"log"
 	"net/http"
 	"strconv"
 	"time"
+
+	"github.com/gin-gonic/gin"
+	socketio "github.com/googollee/go-socket.io"
+	"gorm.io/gorm"
 )
 
 // REST
@@ -39,6 +41,22 @@ func (h *FlightHandler) GetAll(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
+// CreateFlight godoc
+//
+// @Summary	Create flight
+// @Schemes
+// @Description	create a new flight
+// @Tags			flight
+// @Accept			json
+// @Produce		json
+//
+// @Param			flightInput	body		inputs.InputCreateFlight	true	"Message body"
+// @Success		201				{object}	responses.ResponseFlight
+// @Failure		400				{object}	Response
+//
+// @Router			/flights [post]
+//
+// @Security	BearerAuth
 func (h *FlightHandler) Create(c *gin.Context) {
 	var input inputs.InputCreateFlight
 	err := c.ShouldBindJSON(&input)
@@ -71,6 +89,22 @@ func (h *FlightHandler) Create(c *gin.Context) {
 	c.JSON(http.StatusCreated, newFlight)
 }
 
+// GetCurrentFlight godoc
+//
+// @Summary	Get current flight
+// @Schemes
+// @Description	get current flight
+// @Tags			flight
+// @Accept			json
+// @Produce		json
+//
+// @Success		200				{object}	responses.ResponseFlight
+// @Failure		400				{object}	Response
+// @Failure		404				{object}	Response
+//
+// @Router			/flights/current [get]
+//
+// @Security	BearerAuth
 func (h *FlightHandler) GetCurrentFlight(c *gin.Context) {
 	userID, err := token.ExtractTokenID(c)
 	if err != nil {
@@ -135,11 +169,15 @@ func (h *FlightSocketHandler) CreateFlightSession(s socketio.Conn, flightId stri
 		return
 	}
 
+	s.Join(flightId)
+
+	if flight.Status == "waiting_proposal_approval" {
+		err = estimateAndBroadcastFlightTime(s, convertedFlightId, h.flightService, h.socketIoServer)
+	}
+
 	if flight.Status == "waiting_takeoff" || flight.Status == "in_progress" {
 		h.startPilotPositionUpdate(s, flightId)
 	}
-
-	s.Join(flightId)
 }
 
 func (h *FlightSocketHandler) MakeFlightPriceProposal(s socketio.Conn, msg string) error {
@@ -166,6 +204,16 @@ func (h *FlightSocketHandler) MakeFlightPriceProposal(s socketio.Conn, msg strin
 
 	h.socketIoServer.BroadcastToRoom("/flights", strconv.Itoa(flightProposalRequest.FlightId), "flightUpdated", "flight updated")
 	s.Join(strconv.Itoa(flightProposalRequest.FlightId))
+
+	go func() {
+		//TODO: The time sleep is really dirty, we need to find a better way to do this
+		time.Sleep(2 * time.Second)
+
+		err := estimateAndBroadcastFlightTime(s, flightProposalRequest.FlightId, h.flightService, h.socketIoServer)
+		if err != nil {
+			log.Println("Error estimating flight time:", err)
+		}
+	}()
 
 	return nil
 }
@@ -280,6 +328,33 @@ func (h *FlightSocketHandler) CancelFlight(s socketio.Conn, flightId string) err
 	return nil
 }
 
+func estimateAndBroadcastFlightTime(s socketio.Conn, flightId int, flightService services.FlightServiceInterface, socketIoServer *socketio.Server) error {
+	flight, err := flightService.GetFlight(flightId)
+	if err != nil {
+		s.Emit("error", err.Error())
+		log.Println("Error getting flight", err.Error())
+		return err
+	}
+
+	//TODO: This is temporary, we need to get the pilot's real position
+	pilotPosition := utils.Position{
+		Latitude:  flight.Departure.Latitude,
+		Longitude: flight.Departure.Longitude,
+	}
+
+	estimateFlightTimeInHour, err := flightService.EstimateFlightTimeInHour(flightId, pilotPosition)
+	if err != nil {
+		s.Emit("error", err.Error())
+		log.Println("Error estimating flight time", err.Error())
+		return err
+	}
+
+	socketIoServer.BroadcastToRoom("/flights", strconv.Itoa(flightId), "flightTimeUpdated", strconv.FormatFloat(estimateFlightTimeInHour, 'f', 2, 64))
+
+	log.Println("Emitting flightTimeUpdated event")
+	return nil
+}
+
 func (h *FlightSocketHandler) startPilotPositionUpdate(s socketio.Conn, flightId string) {
 	if oldStopChan, ok := h.stopChans[s.ID()]; ok {
 		log.Println("Stopping old goroutine")
@@ -303,6 +378,7 @@ func (h *FlightSocketHandler) startPilotPositionUpdate(s socketio.Conn, flightId
 		return
 	}
 
+	//TODO: This is temporary, we need to get the pilot's real position
 	pilotPosition := responses.ResponsePilotPosition{
 		Latitude:  flight.Departure.Latitude,
 		Longitude: flight.Departure.Longitude,
@@ -331,16 +407,12 @@ func (h *FlightSocketHandler) startPilotPositionUpdate(s socketio.Conn, flightId
 			}
 		}
 	}()
-
-	log.Println("Go routine started")
-
 }
 
 func (h *FlightSocketHandler) StopGoroutine(chanId string) {
 	if stopChan, ok := h.stopChans[chanId]; ok {
 		close(stopChan)
 		delete(h.stopChans, chanId)
-		log.Println("Goroutine stopped")
 	}
 }
 

@@ -6,14 +6,15 @@ import (
 	"backend/services"
 	"backend/utils/token"
 	"errors"
-	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 	"net/http"
 	"strconv"
+
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 type vehicleHandler struct {
-	vehicleService services.VehicleService
+	vehicleService services.IVehicleService
 }
 
 func GetVehicle(db *gorm.DB) (vehicleHandler *vehicleHandler) {
@@ -23,7 +24,7 @@ func GetVehicle(db *gorm.DB) (vehicleHandler *vehicleHandler) {
 	return vehicleHandler
 }
 
-func NewVehicleHandler(vehicleService services.VehicleService) *vehicleHandler {
+func NewVehicleHandler(vehicleService services.IVehicleService) *vehicleHandler {
 	return &vehicleHandler{vehicleService}
 }
 
@@ -241,7 +242,7 @@ func (th *vehicleHandler) UpdateVehicle(c *gin.Context) {
 	err = c.ShouldBindJSON(&input)
 	if err != nil {
 		response := &Response{
-			Message: "Error: cannot extract JSON body",
+			Message: err.Error(),
 		}
 		c.JSON(http.StatusBadRequest, response)
 		return

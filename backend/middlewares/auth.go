@@ -23,7 +23,27 @@ func IsAuth() gin.HandlerFunc {
 	}
 }
 
-const ROLE_ADMIN = "ROLE_ADMIN"
+func IsPilotAuth() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		println("middleware pilot auth")
+		err := token.TokenValid(c)
+		if err != nil {
+			c.Status(http.StatusUnauthorized)
+			c.Abort()
+			return
+		}
+		userId, _ := token.ExtractTokenID(c)
+		userRepository := repositories.NewUserRepository(database.DB)
+
+		currentUser, err := userRepository.GetById(userId)
+		if err != nil || currentUser.Role != roles.ROLE_PILOT {
+			c.Status(http.StatusForbidden)
+			c.Abort()
+			return
+		}
+		c.Next()
+	}
+}
 
 func IsAdminAuth() gin.HandlerFunc {
 	return func(c *gin.Context) {

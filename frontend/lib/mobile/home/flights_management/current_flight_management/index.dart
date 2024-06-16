@@ -1,9 +1,8 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend/mobile/blocs/current_flight/current_flight_bloc.dart';
 import 'package:frontend/mobile/blocs/socket_io/socket_io_bloc.dart';
+import 'package:frontend/mobile/home/flights_management/current_flight_management/waiting_proposal_approval_card.dart';
 
 class CurrentFlightManagement extends StatefulWidget {
   const CurrentFlightManagement({super.key});
@@ -25,20 +24,20 @@ class _CurrentFlightManagementState extends State<CurrentFlightManagement> {
           .add(SocketIoCreateSession(flightId: currentFlightState.flight!.id));
 
       context.read<SocketIoBloc>().add(SocketIoListenEvent(
-            event: "flightUpdated",
-            callback: (_) {
-              context.read<CurrentFlightBloc>().add(CurrentFlightUpdated());
-            },
-          ));
+        event: "flightUpdated",
+        callback: (_) {
+          context.read<CurrentFlightBloc>().add(CurrentFlightUpdated());
+        },
+      ));
     }
     return Center(
       child: BlocConsumer<CurrentFlightBloc, CurrentFlightState>(
           listener: (context, state) {
-        if (state.errorMessage != null) {
-          ScaffoldMessenger.of(context)
-              .showSnackBar(SnackBar(content: Text(state.errorMessage!)));
-        }
-      }, builder: (context, state) {
+            if (state.errorMessage != null) {
+              ScaffoldMessenger.of(context)
+                  .showSnackBar(SnackBar(content: Text(state.errorMessage!)));
+            }
+          }, builder: (context, state) {
         if (state.flight!.status == 'waiting_pilot') {
           return Column(children: [
             Row(
@@ -105,44 +104,7 @@ class _CurrentFlightManagementState extends State<CurrentFlightManagement> {
         }
 
         if (state.flight!.status == 'waiting_proposal_approval') {
-          return Column(
-            children: [
-              const Text("Price offer received !"),
-              const SizedBox(height: 10),
-              Text("Price : ${state.flight!.price}"),
-              const SizedBox(height: 10),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  ElevatedButton(
-                    onPressed: () {
-                      // SocketProvider.of(context)!.socket.emit("flightProposalChoice", jsonEncode({"flightId": state.flight!.id, "choice": "accepted"}));
-                      context.read<SocketIoBloc>().state.socket!.emit(
-                            "flightProposalChoice",
-                            jsonEncode({
-                              "flightId": state.flight!.id,
-                              "choice": "accepted"
-                            }),
-                          );
-                    },
-                    child: const Text('Accept price offer'),
-                  ),
-                  ElevatedButton(
-                    onPressed: () {
-                      context.read<SocketIoBloc>().state.socket!.emit(
-                            "flightProposalChoice",
-                            jsonEncode({
-                              "flightId": state.flight!.id,
-                              "choice": "rejected"
-                            }),
-                          );
-                    },
-                    child: const Text('Reject price offer'),
-                  ),
-                ],
-              ),
-            ],
-          );
+          return WaitingProposalApprovalCard(flight: state.flight!);
         }
 
         if (state.flight!.status == 'waiting_takeoff') {

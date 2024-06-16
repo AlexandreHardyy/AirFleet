@@ -7,7 +7,7 @@ import (
 	"backend/responses"
 )
 
-type VehicleService interface {
+type IVehicleService interface {
 	Create(vehicle inputs.CreateVehicle, userID int) (responses.Vehicle, error)
 	GetAll() ([]responses.Vehicle, error)
 	GetAllMe(userID int) ([]responses.Vehicle, error)
@@ -16,32 +16,36 @@ type VehicleService interface {
 	Update(id int, vehicle inputs.UpdateVehicle) (models.Vehicle, error)
 }
 
-type vehiclSservice struct {
+type VehicleService struct {
 	repository repositories.VehicleRepository
 }
 
-func NewVehicleService(r repositories.VehicleRepository) *vehiclSservice {
-	return &vehiclSservice{r}
+func NewVehicleService(r repositories.VehicleRepository) *VehicleService {
+	return &VehicleService{r}
 }
 
-func (s *vehiclSservice) Create(input inputs.CreateVehicle, userID int) (responses.Vehicle, error) {
+func (s *VehicleService) Create(input inputs.CreateVehicle, userID int) (responses.Vehicle, error) {
 	var vehicle = models.Vehicle{
-		ModelName:     input.ModelName,
-		Matriculation: input.Matriculation,
-		Seat:          input.Seat,
-		Type:          input.Type,
-		UserID:        userID,
+		ModelName:      input.ModelName,
+		Matriculation:  input.Matriculation,
+		Seat:           input.Seat,
+		Type:           input.Type,
+		CruiseSpeed:    input.CruiseSpeed,
+		CruiseAltitude: input.CruiseAltitude,
+		UserID:         userID,
 	}
 
 	vehicle, err := s.repository.Create(vehicle)
 	formattedVehicle := responses.Vehicle{
-		ID:            vehicle.ID,
-		ModelName:     vehicle.ModelName,
-		Matriculation: vehicle.Matriculation,
-		Seat:          vehicle.Seat,
-		Type:          vehicle.Type,
-		CreatedAt:     vehicle.CreatedAt,
-		UpdatedAt:     vehicle.UpdatedAt,
+		ID:             vehicle.ID,
+		ModelName:      vehicle.ModelName,
+		Matriculation:  vehicle.Matriculation,
+		Seat:           vehicle.Seat,
+		Type:           vehicle.Type,
+		CruiseSpeed:    vehicle.CruiseSpeed,
+		CruiseAltitude: vehicle.CruiseAltitude,
+		CreatedAt:      vehicle.CreatedAt,
+		UpdatedAt:      vehicle.UpdatedAt,
 	}
 	if err != nil {
 		return formattedVehicle, err
@@ -50,7 +54,7 @@ func (s *vehiclSservice) Create(input inputs.CreateVehicle, userID int) (respons
 	return formattedVehicle, nil
 }
 
-func (s *vehiclSservice) GetAll() ([]responses.Vehicle, error) {
+func (s *VehicleService) GetAll() ([]responses.Vehicle, error) {
 	vehicle, err := s.repository.FindAll()
 	if err != nil {
 		return vehicle, err
@@ -58,7 +62,7 @@ func (s *vehiclSservice) GetAll() ([]responses.Vehicle, error) {
 	return vehicle, nil
 }
 
-func (s *vehiclSservice) GetAllMe(userID int) ([]responses.Vehicle, error) {
+func (s *VehicleService) GetAllMe(userID int) ([]responses.Vehicle, error) {
 	vehicle, err := s.repository.FindAllMe(userID)
 	if err != nil {
 		return vehicle, err
@@ -67,7 +71,7 @@ func (s *vehiclSservice) GetAllMe(userID int) ([]responses.Vehicle, error) {
 
 }
 
-func (s *vehiclSservice) GetById(id int) (models.Vehicle, error) {
+func (s *VehicleService) GetById(id int) (models.Vehicle, error) {
 	vehicle, err := s.repository.GetById(id)
 	if err != nil {
 		return vehicle, err
@@ -75,7 +79,7 @@ func (s *vehiclSservice) GetById(id int) (models.Vehicle, error) {
 	return vehicle, nil
 }
 
-func (s *vehiclSservice) Delete(id int) error {
+func (s *VehicleService) Delete(id int) error {
 	err := s.repository.Delete(id)
 	if err != nil {
 		return err
@@ -83,13 +87,17 @@ func (s *vehiclSservice) Delete(id int) error {
 	return nil
 }
 
-func (s *vehiclSservice) Update(id int, input inputs.UpdateVehicle) (models.Vehicle, error) {
+func (s *VehicleService) Update(id int, input inputs.UpdateVehicle) (models.Vehicle, error) {
 	var vehicle = models.Vehicle{
-		ModelName:     input.ModelName,
-		Matriculation: input.Matriculation,
-		Seat:          input.Seat,
-		Type:          input.Type,
+		ModelName:      input.ModelName,
+		Matriculation:  input.Matriculation,
+		Seat:           input.Seat,
+		Type:           input.Type,
+		CruiseSpeed:    input.CruiseSpeed,
+		CruiseAltitude: input.CruiseAltitude,
+		IsSelected:     input.IsSelected,
 	}
+
 	vehicle, err := s.repository.Update(id, vehicle)
 	if err != nil {
 		return vehicle, err
