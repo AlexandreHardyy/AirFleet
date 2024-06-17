@@ -26,7 +26,15 @@ type ResponseFlight struct {
 
 // WEBSOCKET
 
+// DEPRECATED
 type ResponsePilotPosition struct {
 	Latitude  float64 `json:"latitude"`
 	Longitude float64 `json:"longitude"`
+}
+
+type ResponsePilotPositionUpdate struct {
+	Latitude            float64 `json:"latitude"`
+	Longitude           float64 `json:"longitude"`
+	EstimatedFlightTime float64 `json:"estimated_flight_time"`
+	RemainingDistance   float64 `json:"remaining_distance"`
 }

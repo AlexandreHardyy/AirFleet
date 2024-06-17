@@ -23,3 +23,9 @@ type InputFlightProposalChoice struct {
 	FlightId int    `json:"flightId" binding:"required"`
 	Choice   string `json:"choice" binding:"required"`
 }
+
+type InputPilotPositionUpdate struct {
+	FlightId  int     `json:"flightId" binding:"required"`
+	Latitude  float64 `json:"latitude" binding:"required"`
+	Longitude float64 `json:"longitude" binding:"required"`
+}

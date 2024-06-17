@@ -27,6 +27,7 @@ type FlightServiceInterface interface {
 	MakeFlightPriceProposal(input inputs.InputCreateFlightProposal, userID int) error
 	FlightProposalChoice(input inputs.InputFlightProposalChoice, userID int) error
 	FlightTakeoff(flightID int, pilotId int) error
+	PilotPositionUpdate(input inputs.InputPilotPositionUpdate, pilotId int) (responses.ResponsePilotPositionUpdate, error)
 	FlightLanding(flightID int, pilotId int) error
 	CancelFlight(flightID int, userId int) error
 	EstimateFlightTimeInHour(flightID int, pilotPosition utils.Position) (float64, error)
@@ -242,11 +243,11 @@ func (s *FlightService) FlightTakeoff(flightID int, pilotId int) error {
 		return errors.New("flight has no pilot assigned")
 	}
 
-	if flight.Status != "waiting_takeoff" || *flightPilotId != pilotId {
+	if flight.Status != flightStatus.WAITING_TAKEOFF || *flightPilotId != pilotId {
 		return errors.New("flight is not available for takeoff")
 	}
 
-	flight.Status = "in_progress"
+	flight.Status = flightStatus.IN_PROGRESS
 
 	_, err = s.repository.UpdateFlight(flight)
 
@@ -255,6 +256,50 @@ func (s *FlightService) FlightTakeoff(flightID int, pilotId int) error {
 	}
 
 	return nil
+}
+
+func (s *FlightService) PilotPositionUpdate(input inputs.InputPilotPositionUpdate, pilotId int) (responses.ResponsePilotPositionUpdate, error) {
+	flight, err := s.repository.GetFlightByID(input.FlightId)
+	if err != nil {
+		return responses.ResponsePilotPositionUpdate{}, err
+	}
+
+	flightPilotId := flight.PilotID
+	if flightPilotId == nil {
+		return responses.ResponsePilotPositionUpdate{}, errors.New("flight has no pilot assigned")
+	}
+
+	if (flight.Status != flightStatus.IN_PROGRESS && flight.Status != flightStatus.WAITING_TAKEOFF) || *flightPilotId != pilotId {
+		return responses.ResponsePilotPositionUpdate{}, errors.New("flight is not available for position update")
+	}
+
+	estimatedFlightTime, err := s.EstimateFlightTimeInHour(input.FlightId, utils.Position{
+		Latitude:  input.Latitude,
+		Longitude: input.Longitude,
+	})
+	if err != nil {
+		return responses.ResponsePilotPositionUpdate{}, err
+	}
+
+	remainingDistance := calculateDistanceInNauticalMiles(
+		utils.Position{
+			Latitude:  input.Latitude,
+			Longitude: input.Longitude,
+		},
+		utils.Position{
+			Latitude:  flight.ArrivalLatitude,
+			Longitude: flight.ArrivalLongitude,
+		},
+	)
+
+	response := responses.ResponsePilotPositionUpdate{
+		Latitude:            input.Latitude,
+		Longitude:           input.Longitude,
+		EstimatedFlightTime: estimatedFlightTime,
+		RemainingDistance:   remainingDistance,
+	}
+
+	return response, nil
 }
 
 func (s *FlightService) FlightLanding(flightID int, pilotId int) error {
@@ -268,11 +313,11 @@ func (s *FlightService) FlightLanding(flightID int, pilotId int) error {
 		return errors.New("flight has no pilot assigned")
 	}
 
-	if flight.Status != "in_progress" || *flightPilotId != pilotId {
+	if flight.Status != flightStatus.IN_PROGRESS || *flightPilotId != pilotId {
 		return errors.New("flight is not available for landing")
 	}
 
-	flight.Status = "finished"
+	flight.Status = flightStatus.FINISHED
 
 	_, err = s.repository.UpdateFlight(flight)
 
@@ -289,7 +334,7 @@ func (s *FlightService) CancelFlight(flightID int, userID int) error {
 		return err
 	}
 
-	if (flight.Status != "waiting_pilot" && flight.Status != "waiting_takeoff") || flight.UserID != userID {
+	if (flight.Status != flightStatus.WAITING_PILOT && flight.Status != flightStatus.WAITING_TAKEOFF) || flight.UserID != userID {
 		return errors.New("flight is not available for cancel")
 	}
 

@@ -28,14 +28,15 @@ final class SocketIoCreateSession extends SocketIoEvent {
 }
 
 final class SocketIoListenEvent extends SocketIoEvent {
+  final String eventId;
   final String event;
   final dynamic Function(dynamic) callback;
 
-  SocketIoListenEvent({required this.event, required this.callback});
+  SocketIoListenEvent({required this.eventId, required this.event, required this.callback});
 }
 
 final class SocketIoStopListeningEvent extends SocketIoEvent {
-  final String event;
+  final String eventId;
 
-  SocketIoStopListeningEvent({required this.event});
+  SocketIoStopListeningEvent({required this.eventId});
 }

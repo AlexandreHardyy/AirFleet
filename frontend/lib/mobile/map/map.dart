@@ -186,7 +186,8 @@ class AirFleetMapState extends State<AirFleetMap> {
   Widget build(BuildContext context) {
     if (context.read<SocketIoBloc>().state.socket != null) {
       context.read<SocketIoBloc>().add(SocketIoListenEvent(
-          event: "pilotPositionUpdate",
+          eventId: "pilotPositionUpdated",
+          event: "pilotPositionUpdated",
           callback: (data) {
             Map<String, dynamic> jsonData = jsonDecode(data);
             final position =

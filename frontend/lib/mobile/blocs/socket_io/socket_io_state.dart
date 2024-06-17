@@ -11,7 +11,7 @@ enum SocketIoStatus {
 class SocketIoState {
   final SocketIoStatus status;
   final Socket? socket;
-  final Set<String> listenedEvents;
+  final Map<String, String> listenedEvents;
   final String? errorMessage;
 
   SocketIoState({
@@ -24,7 +24,7 @@ class SocketIoState {
   SocketIoState copyWith({
     SocketIoStatus? status,
     Socket? socket,
-    Set<String>? listenedEvents,
+    Map<String, String>? listenedEvents,
     String? errorMessage,
   }) {
     return SocketIoState(

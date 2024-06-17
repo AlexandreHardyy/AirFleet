@@ -18,6 +18,8 @@ func InitFlightSession(socketIoServer *socketio.Server) {
 
 	socketIoServer.OnEvent("/flights", "flightTakeoff", flightSocketHandler.FlightTakeoff)
 
+	socketIoServer.OnEvent("/flights", "pilotPositionUpdate", flightSocketHandler.PilotPositionUpdate)
+
 	socketIoServer.OnEvent("/flights", "flightLanding", flightSocketHandler.FlightLanding)
 
 	socketIoServer.OnEvent("/flights", "cancelFlight", flightSocketHandler.CancelFlight)
