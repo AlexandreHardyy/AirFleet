@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:frontend/models/user.dart';
+import 'package:frontend/models/vehicle.dart';
 import 'package:frontend/services/user.dart';
+import 'package:frontend/services/vehicle.dart';
 import 'package:frontend/web/charts/bar_chart.dart';
+import 'package:frontend/web/charts/pie_chart.dart';
 import 'package:frontend/web/user/user.dart';
-import 'package:frontend/web/pilot/pilot.dart';
 import 'package:frontend/web/vehicle/vehicle.dart';
 
 class HomeWeb extends StatefulWidget {
@@ -16,16 +18,27 @@ class HomeWeb extends StatefulWidget {
 
 class _HomeWebState extends State<HomeWeb> {
   List<User> _users = [];
+  List<Vehicle> _vehicles = [];
 
   @override
   void initState() {
     super.initState();
     _fetchUsers();
+    _fetchVehicles();
   }
 
   Future<void> _fetchUsers() async {
     try {
       _users = await UserService.getUsers();
+      setState(() {});
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  Future<void> _fetchVehicles() async {
+    try {
+      _vehicles = await VehicleService.getVehicles();
       setState(() {});
     } catch (e) {
       print(e);
@@ -55,26 +68,14 @@ class _HomeWebState extends State<HomeWeb> {
                     ),
                   ),
                   ListTile(
-                    leading: const Icon(Icons.person, color: Color(0xFFDCA200)),
-                    title: const Text('User',
+                    leading: const Icon(FontAwesomeIcons.userTie, color: Color(0xFFDCA200)),
+                    title: const Text('Users',
                         style: TextStyle(color: Colors.white)),
                     onTap: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
                             builder: (context) => const UserScreen()),
-                      );
-                    },
-                  ),
-                  ListTile(
-                    leading: const Icon(FontAwesomeIcons.userTie,
-                        color: Color(0xFFDCA200)),
-                    title: const Text('Pilots',
-                        style: TextStyle(color: Colors.white)),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => const PilotScreen()),
                       );
                     },
                   ),
@@ -116,6 +117,7 @@ class _HomeWebState extends State<HomeWeb> {
                         childAspectRatio: 1.8,
                         children: [
                           _buildChart(CustomBarChart(users: _users)),
+                          _buildChart(CustomPieChart(vehicles: _vehicles)),
                         ],
                       ),
                     ),

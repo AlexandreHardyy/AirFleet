@@ -26,7 +26,10 @@ class _UpdateVehicleFormState extends State<UpdateVehicleForm> {
       matriculation: widget.vehicle.matriculation,
       seat: widget.vehicle.seat,
       type: widget.vehicle.type,
+      cruiseSpeed: widget.vehicle.cruiseSpeed,
+      cruiseAltitude: widget.vehicle.cruiseAltitude,
       isVerified: widget.vehicle.isVerified,
+      isSelected: widget.vehicle.isSelected,
     );
     isPlaneSelected = _vehicle.type == 'PLANE';
   }
@@ -86,6 +89,36 @@ class _UpdateVehicleFormState extends State<UpdateVehicleForm> {
                   return null;
                 },
                 onSaved: (value) => _vehicle.seat = int.parse(value!),
+              ),
+              TextFormField(
+                initialValue: _vehicle.cruiseSpeed.toString(),
+                decoration: const InputDecoration(labelText: 'cruiseSpeed'),
+                keyboardType: TextInputType.number,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter a number';
+                  }
+                  if (int.tryParse(value) == null) {
+                    return 'Please enter a valid number';
+                  }
+                  return null;
+                },
+                onSaved: (value) => _vehicle.cruiseSpeed = int.parse(value!),
+              ),
+              TextFormField(
+                initialValue: _vehicle.cruiseAltitude.toString(),
+                decoration: const InputDecoration(labelText: 'cruiseAltitude'),
+                keyboardType: TextInputType.number,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter a number';
+                  }
+                  if (int.tryParse(value) == null) {
+                    return 'Please enter a valid number';
+                  }
+                  return null;
+                },
+                onSaved: (value) => _vehicle.cruiseAltitude = int.parse(value!),
               ),
               const SizedBox(height: 20),
               const Text(
@@ -158,6 +191,21 @@ class _UpdateVehicleFormState extends State<UpdateVehicleForm> {
                     onChanged: (value) {
                       setState(() {
                         _vehicle.isVerified = value!;
+                      });
+                    },
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              Row(
+                children: [
+                  const Text('Is Selected'),
+                  const SizedBox(width: 10),
+                  Checkbox(
+                    value: _vehicle.isSelected,
+                    onChanged: (value) {
+                      setState(() {
+                        _vehicle.isSelected = value!;
                       });
                     },
                   ),

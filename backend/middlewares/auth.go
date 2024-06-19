@@ -36,6 +36,10 @@ func IsPilotAuth() gin.HandlerFunc {
 		userRepository := repositories.NewUserRepository(database.DB)
 
 		currentUser, err := userRepository.GetById(userId)
+		if currentUser.Role == roles.ROLE_ADMIN { // admin can do anything
+			c.Next()
+			return
+		}
 		if err != nil || currentUser.Role != roles.ROLE_PILOT {
 			c.Status(http.StatusForbidden)
 			c.Abort()

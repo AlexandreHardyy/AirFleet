@@ -84,8 +84,11 @@ class _VehicleScreenState extends State<VehicleScreen> {
                             DataColumn(label: Text('Model Name', style: TextStyle(fontWeight: FontWeight.bold))),
                             DataColumn(label: Text('Matriculation', style: TextStyle(fontWeight: FontWeight.bold))),
                             DataColumn(label: Text('Seat', style: TextStyle(fontWeight: FontWeight.bold))),
+                            DataColumn(label: Text('Cruise speed', style: TextStyle(fontWeight: FontWeight.bold))),
+                            DataColumn(label: Text('Cruise altitude', style: TextStyle(fontWeight: FontWeight.bold))),
                             DataColumn(label: Text('Type', style: TextStyle(fontWeight: FontWeight.bold))),
                             DataColumn(label: Text('Is verified', style: TextStyle(fontWeight: FontWeight.bold))),
+                            DataColumn(label: Text('Is selected', style: TextStyle(fontWeight: FontWeight.bold))),
                             DataColumn(
                               label: Expanded(
                                 child: Padding(
@@ -105,11 +108,20 @@ class _VehicleScreenState extends State<VehicleScreen> {
                                 DataCell(Text(vehicle.modelName)),
                                 DataCell(Text(vehicle.matriculation)),
                                 DataCell(Text(vehicle.seat.toString())),
+                                DataCell(Text(vehicle.cruiseSpeed.toString())),
+                                DataCell(Text(vehicle.cruiseAltitude.toString())),
                                 DataCell(Text(vehicle.type)),
                                 DataCell(
                                   Checkbox(
                                     value: vehicle.isVerified,
-                                    onChanged: null, // désactive la case à cocher
+                                    onChanged: null,
+                                    tristate: true,
+                                  ),
+                                ),
+                                DataCell(
+                                  Checkbox(
+                                    value: vehicle.isSelected,
+                                    onChanged: null,
                                     tristate: true,
                                   ),
                                 ),

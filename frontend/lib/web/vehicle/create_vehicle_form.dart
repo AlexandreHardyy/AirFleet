@@ -23,6 +23,8 @@ class _CreateVehicleFormState extends State<CreateVehicleForm> {
       matriculation: '',
       seat: 0,
       type: 'PLANE',
+      cruiseSpeed: 0,
+      cruiseAltitude: 0,
       isVerified: false,
     );
   }
@@ -82,6 +84,36 @@ class _CreateVehicleFormState extends State<CreateVehicleForm> {
                   return null;
                 },
                 onSaved: (value) => _vehicle.seat = int.parse(value!),
+              ),
+              TextFormField(
+                initialValue: _vehicle.cruiseSpeed.toString(),
+                decoration: const InputDecoration(labelText: 'cruiseSpeed'),
+                keyboardType: TextInputType.number,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter a number';
+                  }
+                  if (int.tryParse(value) == null) {
+                    return 'Please enter a valid number';
+                  }
+                  return null;
+                },
+                onSaved: (value) => _vehicle.cruiseSpeed = int.parse(value!),
+              ),
+              TextFormField(
+                initialValue: _vehicle.cruiseAltitude.toString(),
+                decoration: const InputDecoration(labelText: 'cruiseAltitude'),
+                keyboardType: TextInputType.number,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter a number';
+                  }
+                  if (int.tryParse(value) == null) {
+                    return 'Please enter a valid number';
+                  }
+                  return null;
+                },
+                onSaved: (value) => _vehicle.cruiseAltitude = int.parse(value!),
               ),
               const SizedBox(height: 20),
               const Text(
