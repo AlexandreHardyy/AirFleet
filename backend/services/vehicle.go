@@ -32,6 +32,7 @@ func (s *VehicleService) Create(input inputs.CreateVehicle, userID int) (respons
 		Type:           input.Type,
 		CruiseSpeed:    input.CruiseSpeed,
 		CruiseAltitude: input.CruiseAltitude,
+		IsVerified:     input.IsVerified,
 		UserID:         userID,
 	}
 
@@ -44,6 +45,7 @@ func (s *VehicleService) Create(input inputs.CreateVehicle, userID int) (respons
 		Type:           vehicle.Type,
 		CruiseSpeed:    vehicle.CruiseSpeed,
 		CruiseAltitude: vehicle.CruiseAltitude,
+		IsVerified:     vehicle.IsVerified,
 		CreatedAt:      vehicle.CreatedAt,
 		UpdatedAt:      vehicle.UpdatedAt,
 	}
@@ -96,6 +98,7 @@ func (s *VehicleService) Update(id int, input inputs.UpdateVehicle) (models.Vehi
 		CruiseSpeed:    input.CruiseSpeed,
 		CruiseAltitude: input.CruiseAltitude,
 		IsSelected:     input.IsSelected,
+		IsVerified:     input.IsVerified,
 	}
 
 	vehicle, err := s.repository.Update(id, vehicle)

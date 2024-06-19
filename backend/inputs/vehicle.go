@@ -7,6 +7,7 @@ type CreateVehicle struct {
 	Type           string  `json:"type" binding:"required"`
 	CruiseSpeed    float64 `json:"cruise_speed" binding:"required"`
 	CruiseAltitude float64 `json:"cruise_altitude" binding:"required"`
+	IsVerified     bool    `json:"is_verified"`
 }
 
 type UpdateVehicle struct {
@@ -17,5 +18,6 @@ type UpdateVehicle struct {
 	CruiseSpeed    float64 `json:"cruise_speed"`
 	CruiseAltitude float64 `json:"cruise_altitude"`
 	UserID         int     `json:"user_id"`
-	IsSelected     *bool   `json:"is_selected" binding:"required"`
+	IsVerified     bool    `json:"is_verified"`
+	IsSelected     *bool   `json:"is_selected"`
 }

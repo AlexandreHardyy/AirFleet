@@ -48,7 +48,7 @@ class CustomBarChartState extends State<CustomBarChart> {
                       width: 32,
                     ),
                     Text(
-                      'Sales forecasting chart',
+                      'New users chart',
                       style: TextStyle(
                         color: widget.barColor,
                         fontSize: 18,

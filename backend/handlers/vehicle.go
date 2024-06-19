@@ -140,7 +140,7 @@ func (th *vehicleHandler) GetAllMe(c *gin.Context) {
 	c.JSON(http.StatusOK, vehicles)
 }
 
-// VehcileById vehicle godoc
+// VehicleById vehicle godoc
 //
 // @Summary get vehicle by id
 // @Schemes
@@ -154,7 +154,7 @@ func (th *vehicleHandler) GetAllMe(c *gin.Context) {
 //	@Failure	404			{object}	Response
 //
 // @Router /vehicles/{id} [get]
-func (th *vehicleHandler) VehcileById(c *gin.Context) {
+func (th *vehicleHandler) VehicleById(c *gin.Context) {
 	idStr := c.Param("id")
 	id, err := strconv.Atoi(idStr)
 
