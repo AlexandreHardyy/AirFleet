@@ -8,6 +8,7 @@ import 'package:frontend/web/charts/bar_chart.dart';
 import 'package:frontend/web/charts/pie_chart.dart';
 import 'package:frontend/web/user/user.dart';
 import 'package:frontend/web/vehicle/vehicle.dart';
+import 'package:intl/intl.dart';
 
 class HomeWeb extends StatefulWidget {
   const HomeWeb({super.key});
@@ -17,8 +18,11 @@ class HomeWeb extends StatefulWidget {
 }
 
 class _HomeWebState extends State<HomeWeb> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
   List<User> _users = [];
   List<Vehicle> _vehicles = [];
+  List<Vehicle> _unverifiedVehicles = [];
 
   @override
   void initState() {
@@ -39,7 +43,35 @@ class _HomeWebState extends State<HomeWeb> {
   Future<void> _fetchVehicles() async {
     try {
       _vehicles = await VehicleService.getVehicles();
+      _filterUnverifiedVehicles();
       setState(() {});
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  void _filterUnverifiedVehicles() {
+    final oneWeekAgo = DateTime.now().subtract(const Duration(days: 7));
+    _unverifiedVehicles = _vehicles.where((vehicle) {
+      if (vehicle.isVerified == null || vehicle.createdAt == null) {
+        return false;
+      } else {
+        DateTime vehicleDate;
+        try {
+          vehicleDate = DateTime.parse(vehicle.createdAt!);
+        } catch (e) {
+          return false;
+        }
+        return !vehicle.isVerified! && vehicleDate.isAfter(oneWeekAgo);
+      }
+    }).toList();
+  }
+
+  Future<void> _verifyVehicle(Vehicle vehicle) async {
+    try {
+      vehicle.isVerified = true;
+      await VehicleService.updateVehicle(vehicle);
+      _fetchVehicles(); // Refresh the list of vehicles after update
     } catch (e) {
       print(e);
     }
@@ -49,84 +81,128 @@ class _HomeWebState extends State<HomeWeb> {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-        body: Row(
+        key: _scaffoldKey,
+        body: Stack(
           children: [
-            Container(
-              width: 200,
-              color: const Color(0xFF131141),
-              child: ListView(
-                padding: EdgeInsets.zero,
-                children: <Widget>[
-                  const Padding(
-                    padding: EdgeInsets.all(16.0),
-                    child: Text(
-                      'Admin Menu',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 24,
+            Row(
+              children: [
+                Container(
+                  width: 200,
+                  color: const Color(0xFF131141),
+                  child: ListView(
+                    padding: EdgeInsets.zero,
+                    children: <Widget>[
+                      const Padding(
+                        padding: EdgeInsets.all(16.0),
+                        child: Text(
+                          'Admin Menu',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 24,
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                  ListTile(
-                    leading: const Icon(FontAwesomeIcons.userTie, color: Color(0xFFDCA200)),
-                    title: const Text('Users',
-                        style: TextStyle(color: Colors.white)),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const UserScreen()),
-                      );
-                    },
-                  ),
-                  ListTile(
-                    leading: const Icon(Icons.airplanemode_active,
-                        color: Color(0xFFDCA200)),
-                    title: const Text('Vols',
-                        style: TextStyle(color: Colors.white)),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => const VehicleScreen()),
-                      );
-                    },
-                  ),
-                ],
-              ),
-            ),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Dashboard',
-                      style: TextStyle(
-                        fontSize: 32,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF131141),
+                      ListTile(
+                        leading: const Icon(FontAwesomeIcons.userTie, color: Color(0xFFDCA200)),
+                        title: const Text('Users',
+                            style: TextStyle(color: Colors.white)),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const UserScreen()),
+                          );
+                        },
                       ),
-                    ),
-                    const SizedBox(height: 20),
-                    Expanded(
-                      child: GridView.count(
-                        crossAxisCount: 2,
-                        crossAxisSpacing: 16,
-                        mainAxisSpacing: 16,
-                        childAspectRatio: 1.8,
-                        children: [
-                          _buildChart(CustomBarChart(users: _users)),
-                          _buildChart(CustomPieChart(vehicles: _vehicles)),
-                        ],
+                      ListTile(
+                        leading: const Icon(Icons.airplanemode_active,
+                            color: Color(0xFFDCA200)),
+                        title: const Text('Vehicles',
+                            style: TextStyle(color: Colors.white)),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => const VehicleScreen()),
+                          );
+                        },
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Dashboard',
+                          style: TextStyle(
+                            fontSize: 32,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF131141),
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        Expanded(
+                          child: GridView.count(
+                            crossAxisCount: 2,
+                            crossAxisSpacing: 16,
+                            mainAxisSpacing: 16,
+                            childAspectRatio: 1.8,
+                            children: [
+                              _buildChart(CustomBarChart(users: _users)),
+                              _buildChart(CustomPieChart(vehicles: _vehicles)),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            Positioned(
+              top: 16.0,
+              right: 16.0,
+              child: Stack(
+                children: [
+                  FloatingActionButton(
+                    onPressed: () {
+                      _scaffoldKey.currentState?.openEndDrawer();
+                    },
+                    backgroundColor: const Color(0xFF131141),
+                    child: const Icon(Icons.notifications, color: Color(0xFFDCA200)),
+                  ),
+                  if (_unverifiedVehicles.isNotEmpty)
+                    Positioned(
+                      right: 0,
+                      child: Container(
+                        padding: const EdgeInsets.all(2),
+                        decoration: BoxDecoration(
+                          color: Colors.red,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        constraints: const BoxConstraints(
+                          minWidth: 24,
+                          minHeight: 24,
+                        ),
+                        child: Text(
+                          '${_unverifiedVehicles.length}',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 12,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ),
+                ],
               ),
             ),
           ],
         ),
+        endDrawer: _buildUnverifiedVehiclesDrawer(),
       ),
       theme: ThemeData(
         textTheme: const TextTheme(
@@ -142,6 +218,46 @@ class _HomeWebState extends State<HomeWeb> {
           titleTextStyle: TextStyle(color: Color(0xFF131141), fontSize: 20),
           toolbarTextStyle: TextStyle(color: Color(0xFF131141)),
         ),
+      ),
+    );
+  }
+
+  Widget _buildUnverifiedVehiclesDrawer() {
+    return Drawer(
+      child: ListView.builder(
+        padding: EdgeInsets.zero,
+        itemCount: _unverifiedVehicles.length + 1,
+        itemBuilder: (context, index) {
+          if (index == 0) {
+            return const DrawerHeader(
+              decoration: BoxDecoration(
+                color: Color(0xFF131141),
+              ),
+              child: Text(
+                'Unverified Vehicles',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
+                ),
+              ),
+            );
+          }
+          final vehicle = _unverifiedVehicles[index - 1];
+          return Column(
+            children: [
+              ListTile(
+                title: Text(vehicle.modelName),
+                subtitle: Text(DateFormat('yyyy-MM-dd').format(DateTime.parse(vehicle.createdAt!))),
+                trailing: IconButton(
+                  icon: const Icon(Icons.check_circle, color: Color(0xFFDCA200)),
+                  tooltip: 'Verify this vehicle',
+                  onPressed: () => _verifyVehicle(vehicle),
+                ),
+              ),
+              if (index - 1 < _unverifiedVehicles.length - 1) const Divider(),
+            ],
+          );
+        },
       ),
     );
   }

@@ -47,7 +47,7 @@ class CustomPieChartState extends State<CustomPieChart> {
                     Text(
                       'Verified vehicles chart',
                       style: TextStyle(
-                        color: Colors.blue,
+                        color: Color(0xFF131141),
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),
@@ -73,7 +73,7 @@ class CustomPieChartState extends State<CustomPieChart> {
                     Text(
                       'Verified vehicles',
                       style: TextStyle(
-                        color: Colors.blue,
+                        color: Color(0xFF131141),
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),
@@ -112,7 +112,7 @@ class CustomPieChartState extends State<CustomPieChart> {
 
     return [
       PieChartSectionData(
-        color: Colors.blue,
+        color: Color(0xFF131141),
         value: verified.toDouble(),
         title: '$verified',
         radius: 50,
