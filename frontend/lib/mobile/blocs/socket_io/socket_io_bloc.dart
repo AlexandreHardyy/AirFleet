@@ -99,25 +99,25 @@ class SocketIoBloc extends Bloc<SocketIoEvent, SocketIoState> {
 
   void _onSocketListenEvent(
       SocketIoListenEvent event, Emitter<SocketIoState> emit) {
-    if (state.listenedEvents.contains(event.event)) {
+    if (state.listenedEvents.containsKey(event.eventId)) {
       return;
     }
 
     state.socket!.on(event.event, event.callback);
     emit(state.copyWith(
-      listenedEvents: state.listenedEvents..add(event.event),
+      listenedEvents: state.listenedEvents..putIfAbsent(event.eventId, () => event.event)
     ));
   }
 
   void _onSocketStopListeningEvent(
       SocketIoStopListeningEvent event, Emitter<SocketIoState> emit) {
-    if (!state.listenedEvents.contains(event.event)) {
+    if (!state.listenedEvents.containsKey(event.eventId)) {
       return;
     }
 
-    state.socket!.off(event.event);
+    state.socket!.off(state.listenedEvents[event.eventId]!);
     emit(state.copyWith(
-      listenedEvents: state.listenedEvents..remove(event.event),
+      listenedEvents: state.listenedEvents..remove(event.eventId),
     ));
   }
 }

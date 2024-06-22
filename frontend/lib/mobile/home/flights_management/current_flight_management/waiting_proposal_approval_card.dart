@@ -27,6 +27,7 @@ class _WaitingProposalApprovalCardState
 
     //TODO: Optimization to reproduce
     _socketIoBloc.add(SocketIoListenEvent(
+      eventId: "flightTimeUpdated",
       event: "flightTimeUpdated",
       callback: (estimatedFlightTime) {
         if (mounted) {
@@ -40,7 +41,7 @@ class _WaitingProposalApprovalCardState
 
   @override
   void dispose() {
-    _socketIoBloc.add(SocketIoStopListeningEvent(event: 'flightTimeUpdated'));
+    _socketIoBloc.add(SocketIoStopListeningEvent(eventId: 'flightTimeUpdated'));
     super.dispose();
   }
 

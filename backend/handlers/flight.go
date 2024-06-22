@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	flightStatus "backend/data/flight-status"
 	"backend/inputs"
 	"backend/repositories"
 	"backend/responses"
@@ -171,12 +172,12 @@ func (h *FlightSocketHandler) CreateFlightSession(s socketio.Conn, flightId stri
 
 	s.Join(flightId)
 
-	if flight.Status == "waiting_proposal_approval" {
+	if flight.Status == flightStatus.WAITING_PROPOSAL_APPROVAL {
 		err = estimateAndBroadcastFlightTime(s, convertedFlightId, h.flightService, h.socketIoServer)
 	}
 
-	if flight.Status == "waiting_takeoff" || flight.Status == "in_progress" {
-		h.startPilotPositionUpdate(s, flightId)
+	if flight.Status == flightStatus.WAITING_TAKEOFF || flight.Status == flightStatus.IN_PROGRESS {
+		//h.startPilotPositionUpdate(s, flightId)
 	}
 }
 
@@ -244,7 +245,7 @@ func (h *FlightSocketHandler) FlightProposalChoice(s socketio.Conn, msg string) 
 	if flightProposalChoice.Choice == "accepted" {
 		s.Join(strconv.Itoa(flightProposalChoice.FlightId))
 
-		h.startPilotPositionUpdate(s, strconv.Itoa(flightProposalChoice.FlightId))
+		//h.startPilotPositionUpdate(s, strconv.Itoa(flightProposalChoice.FlightId))
 	}
 
 	return nil
@@ -355,6 +356,41 @@ func estimateAndBroadcastFlightTime(s socketio.Conn, flightId int, flightService
 	return nil
 }
 
+func (h *FlightSocketHandler) PilotPositionUpdate(s socketio.Conn, msg string) error {
+	userId, err := ExtractIdFromWebSocketHeader(s)
+	if err != nil {
+		return err
+	}
+
+	var pilotPositionUpdate inputs.InputPilotPositionUpdate
+	err = json.Unmarshal([]byte(msg), &pilotPositionUpdate)
+	if err != nil {
+		s.Emit("error", err.Error())
+		log.Println("Error unmarshalling pilot position update", err.Error())
+		return err
+	}
+
+	response, err := h.flightService.PilotPositionUpdate(pilotPositionUpdate, userId)
+	if err != nil {
+		s.Emit("error", err.Error())
+		log.Println("Error updating pilot position", err.Error())
+		return err
+	}
+
+	responseBytes, err := json.Marshal(response)
+	if err != nil {
+		log.Println("Error marshalling pilot position:", err)
+		return err
+	}
+
+	responseString := string(responseBytes)
+
+	h.socketIoServer.BroadcastToRoom("/flights", strconv.Itoa(pilotPositionUpdate.FlightId), "pilotPositionUpdated", responseString)
+
+	return nil
+}
+
+// DEPRECATED
 func (h *FlightSocketHandler) startPilotPositionUpdate(s socketio.Conn, flightId string) {
 	if oldStopChan, ok := h.stopChans[s.ID()]; ok {
 		log.Println("Stopping old goroutine")
