@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend/web/auth_screen/login_screen.dart';
 import 'package:frontend/web/home_web.dart';
 import 'package:frontend/storage/user.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class WebLayout extends StatefulWidget {
   const WebLayout({super.key});
@@ -25,6 +26,17 @@ class WebLayoutState extends State<WebLayout> {
 
   @override
   Widget build(BuildContext context) {
-    return isAuth ? const HomeWeb() : const LoginScreen();
+    return MaterialApp(
+          home: isAuth ? const HomeWeb() : const LoginScreen(),
+          theme: ThemeData(
+            textTheme: TextTheme(
+                displayLarge: GoogleFonts.prostoOne(
+                  color: const Color(0xFFDCA200),
+                  fontSize: 32,
+                  fontWeight: FontWeight.bold,
+                )
+            ),
+          )
+      );
   }
 }

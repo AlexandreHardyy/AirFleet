@@ -6,6 +6,7 @@ import 'package:frontend/mobile/map/mapbox_endpoint/suggest.dart';
 import 'package:frontend/models/flight.dart';
 import 'package:frontend/services/dio.dart';
 import 'package:frontend/services/flight.dart';
+import 'package:frontend/services/position.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:dio/dio.dart';
 import 'package:uuid/uuid.dart';
@@ -41,7 +42,7 @@ class _CreateFlightWidgetState extends State<CreateFlightWidget> {
   void initState() {
     super.initState();
 
-    _determinePosition().then((value) => setState(() {
+    determinePosition().then((value) => setState(() {
           userLocation = value;
         }));
   }
@@ -207,30 +208,4 @@ class _CreateFlightWidgetState extends State<CreateFlightWidget> {
             ),
           ]);
   }
-}
-
-Future<Position> _determinePosition() async {
-  bool serviceEnabled;
-  LocationPermission permission;
-
-  // Test if location services are enabled.
-  serviceEnabled = await Geolocator.isLocationServiceEnabled();
-  if (!serviceEnabled) {
-    return Future.error('Location services are disabled.');
-  }
-
-  permission = await Geolocator.checkPermission();
-  if (permission == LocationPermission.denied) {
-    permission = await Geolocator.requestPermission();
-    if (permission == LocationPermission.denied) {
-      return Future.error('Location permissions are denied');
-    }
-  }
-
-  if (permission == LocationPermission.deniedForever) {
-    return Future.error(
-        'Location permissions are permanently denied, we cannot request permissions.');
-  }
-
-  return await Geolocator.getCurrentPosition();
 }

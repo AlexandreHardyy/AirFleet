@@ -1,5 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:frontend/models/flight.dart';
+import 'package:frontend/services/position.dart';
+import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 
 import 'dio.dart';
 
@@ -25,6 +27,24 @@ class FlightService {
       }
 
       return Flight.fromJson(response.data);
+    } on DioException catch (e) {
+      throw Exception('Something went wrong during flight retrieval: ${e.response}');
+    } catch (e) {
+      throw Exception('Something went wrong: $e');
+    }
+  }
+
+  static Future<List<Flight>?> getCurrentFlightRequests() async {
+    final position = await determinePosition();
+    try {
+      final response = await dioApi.get("/flights/near-by?latitude=${position.latitude}&longitude=${position.longitude}&range=100");
+
+      if (response.data == null) {
+        return null;
+      }
+
+      List<dynamic> data = response.data;
+      return data.map((json) => Flight.fromJson(json)).toList();
     } on DioException catch (e) {
       throw Exception('Something went wrong during flight retrieval: ${e.response}');
     } catch (e) {

@@ -2,8 +2,10 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:frontend/mobile/blocs/current_flight/current_flight_bloc.dart';
 import 'package:frontend/mobile/blocs/socket_io/socket_io_bloc.dart';
 import 'package:frontend/models/flight.dart';
+import 'package:frontend/storage/user.dart';
 
 class WaitingProposalApprovalCard extends StatefulWidget {
   final Flight flight;
@@ -47,6 +49,29 @@ class _WaitingProposalApprovalCardState
 
   @override
   Widget build(BuildContext context) {
+    if (UserStore.user?.role == Roles.pilot) {
+      return Column(
+        children: [
+          Text(
+              '${widget.flight.departure.name} -> ${widget.flight.arrival.name}'),
+          const SizedBox(
+            height: 10,
+          ),
+          const Text('Waiting confirmation from client'),
+          ElevatedButton(
+            onPressed: () {
+              _socketIoBloc.state.socket!.emit(
+                "cancelFlight",
+                '${widget.flight.id}',
+              );
+              context.read<CurrentFlightBloc>().add(CurrentFlightUpdated());
+            },
+            child: const Text('Cancel offer'),
+          ),
+        ],
+      );
+    }
+
     return Column(
       children: [
         const Text("Price offer received !"),

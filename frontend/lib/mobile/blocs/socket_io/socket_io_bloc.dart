@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -21,6 +23,7 @@ class SocketIoBloc extends Bloc<SocketIoEvent, SocketIoState> {
     on<SocketIoLoading>(_onSocketIoLoading);
     on<SocketIoError>(_onSocketIoError);
     on<SocketIoCreateSession>(_onSocketCreateSession);
+    on<SocketIoMakePriceProposal>(_onSocketMakePriceProposal);
     on<SocketIoListenEvent>(_onSocketListenEvent);
     on<SocketIoStopListeningEvent>(_onSocketStopListeningEvent);
   }
@@ -91,6 +94,22 @@ class SocketIoBloc extends Bloc<SocketIoEvent, SocketIoState> {
       SocketIoCreateSession event, Emitter<SocketIoState> emit) {
     state.socket!.connect();
     state.socket!.emit("createSession", "${event.flightId}");
+
+    emit(state.copyWith(
+      status: SocketIoStatus.connected,
+    ));
+  }
+
+  void _onSocketMakePriceProposal(
+      SocketIoMakePriceProposal event, Emitter<SocketIoState> emit) {
+    state.socket!.connect();
+
+    final message = {
+      'flightId': event.flightId,
+      'price': event.price
+    };
+
+    state.socket!.emit("makeFlightProposal", const JsonEncoder().convert(message));
 
     emit(state.copyWith(
       status: SocketIoStatus.connected,

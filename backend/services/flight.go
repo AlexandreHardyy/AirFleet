@@ -10,8 +10,6 @@ import (
 	"backend/utils"
 	"errors"
 
-	"math"
-
 	"gorm.io/gorm"
 )
 
@@ -19,9 +17,10 @@ const earthRadiusKm = 6371
 
 type FlightServiceInterface interface {
 	//REST
-	CreateFlight(input inputs.InputCreateFlight, userID int) (responses.ResponseFlight, error)
+	CreateFlight(input inputs.CreateFlight, userID int) (responses.ResponseFlight, error)
 	GetFlight(flightID int) (responses.ResponseFlight, error)
 	GetCurrentFlight(userID int) (responses.ResponseFlight, error)
+	GetFlightRequestNearBy(position utils.Position, rangeKm float64) ([]responses.ResponseFlight, error)
 	//WEBSOCKET
 	JoinFlightSession(flightID int, userID int) error
 	MakeFlightPriceProposal(input inputs.InputCreateFlightProposal, userID int) error
@@ -43,7 +42,7 @@ func NewFlightService(r repositories.FlightRepositoryInterface) *FlightService {
 
 //REST
 
-func (s *FlightService) CreateFlight(input inputs.InputCreateFlight, userID int) (responses.ResponseFlight, error) {
+func (s *FlightService) CreateFlight(input inputs.CreateFlight, userID int) (responses.ResponseFlight, error) {
 	flight := models.Flight{
 		//TODO: Status can be different based on the user role
 		Status:             flightStatus.WAITING_PILOT,
@@ -89,6 +88,23 @@ func (s *FlightService) GetCurrentFlight(userID int) (responses.ResponseFlight, 
 	formattedFlight := formatFlight(flight)
 
 	return formattedFlight, nil
+}
+
+func (s *FlightService) GetFlightRequestNearBy(position utils.Position, kmRange float64) ([]responses.ResponseFlight, error) {
+	flights, err := s.repository.GetFlightRequests()
+
+	var formattedFlights []responses.ResponseFlight
+	for _, flight := range flights {
+		flightPosition := utils.Position{
+			Latitude:  flight.DepartureLatitude,
+			Longitude: flight.DepartureLongitude,
+		}
+
+		if utils.ComputeDistanceInKm(flightPosition, position) <= kmRange {
+			formattedFlights = append(formattedFlights, formatFlight(flight))
+		}
+	}
+	return formattedFlights, err
 }
 
 func formatFlight(flight models.Flight) responses.ResponseFlight {
@@ -281,7 +297,7 @@ func (s *FlightService) PilotPositionUpdate(input inputs.InputPilotPositionUpdat
 		return responses.ResponsePilotPositionUpdate{}, err
 	}
 
-	remainingDistance := calculateDistanceInNauticalMiles(
+	remainingDistance := utils.ComputeDistanceInNauticalMiles(
 		utils.Position{
 			Latitude:  input.Latitude,
 			Longitude: input.Longitude,
@@ -334,7 +350,7 @@ func (s *FlightService) CancelFlight(flightID int, userID int) error {
 		return err
 	}
 
-	if (flight.Status != flightStatus.WAITING_PILOT && flight.Status != flightStatus.WAITING_TAKEOFF) || flight.UserID != userID {
+	if (flight.Status != flightStatus.WAITING_PILOT && flight.Status != flightStatus.WAITING_TAKEOFF && flight.Status != flightStatus.WAITING_PROPOSAL_APPROVAL) || (flight.UserID != userID && *flight.PilotID != userID) {
 		return errors.New("flight is not available for cancel")
 	}
 
@@ -363,34 +379,11 @@ func (s *FlightService) EstimateFlightTimeInHour(flightID int, pilotPosition uti
 		Longitude: flight.ArrivalLongitude,
 	}
 
-	distanceInNauticalMiles := calculateDistanceInNauticalMiles(pilotPosition, arrivalPosition)
+	distanceInNauticalMiles := utils.ComputeDistanceInNauticalMiles(pilotPosition, arrivalPosition)
 
 	aircraftSpeed := flight.Vehicle.CruiseSpeed
 
 	estimatedTimeInHour := distanceInNauticalMiles / aircraftSpeed
 
 	return estimatedTimeInHour, nil
-}
-
-func calculateDistanceInNauticalMiles(p1, p2 utils.Position) float64 {
-	// Convert latitude and longitude from degrees to radians
-	lat1 := p1.Latitude * math.Pi / 180
-	lon1 := p1.Longitude * math.Pi / 180
-	lat2 := p2.Latitude * math.Pi / 180
-	lon2 := p2.Longitude * math.Pi / 180
-
-	// Haversine formula
-	deltaLat := lat2 - lat1
-	deltaLon := lon2 - lon1
-
-	a := math.Sin(deltaLat/2)*math.Sin(deltaLat/2) + math.Cos(lat1)*math.Cos(lat2)*math.Sin(deltaLon/2)*math.Sin(deltaLon/2)
-	c := 2 * math.Atan2(math.Sqrt(a), math.Sqrt(1-a))
-
-	// Distance in kilometers
-	distance := earthRadiusKm * c
-
-	// Convert distance to nautical miles
-	distanceNM := distance * 0.539957
-
-	return distanceNM
 }

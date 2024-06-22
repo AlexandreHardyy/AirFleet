@@ -1,7 +1,9 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:frontend/models/flight.dart';
 import 'package:frontend/models/vehicle.dart';
+import 'package:frontend/services/flight.dart';
 import 'package:frontend/services/vehicle.dart';
 
 part 'pilot_status_event.dart';
@@ -14,18 +16,20 @@ class PilotStatusBloc extends Bloc<PilotStatusEvent, PilotStatusState> {
     on<PilotStatusInitialized>(_onPilotStatusInitialized);
     on<PilotStatusNotReady>(_onPilotStatusNotReady);
     on<PilotStatusReady>(_onPilotStatusReady);
-
   }
 
   Future<void> _onPilotStatusInitialized(
       PilotStatusInitialized event, Emitter<PilotStatusState> emit) async {
     emit(state.copyWith(status: CurrentPilotStatus.loading));
     final vehicles = await VehicleService.getVehiclesForMe();
+    final selectedVehicle =
+        vehicles.firstWhereOrNull((vehicle) => vehicle.isSelected == true);
+    final flightRequests = await FlightService.getCurrentFlightRequests();
 
     emit(state.copyWith(
         status: CurrentPilotStatus.loaded,
-        selectedVehicle:
-            vehicles.firstWhereOrNull((vehicle) => vehicle.isSelected == true),
+        selectedVehicle: selectedVehicle,
+        flights: flightRequests,
         vehicles:
             vehicles.where((vehicle) => vehicle.isVerified == true).toList()));
   }
@@ -59,11 +63,14 @@ class PilotStatusBloc extends Bloc<PilotStatusEvent, PilotStatusState> {
     emit(state.copyWith(status: CurrentPilotStatus.loading));
 
     final updatedVehicle = await VehicleService.updateVehicle(event.vehicle);
+    final flightRequests = await FlightService.getCurrentFlightRequests();
 
-    emit(state.copyWith(
-        status: CurrentPilotStatus.loaded,
-        selectedVehicle: updatedVehicle,
-        vehicles: state.vehicles)
+    emit(
+      state.copyWith(
+          status: CurrentPilotStatus.loaded,
+          selectedVehicle: updatedVehicle,
+          flights: flightRequests,
+          vehicles: state.vehicles),
     );
   }
 }

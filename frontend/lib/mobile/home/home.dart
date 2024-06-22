@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:frontend/mobile/blocs/current_flight/current_flight_bloc.dart';
 import 'package:frontend/mobile/blocs/socket_io/socket_io_bloc.dart';
 import 'package:frontend/mobile/home/flights_management/pilot_flight_management/pilot_flights_management.dart';
 import 'package:frontend/mobile/map/map.dart';
@@ -21,17 +20,7 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return GestureDetector(
         onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-        child: MultiBlocProvider(
-          providers: [
-            BlocProvider<CurrentFlightBloc>(
-              create: (context) =>
-                  CurrentFlightBloc()..add(CurrentFlightInitialized()),
-            ),
-            BlocProvider<SocketIoBloc>(
-              create: (context) => SocketIoBloc()..add(SocketIoInitialized()),
-            ),
-          ],
-          child: BlocBuilder<SocketIoBloc, SocketIoState>(
+        child: BlocBuilder<SocketIoBloc, SocketIoState>(
               builder: (context, state) {
             if (state.status == SocketIoStatus.error) {
               return Scaffold(
@@ -85,10 +74,12 @@ class _HomeState extends State<Home> {
                       height: MediaQuery.of(context).size.height * (2 / 3),
                       child: const AirFleetMap(),
                     ),
-                    UserStore.user?.role == Roles.pilot ? const PilotFlightsManagement() : const FlightsManagement()
+                    UserStore.user?.role == Roles.pilot
+                        ? const PilotFlightsManagement()
+                        : const FlightsManagement()
                   ],
                 ));
           }),
-        ));
+        );
   }
 }

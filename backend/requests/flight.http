@@ -4,7 +4,7 @@ GET http://localhost:3001/api/flights HTTP/1.1
 ### Create a flight
 POST http://localhost:3001/api/flights HTTP/1.1
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsImV4cCI6MTc0Nzk5MTgxMn0.BiCoBclwBu68FEIR7ihVUe1GvhXN3xS8Tn_3vZ3T794
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsImV4cCI6MTc0OTY1NjE2N30.A5nQgLQOklbiipjfAtn7GwwJQH17ClbHplaMCFvNxhc
 
 {
   "status": "waiting_pilot",
@@ -24,4 +24,9 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsImV4cCI6M
 
 ### Get current flight
 GET http://localhost:3001/api/flights/current HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsImV4cCI6MTc0Nzk5MTgxMn0.BiCoBclwBu68FEIR7ihVUe1GvhXN3xS8Tn_3vZ3T794
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsImV4cCI6MTc0OTY1NjE2N30.A5nQgLQOklbiipjfAtn7GwwJQH17ClbHplaMCFvNxhc
+
+
+### Get flights close by
+GET http://localhost:3001/api/flights/near-by?latitude=48.866669&longitude=2.13333&range=100 HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsImV4cCI6MTc0OTY1NjE2N30.A5nQgLQOklbiipjfAtn7GwwJQH17ClbHplaMCFvNxhc

@@ -4,6 +4,7 @@ import (
 	"backend/database"
 	"backend/handlers"
 	"backend/middlewares"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -17,4 +18,5 @@ func InitFlightRoutes(api *gin.RouterGroup) {
 	api.POST("", middlewares.IsAuth(), flightHandler.Create)
 
 	api.GET("/current", middlewares.IsAuth(), flightHandler.GetCurrentFlight)
+	api.GET("/near-by", middlewares.IsPilotAuth(), flightHandler.GetFlightRequestsNearBy)
 }

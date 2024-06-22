@@ -7,7 +7,13 @@ type Airport struct {
 	Longitude float64 `json:"longitude"`
 }
 
-type InputCreateFlight struct {
+type NearByParams struct {
+	Range     float64 `form:"range"`
+	Latitude  float64 `form:"latitude" binding:"required"`
+	Longitude float64 `form:"longitude" binding:"required"`
+}
+
+type CreateFlight struct {
 	Departure Airport `json:"departure" binding:"required"`
 	Arrival   Airport `json:"arrival" binding:"required"`
 }

@@ -54,6 +54,20 @@ class Flight {
       vehicle: json['vehicle'] != null ? Vehicle.fromJson(json['vehicle']) : null,
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'status': status,
+      'price': price,
+      'pilotId': pilotId,
+      'vehicleId': vehicleId,
+      'departure': departure.toJson(),
+      'arrival': arrival.toJson(),
+      'pilot': pilot?.toJson(),
+      'vehicle': vehicle?.toJson()
+    };
+  }
 }
 
 class Airport {

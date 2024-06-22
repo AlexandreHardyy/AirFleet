@@ -1,11 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:frontend/layouts/mobile_layout.dart';
 import 'package:frontend/layouts/web_layout.dart';
-import 'package:frontend/mobile/blocs/pilot_status/pilot_status_bloc.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 
@@ -35,35 +32,9 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (kIsWeb) {
-      return MaterialApp(
-          home: const WebLayout(),
-          theme: ThemeData(
-            textTheme: TextTheme(
-                displayLarge: GoogleFonts.prostoOne(
-                  color: const Color(0xFFDCA200),
-                  fontSize: 32,
-                  fontWeight: FontWeight.bold,
-                )
-            ),
-          )
-      );
+      return const WebLayout();
     } else {
-      return BlocProvider(
-      create: (context) => PilotStatusBloc()..add(PilotStatusInitialized()),
-      child:MaterialApp(
-        home: const MobileLayout(),
-        theme: ThemeData(
-          textTheme: TextTheme(
-              displayLarge: GoogleFonts.prostoOne(
-                color: const Color(0xFFDCA200),
-                fontSize: 32,
-                fontWeight: FontWeight.bold,
-              )
-          ),
-          // ALTERNATIVE
-          /*textTheme: GoogleFonts.prostoOneTextTheme(),*/
-        ),
-      ));
+      return const MobileLayout();
     }
   }
 }

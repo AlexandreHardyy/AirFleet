@@ -27,6 +27,12 @@ final class SocketIoCreateSession extends SocketIoEvent {
   SocketIoCreateSession({required this.flightId});
 }
 
+final class SocketIoMakePriceProposal extends SocketIoEvent {
+  final int flightId;
+  final double price;
+
+  SocketIoMakePriceProposal({required this.flightId, required this.price});
+}
 final class SocketIoListenEvent extends SocketIoEvent {
   final String eventId;
   final String event;

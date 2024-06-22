@@ -4,7 +4,9 @@ import 'package:frontend/mobile/auth_screen/register_pilot_screen.dart';
 import 'package:frontend/mobile/auth_screen/register_screen.dart';
 import 'package:frontend/mobile/flight_history.dart';
 import 'package:frontend/mobile/home/home.dart';
+import 'package:frontend/mobile/pilot_flight_request_detail.dart';
 import 'package:frontend/mobile/vehicles_management.dart';
+import 'package:frontend/models/flight.dart';
 import 'package:frontend/web/home_web.dart';
 
 import 'mobile/vehicle_detail.dart';
@@ -49,6 +51,12 @@ class Routes {
   static vehiclesManagement(context) {
     return MaterialPageRoute(
       builder: (context) => const VehiclesManagementScreen(),
+    );
+  }
+
+  static flightRequestDetail(context, {required Flight flight}) {
+    return MaterialPageRoute(
+      builder: (context) => FlightRequestDetail(flight: flight),
     );
   }
 

@@ -42,6 +42,28 @@ func (h *FlightHandler) GetAll(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
+func (h *FlightHandler) GetFlightRequestsNearBy(c *gin.Context) {
+	var queryParams inputs.NearByParams
+	if err := c.ShouldBindQuery(&queryParams); err != nil {
+		c.JSON(400, &Response{
+			Message: err.Error(),
+		})
+		return
+	}
+
+	flights, err := h.flightService.GetFlightRequestNearBy(utils.Position{
+		Latitude: queryParams.Latitude, Longitude: queryParams.Longitude,
+	}, queryParams.Range)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, Response{
+			Message: err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, flights)
+}
+
 // CreateFlight godoc
 //
 // @Summary	Create flight
@@ -51,7 +73,7 @@ func (h *FlightHandler) GetAll(c *gin.Context) {
 // @Accept			json
 // @Produce		json
 //
-// @Param			flightInput	body		inputs.InputCreateFlight	true	"Message body"
+// @Param			flightInput	body		inputs.CreateFlight	true	"Message body"
 // @Success		201				{object}	responses.ResponseFlight
 // @Failure		400				{object}	Response
 //
@@ -59,7 +81,7 @@ func (h *FlightHandler) GetAll(c *gin.Context) {
 //
 // @Security	BearerAuth
 func (h *FlightHandler) Create(c *gin.Context) {
-	var input inputs.InputCreateFlight
+	var input inputs.CreateFlight
 	err := c.ShouldBindJSON(&input)
 	if err != nil {
 		response := &Response{

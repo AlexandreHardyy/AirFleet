@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
+import 'package:frontend/mobile/blocs/current_flight/current_flight_bloc.dart';
 import 'package:frontend/mobile/blocs/pilot_status/pilot_status_bloc.dart';
+import 'package:frontend/mobile/blocs/socket_io/socket_io_bloc.dart';
+import 'package:frontend/mobile/home/flights_management/pilot_flight_management/pilot_flight_requests.dart';
 import 'package:frontend/models/vehicle.dart';
 import 'package:frontend/routes.dart';
 
@@ -15,6 +18,7 @@ class PilotNotReadyScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<PilotStatusBloc, PilotStatusState>(
         builder: (context, state) {
+
       if (state.status == CurrentPilotStatus.loading) {
         return const Center(
           child: CircularProgressIndicator(),
@@ -40,15 +44,18 @@ class PilotNotReadyScreen extends StatelessWidget {
       }
 
       if (state.status == CurrentPilotStatus.loaded &&
-          (state.selectedVehicle != null && state.selectedVehicle!.isSelected == true)) {
-        return Center(
-          child: ElevatedButton(
-            onPressed: () {
-              context.read<PilotStatusBloc>().add(PilotStatusNotReady());
-
-            },
-            child: const Text('Cancel search'),
-          ),
+          (state.selectedVehicle != null &&
+              state.selectedVehicle!.isSelected == true)) {
+        return Column(
+          children: [
+            ElevatedButton(
+              onPressed: () {
+                context.read<PilotStatusBloc>().add(PilotStatusNotReady());
+              },
+              child: const Text('Cancel search'),
+            ),
+            const Expanded(child: PilotFlightRequests())
+          ],
         );
       }
 
@@ -82,7 +89,18 @@ class PilotNotReadyScreen extends StatelessWidget {
                           state.instantValue['vehicle_selected'] as Vehicle;
                       vehicle.isSelected = true;
 
-                      context.read<PilotStatusBloc>().add(PilotStatusReady(vehicle: vehicle));
+                      context
+                          .read<PilotStatusBloc>()
+                          .add(PilotStatusReady(vehicle: vehicle));
+
+                      context.read<SocketIoBloc>().add(SocketIoListenEvent(
+                            event: "createSession",
+                            callback: (_) {
+                              context
+                                  .read<CurrentFlightBloc>()
+                                  .add(CurrentFlightUpdated());
+                            },
+                          ));
                     },
                     child: const Text('I am ready !'),
                   ),

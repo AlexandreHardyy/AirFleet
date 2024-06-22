@@ -12,6 +12,7 @@ type FlightRepositoryInterface interface {
 	GetFlightByID(flightID int) (models.Flight, error)
 	CreateFlight(flight models.Flight) (models.Flight, error)
 	GetCurrentFlight(userID int) (models.Flight, error)
+	GetFlightRequests() ([]models.Flight, error)
 	UpdateFlight(flight models.Flight) (models.Flight, error)
 }
 
@@ -30,6 +31,15 @@ func (r *FlightRepository) GetFlightByID(flightID int) (models.Flight, error) {
 		return flight, err
 	}
 	return flight, nil
+}
+
+func (r *FlightRepository) GetFlightRequests() ([]models.Flight, error) {
+	var flights []models.Flight
+	err := r.db.Preload("User").Where(models.Flight{Status: flightStatus.WAITING_PILOT}).Find(&flights).Error
+	if err != nil {
+		return flights, err
+	}
+	return flights, nil
 }
 
 func (r *FlightRepository) GetCurrentFlight(userID int) (models.Flight, error) {
