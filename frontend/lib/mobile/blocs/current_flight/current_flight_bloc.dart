@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:frontend/local_notification_setup.dart';
 import 'package:frontend/models/flight.dart';
 import 'package:frontend/services/flight.dart';
 
@@ -47,6 +48,10 @@ class CurrentFlightBloc extends Bloc<CurrentFlightEvent, CurrentFlightState> {
         flightRequest: null,
         errorMessage: null
       ));
+    }
+
+    if (flight?.status == "waiting_proposal_approval" && state.flight?.status == "waiting_pilot") {
+      LocalNotificationService().showNotification('An offer has been made !', 'A pilot has made an offer for your flight. Check it out !');
     }
 
     emit(state.copyWith(
