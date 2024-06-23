@@ -8,6 +8,7 @@ import 'package:frontend/mobile/blocs/socket_io/socket_io_bloc.dart';
 import 'package:frontend/mobile/home/flights_management/pilot_flight_management/pilot_flight_requests.dart';
 import 'package:frontend/models/vehicle.dart';
 import 'package:frontend/routes.dart';
+import 'package:frontend/widgets/input.dart';
 
 class PilotNotReadyScreen extends StatelessWidget {
   final _formKey = GlobalKey<FormBuilderState>();
@@ -18,7 +19,6 @@ class PilotNotReadyScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<PilotStatusBloc, PilotStatusState>(
         builder: (context, state) {
-
       if (state.status == CurrentPilotStatus.loading) {
         return const Center(
           child: CircularProgressIndicator(),
@@ -46,30 +46,39 @@ class PilotNotReadyScreen extends StatelessWidget {
       if (state.status == CurrentPilotStatus.loaded &&
           (state.selectedVehicle != null &&
               state.selectedVehicle!.isSelected == true)) {
-        return Column(
-          children: [
-            ElevatedButton(
-              onPressed: () {
-                context.read<PilotStatusBloc>().add(PilotStatusNotReady());
-              },
-              child: const Text('Cancel search'),
-            ),
-            const Expanded(child: PilotFlightRequests())
-          ],
-        );
+        return Padding(
+            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+            child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  ElevatedButton(
+                    onPressed: () {
+                      context
+                          .read<PilotStatusBloc>()
+                          .add(PilotStatusNotReady());
+                    },
+                    child: const Text('Cancel search'),
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  const Expanded(child: PilotFlightRequests())
+                ]));
       }
 
       return Padding(
-          padding: const EdgeInsets.all(32),
+          padding: const EdgeInsets.symmetric(vertical: 42, horizontal: 24),
           child: FormBuilder(
               key: _formKey,
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   FormBuilderDropdown(
                     name: "vehicle_selected",
                     validator: FormBuilderValidators.compose([
                       FormBuilderValidators.required(),
                     ]),
+                    decoration: getInputDecoration(hintText: 'Select vehicle'),
                     items: state.vehicles!
                         .map((vehicle) => DropdownMenuItem(
                               value: vehicle,
@@ -77,6 +86,7 @@ class PilotNotReadyScreen extends StatelessWidget {
                             ))
                         .toList(),
                   ),
+                  const SizedBox(height: 24),
                   ElevatedButton(
                     onPressed: () {
                       final state = _formKey.currentState;
@@ -94,6 +104,7 @@ class PilotNotReadyScreen extends StatelessWidget {
                           .add(PilotStatusReady(vehicle: vehicle));
 
                       context.read<SocketIoBloc>().add(SocketIoListenEvent(
+                        eventId: "createSession",
                             event: "createSession",
                             callback: (_) {
                               context
@@ -102,7 +113,7 @@ class PilotNotReadyScreen extends StatelessWidget {
                             },
                           ));
                     },
-                    child: const Text('I am ready !'),
+                    child: const Text('I am ready'),
                   ),
                 ],
               )));

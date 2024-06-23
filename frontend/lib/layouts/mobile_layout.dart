@@ -40,18 +40,35 @@ class MobileLayoutState extends State<MobileLayout> {
             create: (context) => SocketIoBloc()..add(SocketIoInitialized()),
           ),
           BlocProvider<CurrentFlightBloc>(
-            create: (context) =>  CurrentFlightBloc()..add(CurrentFlightInitialized()),
+            create: (context) =>
+                CurrentFlightBloc()..add(CurrentFlightInitialized()),
           ),
         ],
         child: MaterialApp(
           home: isAuth ? const Home() : const LoginScreen(),
           theme: ThemeData(
+            colorSchemeSeed: const Color.fromARGB(255, 13, 0, 59),
             textTheme: TextTheme(
                 displayLarge: GoogleFonts.prostoOne(
               color: const Color(0xFFDCA200),
               fontSize: 32,
               fontWeight: FontWeight.bold,
             )),
+            elevatedButtonTheme: ElevatedButtonThemeData(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFDCA200),
+                foregroundColor: Colors.white,
+                textStyle: const TextStyle(
+                  // fontWeight: FontWeight.bold,
+                  fontSize: 16
+                ), // Couleur du texte blanc
+                shape: RoundedRectangleBorder(
+                  borderRadius:
+                      BorderRadius.circular(8.0), // Coins arrondis de 4px
+                ),
+                padding: const EdgeInsets.all(14) 
+              ),
+            ),
             // ALTERNATIVE
             /*textTheme: GoogleFonts.prostoOneTextTheme(),*/
           ),

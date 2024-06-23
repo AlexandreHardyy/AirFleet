@@ -11,7 +11,11 @@ part 'socket_io_event.dart';
 
 part 'socket_io_state.dart';
 
-final String? socketIoUrl = kIsWeb ? dotenv.env['SOCKET_IO_URL'] : (Platform.isAndroid ? dotenv.env['SOCKET_IO_URL_ANDROID'] : dotenv.env['SOCKET_IO_URL']);
+final String? socketIoUrl = kIsWeb
+    ? dotenv.env['SOCKET_IO_URL']
+    : (Platform.isAndroid
+        ? dotenv.env['SOCKET_IO_URL_ANDROID']
+        : dotenv.env['SOCKET_IO_URL']);
 
 class SocketIoBloc extends Bloc<SocketIoEvent, SocketIoState> {
   SocketIoBloc()
@@ -104,12 +108,10 @@ class SocketIoBloc extends Bloc<SocketIoEvent, SocketIoState> {
       SocketIoMakePriceProposal event, Emitter<SocketIoState> emit) {
     state.socket!.connect();
 
-    final message = {
-      'flightId': event.flightId,
-      'price': event.price
-    };
+    final message = {'flightId': event.flightId, 'price': event.price};
 
-    state.socket!.emit("makeFlightProposal", const JsonEncoder().convert(message));
+    state.socket!
+        .emit("makeFlightProposal", const JsonEncoder().convert(message));
 
     emit(state.copyWith(
       status: SocketIoStatus.connected,

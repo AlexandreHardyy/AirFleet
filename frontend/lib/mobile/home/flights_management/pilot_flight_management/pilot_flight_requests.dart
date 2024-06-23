@@ -22,9 +22,10 @@ class PilotFlightRequests extends StatelessWidget {
             child: ListTile(
                 title:
                     Text("${flight.departure.name} -> ${flight.arrival.name}"),
-                leading: const Icon(Icons.flight, color: Colors.green),
+                leading: const Icon(Icons.flight, color: Color(0xFFDCA200)),
                 onTap: () {
-                  Navigator.of(context).push(Routes.flightRequestDetail(context, flight: flight));
+                  Navigator.of(context).push(
+                      Routes.flightRequestDetail(context, flight: flight));
                 }),
           );
         },

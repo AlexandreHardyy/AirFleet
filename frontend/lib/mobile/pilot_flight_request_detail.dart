@@ -6,6 +6,7 @@ import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:frontend/mobile/blocs/current_flight/current_flight_bloc.dart';
 import 'package:frontend/mobile/blocs/socket_io/socket_io_bloc.dart';
 import 'package:frontend/models/flight.dart';
+import 'package:frontend/widgets/input.dart';
 
 class FlightRequestDetail extends StatelessWidget {
   final Flight flight;
@@ -17,26 +18,46 @@ class FlightRequestDetail extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text('Flight Details'),
+          title: const Text('Flight details'),
         ),
         body:
             BlocBuilder<SocketIoBloc, SocketIoState>(builder: (context, state) {
           return BlocBuilder<CurrentFlightBloc, CurrentFlightState>(
               builder: (context, state) {
             return Padding(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    "${flight.departure.name} -> ${flight.arrival.name}",
-                    style: const TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        flight.departure.name,
+                        style: const TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      const Icon(
+                        Icons.arrow_forward, // Icône de flèche
+                        size: 24,
+                        color: Colors.black,
+                      ),
+                      const SizedBox(width: 12),
+                      Text(
+                        flight.arrival.name,
+                        style: const TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 12),
                   const Text(
                     "Departure:",
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
@@ -45,7 +66,7 @@ class FlightRequestDetail extends StatelessWidget {
                     flight.departure.address,
                     style: const TextStyle(fontSize: 16),
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 12),
                   const Text(
                     "Arrival:",
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
@@ -54,11 +75,13 @@ class FlightRequestDetail extends StatelessWidget {
                     flight.arrival.address,
                     style: const TextStyle(fontSize: 16),
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 24),
                   const Divider(),
+                  const SizedBox(height: 24),
                   FormBuilder(
                     key: _formKey,
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         FormBuilderTextField(
                           name: 'price',
@@ -66,10 +89,8 @@ class FlightRequestDetail extends StatelessWidget {
                           inputFormatters: <TextInputFormatter>[
                             FilteringTextInputFormatter.digitsOnly
                           ],
-                          decoration: const InputDecoration(
-                            labelText: 'Your price for the flight request',
-                            border: OutlineInputBorder(),
-                          ),
+                          decoration: getInputDecoration(
+                              hintText: 'Your price for the flight request'),
                           validator: FormBuilderValidators.compose([
                             FormBuilderValidators.required(),
                             FormBuilderValidators.numeric(),
@@ -94,6 +115,7 @@ class FlightRequestDetail extends StatelessWidget {
                               context
                                   .read<SocketIoBloc>()
                                   .add(SocketIoListenEvent(
+                                    eventId: "flightProposalChoice",
                                     event: "flightProposalChoice",
                                     callback: (_) {
                                       context

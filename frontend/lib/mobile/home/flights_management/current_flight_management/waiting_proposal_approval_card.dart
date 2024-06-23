@@ -6,6 +6,7 @@ import 'package:frontend/mobile/blocs/current_flight/current_flight_bloc.dart';
 import 'package:frontend/mobile/blocs/socket_io/socket_io_bloc.dart';
 import 'package:frontend/models/flight.dart';
 import 'package:frontend/storage/user.dart';
+import 'package:frontend/widgets/title.dart';
 
 class WaitingProposalApprovalCard extends StatefulWidget {
   final Flight flight;
@@ -50,26 +51,36 @@ class _WaitingProposalApprovalCardState
   @override
   Widget build(BuildContext context) {
     if (UserStore.user?.role == Roles.pilot) {
-      return Column(
-        children: [
-          Text(
-              '${widget.flight.departure.name} -> ${widget.flight.arrival.name}'),
-          const SizedBox(
-            height: 10,
-          ),
-          const Text('Waiting confirmation from client'),
-          ElevatedButton(
-            onPressed: () {
-              _socketIoBloc.state.socket!.emit(
-                "cancelFlight",
-                '${widget.flight.id}',
-              );
-              context.read<CurrentFlightBloc>().add(CurrentFlightUpdated());
-            },
-            child: const Text('Cancel offer'),
-          ),
-        ],
-      );
+      return Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              MainTitle(
+                   content: '${widget.flight.departure.name} -> ${widget.flight.arrival.name}'),
+              const SizedBox(
+                height: 24,
+              ),
+              const Text('Waiting confirmation from client'),
+              const SizedBox(
+                height: 24,
+              ),
+              const LinearProgressIndicator(),
+              const SizedBox(
+                height: 24,
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  _socketIoBloc.state.socket!.emit(
+                    "cancelFlight",
+                    '${widget.flight.id}',
+                  );
+                  context.read<CurrentFlightBloc>().add(CurrentFlightUpdated());
+                },
+                child: const Text('Cancel offer'),
+              ),
+            ],
+          ));
     }
 
     return Column(

@@ -4,6 +4,8 @@ import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:frontend/routes.dart';
 import 'package:frontend/services/user.dart';
 import 'package:frontend/storage/user.dart';
+import 'package:frontend/widgets/input.dart';
+import 'package:frontend/widgets/title.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -19,33 +21,34 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Login'),
-      ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 54),
         child: FormBuilder(
           key: _formKey,
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              const MainTitle(content: 'Login'),
+              const SizedBox(height: 32),
               FormBuilderTextField(
                 key: _emailFieldKey,
                 name: 'email',
-                decoration: const InputDecoration(labelText: 'Email'),
+                decoration: getInputDecoration(hintText: 'Email'),
                 validator: FormBuilderValidators.compose([
                   FormBuilderValidators.required(),
                   FormBuilderValidators.email(),
                 ]),
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 32),
               FormBuilderTextField(
                 name: 'password',
-                decoration: const InputDecoration(labelText: 'Password'),
+                decoration: getInputDecoration(hintText: 'Password'),
                 obscureText: true,
                 validator: FormBuilderValidators.compose([
                   FormBuilderValidators.required(),
                 ]),
               ),
+              const SizedBox(height: 32),
               ElevatedButton(
                 onPressed: () async {
                   final state = _formKey.currentState;
