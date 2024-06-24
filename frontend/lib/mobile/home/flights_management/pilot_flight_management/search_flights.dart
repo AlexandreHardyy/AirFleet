@@ -10,10 +10,10 @@ import 'package:frontend/models/vehicle.dart';
 import 'package:frontend/routes.dart';
 import 'package:frontend/widgets/input.dart';
 
-class PilotNotReadyScreen extends StatelessWidget {
+class SearchFlights extends StatelessWidget {
   final _formKey = GlobalKey<FormBuilderState>();
 
-  PilotNotReadyScreen({super.key});
+  SearchFlights({super.key});
 
   @override
   Widget build(BuildContext context) {

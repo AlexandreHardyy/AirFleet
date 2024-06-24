@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend/mobile/blocs/current_flight/current_flight_bloc.dart';
+import 'package:frontend/mobile/home/flights_management/pilot_flight_management/pilot_current_flight_management/index.dart';
+import 'package:frontend/mobile/home/flights_management/pilot_flight_management/search_flights.dart';
+import 'package:frontend/storage/user.dart';
 
-import 'create_flight.dart';
-import 'current_flight_management/index.dart';
+import 'user_flight_management/create_flight.dart';
+import 'user_flight_management/user_current_flight_management/index.dart';
 
 class FlightsManagement extends StatefulWidget {
   const FlightsManagement({super.key});
@@ -118,36 +121,55 @@ class _FlightsManagementState extends State<FlightsManagement> {
 
                       if (state.status == CurrentFlightStatus.loaded &&
                           state.flight != null) {
-                        return const CurrentFlightManagement();
+                        return UserStore.user?.role == Roles.pilot ? const CurrentPilotFlightManagement() : const CurrentFlightManagement();
                       }
 
-                      return DefaultTabController(
-                        length: 3,
-                        child: Scaffold(
-                          appBar: AppBar(
-                            toolbarHeight: 0,
-                            bottom: const TabBar(
-                              tabs: [
-                                Text("Search"),
-                                Text("Create"),
-                                Text("List"),
-                              ],
-                            ),
-                          ),
-                          body: TabBarView(
-                            children: [
-                              const Icon(Icons.directions_car),
-                              CreateFlightWidget(
-                                departureTextFieldFocusNode:
-                                    departureTextFieldFocusNode,
-                                arrivalTextFieldFocusNode:
-                                    arrivalTextFieldFocusNode,
+                      return UserStore.user?.role == Roles.pilot
+                          ? DefaultTabController(
+                              length: 1,
+                              child: Scaffold(
+                                appBar: AppBar(
+                                  toolbarHeight: 0,
+                                  bottom: const TabBar(
+                                    tabs: [
+                                      Text("List"),
+                                    ],
+                                  ),
+                                ),
+                                body: TabBarView(
+                                  children: [
+                                    SearchFlights(),
+                                  ],
+                                ),
                               ),
-                               const Icon(Icons.directions_bike),
-                            ],
-                          ),
-                        ),
-                      );
+                            )
+                          : DefaultTabController(
+                              length: 3,
+                              child: Scaffold(
+                                appBar: AppBar(
+                                  toolbarHeight: 0,
+                                  bottom: const TabBar(
+                                    tabs: [
+                                      Text("Search"),
+                                      Text("Create"),
+                                      Text("List"),
+                                    ],
+                                  ),
+                                ),
+                                body: TabBarView(
+                                  children: [
+                                    const Icon(Icons.directions_car),
+                                    CreateFlightWidget(
+                                      departureTextFieldFocusNode:
+                                          departureTextFieldFocusNode,
+                                      arrivalTextFieldFocusNode:
+                                          arrivalTextFieldFocusNode,
+                                    ),
+                                    const Icon(Icons.directions_bike),
+                                  ],
+                                ),
+                              ),
+                            );
                     },
                   ),
                 ),

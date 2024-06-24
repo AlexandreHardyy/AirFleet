@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend/mobile/blocs/current_flight/current_flight_bloc.dart';
 import 'package:frontend/mobile/blocs/socket_io/socket_io_bloc.dart';
-import 'package:frontend/mobile/home/flights_management/current_flight_management/waiting_proposal_approval_card.dart';
+import 'package:frontend/mobile/home/flights_management/user_flight_management/user_current_flight_management/waiting_proposal_approval_card.dart';
 
 import 'in_progress.dart';
 

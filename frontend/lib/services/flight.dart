@@ -1,7 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:frontend/models/flight.dart';
 import 'package:frontend/services/position.dart';
-import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 
 import 'dio.dart';
 
