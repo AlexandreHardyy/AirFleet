@@ -10,6 +10,7 @@ import (
 	"backend/utils"
 	"errors"
 	"gorm.io/gorm"
+	"math"
 )
 
 const earthRadiusKm = 6371
@@ -386,5 +387,5 @@ func (s *FlightService) EstimateFlightTimeInHour(flightID int, pilotPosition uti
 
 	estimatedTimeInHour := distanceInNauticalMiles / aircraftSpeed
 
-	return estimatedTimeInHour, nil
+	return math.Round(estimatedTimeInHour*100) / 100, nil
 }
