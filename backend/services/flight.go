@@ -9,7 +9,6 @@ import (
 	"backend/responses"
 	"backend/utils"
 	"errors"
-
 	"gorm.io/gorm"
 )
 
@@ -237,6 +236,8 @@ func (s *FlightService) FlightProposalChoice(input inputs.InputFlightProposalCho
 		flight.PilotID = nil
 		flight.Price = nil
 		flight.VehicleID = nil
+		flight.Pilot = models.User{}
+		flight.Vehicle = models.Vehicle{}
 	}
 
 	_, err = s.repository.UpdateFlight(flight)
