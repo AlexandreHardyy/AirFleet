@@ -84,7 +84,9 @@ class UserService {
       if (error is DioException) {
         return error.response?.data;
       } else {
-        throw Exception('Failed to login: $error');
+        return {
+          'message': 'an error occurred.'
+        };
       }
     }
   }

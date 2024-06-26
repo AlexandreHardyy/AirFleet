@@ -1,7 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:frontend/blocs/auth/auth_bloc.dart';
 import 'package:frontend/layouts/mobile_layout.dart';
 import 'package:frontend/layouts/web_layout.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
@@ -36,10 +37,19 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (kIsWeb) {
-      return const WebLayout();
-    } else {
-      return const MobileLayout();
-    }
+    return BlocProvider<AuthBloc>(
+      create: (context) => AuthBloc()..add(AuthInitialized()),
+      child: BlocBuilder<AuthBloc, AuthState>(
+        builder: (context, state) {
+          if (state.status == AuthStatus.loading) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+
+          return kIsWeb ? const WebLayout() : const MobileLayout();
+        },
+      ),
+    );
   }
 }
