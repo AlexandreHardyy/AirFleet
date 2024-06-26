@@ -1,21 +1,35 @@
+import 'dart:async';
+
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:frontend/local_notification_setup.dart';
 import 'package:frontend/models/flight.dart';
 import 'package:frontend/models/vehicle.dart';
 import 'package:frontend/services/flight.dart';
 import 'package:frontend/services/vehicle.dart';
+import 'package:frontend/utils/ticker.dart';
 
 part 'pilot_status_event.dart';
 part 'pilot_status_state.dart';
 
 class PilotStatusBloc extends Bloc<PilotStatusEvent, PilotStatusState> {
+  final Ticker _ticker = const Ticker();
+  StreamSubscription<int>? _tickerSubscription;
+
+  @override
+  Future<void> close() {
+    _tickerSubscription?.cancel();
+    return super.close();
+  }
+
   PilotStatusBloc()
       : super(PilotStatusState(
             status: CurrentPilotStatus.loading, selectedVehicle: null)) {
     on<PilotStatusInitialized>(_onPilotStatusInitialized);
     on<PilotStatusNotReady>(_onPilotStatusNotReady);
     on<PilotStatusReady>(_onPilotStatusReady);
+    on<PilotStatusFlightsRefresh>(_onPilotStatusFlightRefresh);
   }
 
   Future<void> _onPilotStatusInitialized(
@@ -32,6 +46,13 @@ class PilotStatusBloc extends Bloc<PilotStatusEvent, PilotStatusState> {
         flights: flightRequests,
         vehicles:
             vehicles.where((vehicle) => vehicle.isVerified == true).toList()));
+
+    if (selectedVehicle != null) {
+      _tickerSubscription?.cancel();
+      _tickerSubscription = _ticker
+          .tick(interval: 10)
+          .listen((duration) => add(PilotStatusFlightsRefresh()));
+    }
   }
 
   Future<void> _onPilotStatusNotReady(
@@ -44,6 +65,8 @@ class PilotStatusBloc extends Bloc<PilotStatusEvent, PilotStatusState> {
       selectedVehicle.isSelected = false;
       await VehicleService.updateVehicle(selectedVehicle);
     }
+
+    _tickerSubscription?.cancel();
 
     emit(state.copyWith(
         status: CurrentPilotStatus.loaded,
@@ -71,6 +94,25 @@ class PilotStatusBloc extends Bloc<PilotStatusEvent, PilotStatusState> {
           selectedVehicle: updatedVehicle,
           flights: flightRequests,
           vehicles: state.vehicles),
+    );
+    _tickerSubscription?.cancel();
+    _tickerSubscription = _ticker
+        .tick(interval: 4)
+        .listen((duration) => add(PilotStatusFlightsRefresh()));
+  }
+
+  Future<void> _onPilotStatusFlightRefresh(
+      PilotStatusFlightsRefresh event, Emitter<PilotStatusState> emit) async {
+    final flightRequests = await FlightService.getCurrentFlightRequests();
+
+    if (flightRequests?.isNotEmpty == true &&
+        flightRequests?.length != state.flights?.length) {
+      LocalNotificationService().showNotification(
+          'New flight request !', 'A new fight requests was made by a client');
+    }
+
+    emit(
+      state.copyWith(flights: flightRequests),
     );
   }
 }

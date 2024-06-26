@@ -6,7 +6,10 @@ sealed class PilotStatusEvent {}
 final class VehiclesLoading extends PilotStatusEvent {}
 
 final class PilotStatusInitialized extends PilotStatusEvent {}
+
 final class PilotStatusNotReady extends PilotStatusEvent {}
+
+final class PilotStatusFlightsRefresh extends PilotStatusEvent {}
 
 final class PilotStatusReady extends PilotStatusEvent {
   final Vehicle vehicle;

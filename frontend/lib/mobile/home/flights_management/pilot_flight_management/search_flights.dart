@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
-import 'package:frontend/mobile/blocs/current_flight/current_flight_bloc.dart';
 import 'package:frontend/mobile/blocs/pilot_status/pilot_status_bloc.dart';
-import 'package:frontend/mobile/blocs/socket_io/socket_io_bloc.dart';
 import 'package:frontend/mobile/home/flights_management/pilot_flight_management/pilot_flight_requests.dart';
 import 'package:frontend/models/vehicle.dart';
 import 'package:frontend/routes.dart';
@@ -102,16 +100,6 @@ class SearchFlights extends StatelessWidget {
                       context
                           .read<PilotStatusBloc>()
                           .add(PilotStatusReady(vehicle: vehicle));
-
-                      context.read<SocketIoBloc>().add(SocketIoListenEvent(
-                        eventId: "createSession",
-                            event: "createSession",
-                            callback: (_) {
-                              context
-                                  .read<CurrentFlightBloc>()
-                                  .add(CurrentFlightUpdated());
-                            },
-                          ));
                     },
                     child: const Text('I am ready'),
                   ),
