@@ -1,9 +1,12 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:frontend/services/position.dart';
 import 'package:frontend/storage/user.dart';
+import 'package:frontend/utils/ticker.dart';
 import 'package:socket_io_client/socket_io_client.dart';
 import 'dart:io' show Platform;
 
@@ -18,6 +21,15 @@ final String? socketIoUrl = kIsWeb
         : dotenv.env['SOCKET_IO_URL']);
 
 class SocketIoBloc extends Bloc<SocketIoEvent, SocketIoState> {
+  final Ticker _ticker = const Ticker();
+  StreamSubscription<int>? _tickerSubscription;
+
+  @override
+  Future<void> close() {
+    _tickerSubscription?.cancel();
+    return super.close();
+  }
+
   SocketIoBloc()
       : super(
             SocketIoState(status: SocketIoStatus.initial, listenedEvents: {})) {
@@ -28,6 +40,9 @@ class SocketIoBloc extends Bloc<SocketIoEvent, SocketIoState> {
     on<SocketIoError>(_onSocketIoError);
     on<SocketIoCreateSession>(_onSocketCreateSession);
     on<SocketIoMakePriceProposal>(_onSocketMakePriceProposal);
+    on<SocketIoFlightTakeoff>(_onSocketFlightTakeoff);
+    on<SocketIoUpdatePilotPosition>(_onSocketUpdatePilotPosition);
+    on<SocketIoFlightLanding>(_onSocketFlightLanding);
     on<SocketIoListenEvent>(_onSocketListenEvent);
     on<SocketIoStopListeningEvent>(_onSocketStopListeningEvent);
   }
@@ -102,6 +117,15 @@ class SocketIoBloc extends Bloc<SocketIoEvent, SocketIoState> {
     emit(state.copyWith(
       status: SocketIoStatus.connected,
     ));
+
+    _tickerSubscription?.cancel();
+    if (UserStore.user?.role == Roles.pilot) {
+      _tickerSubscription = _ticker
+          .tick(interval: 4)
+          .listen((duration) => add(SocketIoUpdatePilotPosition(
+                flightId: event.flightId,
+              )));
+    }
   }
 
   void _onSocketMakePriceProposal(
@@ -118,6 +142,55 @@ class SocketIoBloc extends Bloc<SocketIoEvent, SocketIoState> {
     ));
   }
 
+  void _onSocketUpdatePilotPosition(
+      SocketIoUpdatePilotPosition event, Emitter<SocketIoState> emit) async {
+    final currentPosition = await determinePosition();
+    state.socket!.connect();
+
+    final message = {
+      'flightId': event.flightId,
+      'latitude': currentPosition.latitude,
+      'longitude': currentPosition.longitude,
+    };
+
+    state.socket!
+        .emit("pilotPositionUpdate", const JsonEncoder().convert(message));
+
+    emit(state.copyWith(
+      status: SocketIoStatus.connected,
+    ));
+  }
+
+  void _onSocketFlightTakeoff(
+      SocketIoFlightTakeoff event, Emitter<SocketIoState> emit) {
+    state.socket!.connect();
+
+    state.socket!.emit("flightTakeoff", "${event.flightId}");
+
+    _tickerSubscription?.cancel();
+    _tickerSubscription = _ticker
+        .tick(interval: 4)
+        .listen((duration) => add(SocketIoUpdatePilotPosition(
+              flightId: event.flightId,
+            )));
+
+    emit(state.copyWith(
+      status: SocketIoStatus.connected,
+    ));
+  }
+
+  void _onSocketFlightLanding(
+      SocketIoFlightLanding event, Emitter<SocketIoState> emit) {
+    state.socket!.connect();
+
+    _tickerSubscription?.cancel();
+    state.socket!.emit("flightLanding", "${event.flightId}");
+
+    emit(state.copyWith(
+      status: SocketIoStatus.connected,
+    ));
+  }
+
   void _onSocketListenEvent(
       SocketIoListenEvent event, Emitter<SocketIoState> emit) {
     if (state.listenedEvents.containsKey(event.eventId)) {
@@ -126,7 +199,8 @@ class SocketIoBloc extends Bloc<SocketIoEvent, SocketIoState> {
 
     state.socket!.on(event.event, event.callback);
     emit(state.copyWith(
-      listenedEvents: state.listenedEvents..putIfAbsent(event.eventId, () => event.event)
+      listenedEvents: state.listenedEvents
+        ..putIfAbsent(event.eventId, () => event.event),
     ));
   }
 

@@ -33,12 +33,35 @@ final class SocketIoMakePriceProposal extends SocketIoEvent {
 
   SocketIoMakePriceProposal({required this.flightId, required this.price});
 }
+
+final class SocketIoFlightTakeoff extends SocketIoEvent {
+  final int flightId;
+
+  SocketIoFlightTakeoff({required this.flightId});
+}
+
+final class SocketIoUpdatePilotPosition extends SocketIoEvent {
+  final int flightId;
+
+  SocketIoUpdatePilotPosition({required this.flightId});
+}
+
+final class SocketIoFlightLanding extends SocketIoEvent {
+  final int flightId;
+
+  SocketIoFlightLanding({required this.flightId});
+}
+
 final class SocketIoListenEvent extends SocketIoEvent {
   final String eventId;
   final String event;
   final dynamic Function(dynamic) callback;
 
-  SocketIoListenEvent({required this.eventId, required this.event, required this.callback});
+  SocketIoListenEvent({
+    required this.eventId,
+    required this.event,
+    required this.callback,
+  });
 }
 
 final class SocketIoStopListeningEvent extends SocketIoEvent {

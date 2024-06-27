@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend/mobile/blocs/current_flight/current_flight_bloc.dart';
 import 'package:frontend/mobile/blocs/socket_io/socket_io_bloc.dart';
+import 'package:frontend/mobile/home/flights_management/pilot_flight_management/pilot_current_flight_management/in_progress.dart';
+import 'package:frontend/mobile/home/flights_management/pilot_flight_management/pilot_current_flight_management/waiting_for_takeoff.dart';
 import 'package:frontend/mobile/home/flights_management/pilot_flight_management/pilot_current_flight_management/waiting_proposal_approval_card.dart';
 
 class CurrentPilotFlightManagement extends StatefulWidget {
@@ -12,7 +14,8 @@ class CurrentPilotFlightManagement extends StatefulWidget {
       _CurrentPilotFlightManagementState();
 }
 
-class _CurrentPilotFlightManagementState extends State<CurrentPilotFlightManagement> {
+class _CurrentPilotFlightManagementState
+    extends State<CurrentPilotFlightManagement> {
   @override
   Widget build(BuildContext context) {
     if (context.read<SocketIoBloc>().state.status ==
@@ -44,11 +47,11 @@ class _CurrentPilotFlightManagementState extends State<CurrentPilotFlightManagem
         }
 
         if (state.flight!.status == 'waiting_takeoff') {
-          return const Text("Waiting for takeoff");
+          return WaitingForTakeoff(flight: state.flight!);
         }
 
         if (state.flight!.status == 'in_progress') {
-          return const Text("flight in progress");
+          return FlightInProgress(flight: state.flight!);
         }
 
         return const Text('No flight selected');

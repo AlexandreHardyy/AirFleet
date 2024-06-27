@@ -264,10 +264,9 @@ func (h *FlightSocketHandler) FlightProposalChoice(s socketio.Conn, msg string) 
 	}
 
 	h.socketIoServer.BroadcastToRoom("/flights", strconv.Itoa(flightProposalChoice.FlightId), "flightUpdated", "flight updated")
-	if flightProposalChoice.Choice == "accepted" {
+	if flightProposalChoice.Choice == "rejected" {
+		h.socketIoServer.ClearRoom("/flights", strconv.Itoa(flightProposalChoice.FlightId))
 		s.Join(strconv.Itoa(flightProposalChoice.FlightId))
-
-		//h.startPilotPositionUpdate(s, strconv.Itoa(flightProposalChoice.FlightId))
 	}
 
 	return nil
