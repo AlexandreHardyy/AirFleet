@@ -4,6 +4,7 @@ import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:frontend/routes.dart';
 import 'package:frontend/services/user.dart';
 import 'package:form_builder_file_picker/form_builder_file_picker.dart';
+import 'package:frontend/utils/file-permission.dart';
 import 'package:frontend/widgets/input.dart';
 import 'package:frontend/widgets/title.dart';
 
@@ -17,6 +18,12 @@ class _RegisterPilotScreenState extends State<RegisterPilotScreen> {
   final _formKey = GlobalKey<FormBuilderState>();
   final _emailFieldKey = GlobalKey<FormBuilderState>();
   var _apiMessage = "";
+
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance
+        .addPostFrameCallback((_) async => requestPhotosPermission());
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -67,50 +74,52 @@ class _RegisterPilotScreenState extends State<RegisterPilotScreen> {
               ),
               const SizedBox(height: 24),
               FormBuilderFilePicker(
-                  name: "id_card",
-                  decoration: getInputDecoration(hintText: 'Card ID'),
-                  maxFiles: 1,
-                  validator: FormBuilderValidators.compose([
-                    FormBuilderValidators.required(),
-                  ]),
-                  previewImages: true,
-                  typeSelectors: const [
-                    TypeSelector(
-                      type: FileType.any,
-                      selector: Row(
-                        children: <Widget>[
-                          Icon(Icons.add_circle),
-                          Padding(
-                            padding: EdgeInsets.only(left: 8.0),
-                            child: Text("Add your ID"),
-                          ),
-                        ],
-                      ),
+                name: "id_card",
+                decoration: getInputDecoration(hintText: 'Card ID'),
+                maxFiles: 1,
+                validator: FormBuilderValidators.compose([
+                  FormBuilderValidators.required(),
+                ]),
+                previewImages: true,
+                typeSelectors: const [
+                  TypeSelector(
+                    type: FileType.any,
+                    selector: Row(
+                      children: <Widget>[
+                        Icon(Icons.add_circle),
+                        Padding(
+                          padding: EdgeInsets.only(left: 8.0),
+                          child: Text("Add your ID"),
+                        ),
+                      ],
                     ),
-                  ]),
+                  ),
+                ],
+              ),
               const SizedBox(height: 4),
               FormBuilderFilePicker(
-                  name: "driving_licence",
-                  decoration: getInputDecoration(hintText: 'Driving license'),
-                  maxFiles: 1,
-                  validator: FormBuilderValidators.compose([
-                    FormBuilderValidators.required(),
-                  ]),
-                  previewImages: true,
-                  typeSelectors: const [
-                    TypeSelector(
-                      type: FileType.any,
-                      selector: Row(
-                        children: <Widget>[
-                          Icon(Icons.add_circle),
-                          Padding(
-                            padding: EdgeInsets.only(left: 8.0),
-                            child: Text("Add your licence"),
-                          ),
-                        ],
-                      ),
+                name: "driving_licence",
+                decoration: getInputDecoration(hintText: 'Pilot license'),
+                maxFiles: 1,
+                validator: FormBuilderValidators.compose([
+                  FormBuilderValidators.required(),
+                ]),
+                previewImages: true,
+                typeSelectors: const [
+                  TypeSelector(
+                    type: FileType.any,
+                    selector: Row(
+                      children: <Widget>[
+                        Icon(Icons.add_circle),
+                        Padding(
+                          padding: EdgeInsets.only(left: 8.0),
+                          child: Text("Add your licence"),
+                        ),
+                      ],
                     ),
-                  ]),
+                  ),
+                ],
+              ),
               const SizedBox(height: 10),
               ElevatedButton(
                 // : Theme.of(context).colorScheme.secondary,
