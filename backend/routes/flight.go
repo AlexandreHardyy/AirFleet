@@ -12,7 +12,7 @@ func InitFlightRoutes(api *gin.RouterGroup) {
 
 	api = api.Group("/flights")
 
-	api.GET("", flightHandler.GetAll)
+	api.GET("", middlewares.IsAuth(), flightHandler.GetAll)
 
 	api.POST("", middlewares.IsAuth(), flightHandler.Create)
 

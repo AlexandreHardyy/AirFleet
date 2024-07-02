@@ -9,6 +9,7 @@ import (
 )
 
 type FlightRepositoryInterface interface {
+	GetAllFlights(limit int, offset int, filter string) ([]models.Flight, error)
 	GetFlightByID(flightID int) (models.Flight, error)
 	CreateFlight(flight models.Flight) (models.Flight, error)
 	GetCurrentFlight(userID int) (models.Flight, error)
@@ -21,6 +22,19 @@ type FlightRepository struct {
 
 func NewFlightRepository(db *gorm.DB) *FlightRepository {
 	return &FlightRepository{db}
+}
+
+func (r *FlightRepository) GetAllFlights(limit int, offset int, filter string) ([]models.Flight, error) {
+	var flights []models.Flight
+	query := r.db.Preload("Pilot").Preload("Vehicle").Offset(offset).Limit(limit)
+	if filter != "" {
+		query = query.Where("status = ?", filter) // Adjust this line based on your filter requirements
+	}
+	err := query.Find(&flights).Error
+	if err != nil {
+		return flights, err
+	}
+	return flights, nil
 }
 
 func (r *FlightRepository) GetFlightByID(flightID int) (models.Flight, error) {

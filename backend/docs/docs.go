@@ -16,6 +16,146 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/flights": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "get all flights",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "flight"
+                ],
+                "summary": "Get all flights",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Limit",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Offset",
+                        "name": "offset",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter",
+                        "name": "filter",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/responses.ResponseFlight"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Response"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "create a new flight",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "flight"
+                ],
+                "summary": "Create flight",
+                "parameters": [
+                    {
+                        "description": "Message body",
+                        "name": "flightInput",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/inputs.InputCreateFlight"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/responses.ResponseFlight"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/flights/current": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "get current flight",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "flight"
+                ],
+                "summary": "Get current flight",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/responses.ResponseFlight"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/users": {
             "get": {
                 "security": [
@@ -617,6 +757,23 @@ const docTemplate = `{
                 }
             }
         },
+        "inputs.Airport": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "latitude": {
+                    "type": "number"
+                },
+                "longitude": {
+                    "type": "number"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
         "inputs.CreatePilot": {
             "type": "object"
         },
@@ -646,12 +803,23 @@ const docTemplate = `{
         "inputs.CreateVehicle": {
             "type": "object",
             "required": [
+                "cruise_altitude",
+                "cruise_speed",
                 "matriculation",
                 "model_name",
                 "seat",
                 "type"
             ],
             "properties": {
+                "cruise_altitude": {
+                    "type": "number"
+                },
+                "cruise_speed": {
+                    "type": "number"
+                },
+                "is_verified": {
+                    "type": "boolean"
+                },
                 "matriculation": {
                     "type": "string"
                 },
@@ -663,6 +831,21 @@ const docTemplate = `{
                 },
                 "type": {
                     "type": "string"
+                }
+            }
+        },
+        "inputs.InputCreateFlight": {
+            "type": "object",
+            "required": [
+                "arrival",
+                "departure"
+            ],
+            "properties": {
+                "arrival": {
+                    "$ref": "#/definitions/inputs.Airport"
+                },
+                "departure": {
+                    "$ref": "#/definitions/inputs.Airport"
                 }
             }
         },
@@ -710,6 +893,18 @@ const docTemplate = `{
         "inputs.UpdateVehicle": {
             "type": "object",
             "properties": {
+                "cruise_altitude": {
+                    "type": "number"
+                },
+                "cruise_speed": {
+                    "type": "number"
+                },
+                "is_selected": {
+                    "type": "boolean"
+                },
+                "is_verified": {
+                    "type": "boolean"
+                },
                 "matriculation": {
                     "type": "string"
                 },
@@ -764,6 +959,70 @@ const docTemplate = `{
                 }
             }
         },
+        "responses.ResponseAirport": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "latitude": {
+                    "type": "number"
+                },
+                "longitude": {
+                    "type": "number"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "responses.ResponseFlight": {
+            "type": "object",
+            "required": [
+                "arrival",
+                "departure",
+                "id",
+                "status"
+            ],
+            "properties": {
+                "arrival": {
+                    "$ref": "#/definitions/responses.ResponseAirport"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "departure": {
+                    "$ref": "#/definitions/responses.ResponseAirport"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "pilot": {
+                    "$ref": "#/definitions/responses.ListUser"
+                },
+                "pilot_id": {
+                    "type": "integer"
+                },
+                "price": {
+                    "type": "number"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "integer"
+                },
+                "vehicle": {
+                    "$ref": "#/definitions/responses.Vehicle"
+                },
+                "vehicle_id": {
+                    "type": "integer"
+                }
+            }
+        },
         "responses.User": {
             "type": "object",
             "properties": {
@@ -802,8 +1061,17 @@ const docTemplate = `{
                 "created_at": {
                     "type": "string"
                 },
+                "cruise_altitude": {
+                    "type": "number"
+                },
+                "cruise_speed": {
+                    "type": "number"
+                },
                 "id": {
                     "type": "integer"
+                },
+                "is_selected": {
+                    "type": "boolean"
                 },
                 "is_verified": {
                     "type": "boolean"
