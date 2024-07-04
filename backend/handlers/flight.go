@@ -35,11 +35,76 @@ func NewFlightHandler(flightService services.FlightServiceInterface) *FlightHand
 	return &FlightHandler{flightService}
 }
 
+// GetAll godoc
+//
+// @Summary	Get all flights
+// @Schemes
+// @Description	get all flights
+// @Tags			flight
+// @Accept			json
+// @Produce		json
+//
+// @Param			limit	query	int		false	"Limit"
+// @Param			offset	query	int		false	"Offset"
+// @Param			filter	query	string	false	"Filter"
+//
+// @Success		200				{object}	[]responses.ResponseFlight
+// @Failure		400				{object}	Response
+//
+// @Router			/flights [get]
+//
+// @Security	BearerAuth
 func (h *FlightHandler) GetAll(c *gin.Context) {
-	response := &Response{
-		Message: "flight endpoint",
+	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "10"))
+	offset, _ := strconv.Atoi(c.DefaultQuery("offset", "0"))
+
+	flights, err := h.flightService.GetAllFlights(limit, offset)
+	if err != nil {
+		response := &Response{
+			Message: err.Error(),
+		}
+		c.JSON(http.StatusBadRequest, response)
+		return
 	}
-	c.JSON(http.StatusOK, response)
+
+	c.JSON(http.StatusOK, flights)
+}
+
+// GetFlight godoc
+//
+// @Summary	Get flight
+// @Schemes
+// @Description	get flight
+// @Tags			flight
+// @Accept			json
+// @Produce		json
+//
+// @Param			id	path	int		true	"Flight ID"
+//
+// @Success		200				{object}	responses.ResponseFlight
+// @Failure		400				{object}	Response
+//
+// @Router			/flights/{id} [get]
+//
+// @Security	BearerAuth
+func (h *FlightHandler) GetFlight(c *gin.Context) {
+	flightId, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, Response{
+			Message: "Invalid flight ID",
+		})
+		return
+	}
+
+	flight, err := h.flightService.GetFlight(flightId)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, Response{
+			Message: err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, flight)
 }
 
 func (h *FlightHandler) GetFlightRequestsNearBy(c *gin.Context) {
@@ -64,7 +129,7 @@ func (h *FlightHandler) GetFlightRequestsNearBy(c *gin.Context) {
 	c.JSON(http.StatusOK, flights)
 }
 
-// CreateFlight godoc
+// Create CreateFlight godoc
 //
 // @Summary	Create flight
 // @Schemes
