@@ -5,12 +5,13 @@ import 'package:frontend/mobile/auth_screen/register_screen.dart';
 import 'package:frontend/mobile/flight_history.dart';
 import 'package:frontend/mobile/home/home.dart';
 import 'package:frontend/mobile/pilot_flight_request_detail.dart';
+import 'package:frontend/mobile/profile/user_profile.dart';
+import 'package:frontend/mobile/profile/user_vehicles.dart';
 import 'package:frontend/mobile/vehicles_management.dart';
 import 'package:frontend/models/flight.dart';
+import 'package:frontend/models/vehicle.dart';
 import 'package:frontend/web/home_web.dart';
-
-import 'mobile/flight_chat.dart';
-import 'mobile/vehicle_detail.dart';
+import 'package:frontend/mobile/vehicle_detail.dart';
 
 class Routes {
   static home(context) {
@@ -46,6 +47,18 @@ class Routes {
   static flightHistory(context) {
     return MaterialPageRoute(
       builder: (context) => const FlightHistoryScreen(),
+    );
+  }
+
+  static userProfile(context) {
+    return MaterialPageRoute(
+      builder: (context) => const UserProfileScreen(),
+    );
+  }
+
+  static userVehicles(context, {required List<Vehicle> vehicles}) {
+    return MaterialPageRoute(
+      builder: (context) => UserVehiclesScreen(vehicles: vehicles),
     );
   }
 

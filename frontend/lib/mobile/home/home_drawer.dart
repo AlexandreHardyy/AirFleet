@@ -19,10 +19,10 @@ class HomeDrawer extends StatelessWidget {
             child: Text('Drawer Header'),
           ),
           ListTile(
-            leading: const Icon(FontAwesomeIcons.clockRotateLeft),
-            title: const Text('Flight history'),
+            leading: const Icon(Icons.person),
+            title: const Text('Profile'),
             onTap: () {
-              Navigator.of(context).push(Routes.flightHistory(context));
+              Navigator.of(context).push(Routes.userProfile(context));
             },
           ),
           UserStore.user?.role == Roles.pilot
