@@ -17,6 +17,7 @@ const earthRadiusKm = 6371
 
 type FlightServiceInterface interface {
 	//REST
+	GetAllFlights(limit int, offset int) ([]responses.ResponseFlight, error)
 	CreateFlight(input inputs.CreateFlight, userID int) (responses.ResponseFlight, error)
 	GetFlight(flightID int) (responses.ResponseFlight, error)
 	GetCurrentFlight(userID int) (responses.ResponseFlight, error)
@@ -41,6 +42,17 @@ func NewFlightService(r repositories.FlightRepositoryInterface) *FlightService {
 }
 
 //REST
+
+func (s *FlightService) GetAllFlights(limit int, offset int) ([]responses.ResponseFlight, error) {
+	flights, err := s.repository.GetAllFlights(limit, offset)
+	if err != nil {
+		return []responses.ResponseFlight{}, err
+	}
+
+	responseFlights := formatFlights(flights)
+
+	return responseFlights, nil
+}
 
 func (s *FlightService) CreateFlight(input inputs.CreateFlight, userID int) (responses.ResponseFlight, error) {
 	flight := models.Flight{
@@ -162,6 +174,14 @@ func formatFlight(flight models.Flight) responses.ResponseFlight {
 		Pilot:     pilot,
 		Vehicle:   vehicle,
 	}
+}
+
+func formatFlights(flights []models.Flight) []responses.ResponseFlight {
+	var responseFlights []responses.ResponseFlight
+	for _, flight := range flights {
+		responseFlights = append(responseFlights, formatFlight(flight))
+	}
+	return responseFlights
 }
 
 //WEBSOCKET
