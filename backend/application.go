@@ -2,21 +2,18 @@ package main
 
 import (
 	"backend/database"
+	_ "backend/docs"
 	"backend/routes"
 	"backend/services/brevo"
 	"backend/websocket"
 	"github.com/gin-contrib/cors"
-	socketio "github.com/googollee/go-socket.io"
-	"log"
-	"os"
-
 	"github.com/gin-gonic/gin"
+	socketio "github.com/googollee/go-socket.io"
 	"github.com/joho/godotenv"
-
-	_ "backend/docs"
-
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
+	"log"
+	"os"
 )
 
 //	@title			Backend AirFleet
@@ -38,7 +35,11 @@ func main() {
 
 	database.OpenConnection()
 
-	gin.SetMode(os.Getenv("GIN_MODE"))
+	ginMode := os.Getenv("GIN_MODE")
+	if ginMode == "" {
+		ginMode = "release"
+	}
+	gin.SetMode(ginMode)
 	router := gin.Default()
 
 	config := cors.DefaultConfig()
@@ -57,5 +58,11 @@ func main() {
 	router.POST("/socket.io/*any", gin.WrapH(socketIoServer))
 
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-	router.Run(":3001")
+
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "5000"
+	}
+	err = router.Run(":" + port)
+	log.Panic(err)
 }
