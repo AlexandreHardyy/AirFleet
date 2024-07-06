@@ -10,7 +10,7 @@ import (
 
 func initVehicleRoutes(api *gin.RouterGroup) {
 
-	vehicleHandler := handlers.GetVehicle(database.DB)
+	vehicleHandler := handlers.GetVehicleHandler(database.DB)
 
 	api = api.Group("/vehicles")
 	api.GET("", middlewares.IsAdminAuth(), vehicleHandler.GetAll)

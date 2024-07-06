@@ -13,19 +13,19 @@ import (
 	"gorm.io/gorm"
 )
 
-type vehicleHandler struct {
+type VehicleHandler struct {
 	vehicleService services.IVehicleService
 }
 
-func GetVehicle(db *gorm.DB) (vehicleHandler *vehicleHandler) {
+func GetVehicleHandler(db *gorm.DB) (vehicleHandler *VehicleHandler) {
 	vehicleRepository := repositories.NewVehicleRepository(db)
 	vehicleService := services.NewVehicleService(vehicleRepository)
 	vehicleHandler = NewVehicleHandler(vehicleService)
 	return vehicleHandler
 }
 
-func NewVehicleHandler(vehicleService services.IVehicleService) *vehicleHandler {
-	return &vehicleHandler{vehicleService}
+func NewVehicleHandler(vehicleService services.IVehicleService) *VehicleHandler {
+	return &VehicleHandler{vehicleService}
 }
 
 // CreateVehicle Register godoc
@@ -44,7 +44,7 @@ func NewVehicleHandler(vehicleService services.IVehicleService) *vehicleHandler 
 //	@Router			/vehicles [post]
 //
 //	@Security	BearerAuth
-func (th *vehicleHandler) CreateVehicle(c *gin.Context) {
+func (th *VehicleHandler) CreateVehicle(c *gin.Context) {
 	var input inputs.CreateVehicle
 	err := c.ShouldBindJSON(&input)
 
@@ -92,7 +92,7 @@ func (th *vehicleHandler) CreateVehicle(c *gin.Context) {
 //	@Router			/vehicles [get]
 //
 //	@Security	BearerAuth
-func (th *vehicleHandler) GetAll(c *gin.Context) {
+func (th *VehicleHandler) GetAll(c *gin.Context) {
 
 	vehicles, err := th.vehicleService.GetAll()
 
@@ -119,7 +119,7 @@ func (th *vehicleHandler) GetAll(c *gin.Context) {
 //	@Router			/vehicles/me [get]
 //
 //	@Security	BearerAuth
-func (th *vehicleHandler) GetAllMe(c *gin.Context) {
+func (th *VehicleHandler) GetAllMe(c *gin.Context) {
 
 	userID, err := token.ExtractTokenID(c)
 	if err != nil {
@@ -154,7 +154,7 @@ func (th *vehicleHandler) GetAllMe(c *gin.Context) {
 //	@Failure	404			{object}	Response
 //
 // @Router /vehicles/{id} [get]
-func (th *vehicleHandler) VehicleById(c *gin.Context) {
+func (th *VehicleHandler) VehicleById(c *gin.Context) {
 	idStr := c.Param("id")
 	id, err := strconv.Atoi(idStr)
 
@@ -191,7 +191,7 @@ func (th *vehicleHandler) VehicleById(c *gin.Context) {
 //	@Failure	404			{object}	Response
 //
 // @Router /vehicles/{id} [delete]
-func (th *vehicleHandler) DeleteVehicle(c *gin.Context) {
+func (th *VehicleHandler) DeleteVehicle(c *gin.Context) {
 	idStr := c.Param("id")
 	id, err := strconv.Atoi(idStr)
 
@@ -229,7 +229,7 @@ func (th *vehicleHandler) DeleteVehicle(c *gin.Context) {
 //	@Failure	404			{object}	Response
 //
 // @Router /vehicles/{id} [patch]
-func (th *vehicleHandler) UpdateVehicle(c *gin.Context) {
+func (th *VehicleHandler) UpdateVehicle(c *gin.Context) {
 	idStr := c.Param("id")
 	id, err := strconv.Atoi(idStr)
 
