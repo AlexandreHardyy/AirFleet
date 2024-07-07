@@ -34,6 +34,12 @@ final class SocketIoMakePriceProposal extends SocketIoEvent {
   SocketIoMakePriceProposal({required this.flightId, required this.price});
 }
 
+final class SocketIoCancelFlight extends SocketIoEvent {
+  final int flightId;
+
+  SocketIoCancelFlight({required this.flightId});
+}
+
 final class SocketIoFlightTakeoff extends SocketIoEvent {
   final int flightId;
 

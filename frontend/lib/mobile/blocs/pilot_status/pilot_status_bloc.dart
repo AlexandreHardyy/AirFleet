@@ -112,7 +112,10 @@ class PilotStatusBloc extends Bloc<PilotStatusEvent, PilotStatusState> {
     }
 
     emit(
-      state.copyWith(flights: flightRequests),
+      state.copyWith(
+        status: CurrentPilotStatus.loaded,
+        flights: flightRequests
+        ),
     );
   }
 }

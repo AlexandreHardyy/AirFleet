@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend/mobile/blocs/current_flight/current_flight_bloc.dart';
 import 'package:frontend/mobile/blocs/socket_io/socket_io_bloc.dart';
 import 'package:frontend/models/flight.dart';
+import 'package:frontend/widgets/button.dart';
 import 'package:frontend/widgets/title.dart';
 
 class WaitingProposalApprovalCard extends StatefulWidget {
@@ -66,6 +67,7 @@ class _WaitingProposalApprovalCardState
               height: 24,
             ),
             ElevatedButton(
+              style: dangerButtonStyle,
               onPressed: () {
                 _socketIoBloc.state.socket!.emit(
                   "cancelFlight",

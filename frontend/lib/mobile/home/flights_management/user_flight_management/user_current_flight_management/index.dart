@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend/mobile/blocs/current_flight/current_flight_bloc.dart';
 import 'package:frontend/mobile/blocs/socket_io/socket_io_bloc.dart';
 import 'package:frontend/mobile/home/flights_management/user_flight_management/user_current_flight_management/waiting_proposal_approval_card.dart';
+import 'package:frontend/mobile/home/flights_management/user_flight_management/user_current_flight_management/waiting_takeoff.dart';
+import 'package:frontend/widgets/button.dart';
 
 import 'in_progress.dart';
 
@@ -33,7 +35,8 @@ class _CurrentFlightManagementState extends State<CurrentFlightManagement> {
             },
           ));
     }
-    return Center(
+    return Padding(
+      padding: const EdgeInsets.all(24),
       child: BlocConsumer<CurrentFlightBloc, CurrentFlightState>(
           listener: (context, state) {
         if (state.errorMessage != null) {
@@ -43,22 +46,8 @@ class _CurrentFlightManagementState extends State<CurrentFlightManagement> {
       }, builder: (context, state) {
         if (state.flight!.status == 'waiting_pilot') {
           return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  ElevatedButton(
-                    onPressed: () {
-                      context
-                          .read<CurrentFlightBloc>()
-                          .add(CurrentFlightLoaded(flight: state.flight!));
-                    },
-                    child: const Text("Focus on route"),
-                  ),
-                  const SizedBox(width: 10),
-                ],
-              ),
-              const SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -72,6 +61,15 @@ class _CurrentFlightManagementState extends State<CurrentFlightManagement> {
                     ),
                   ),
                   const SizedBox(width: 10),
+                  TextButton(
+                    onPressed: () {
+                      context
+                          .read<CurrentFlightBloc>()
+                          .add(CurrentFlightLoaded(flight: state.flight!));
+                    },
+                    child: const Icon(Icons.arrow_circle_right),
+                  ),
+                  const SizedBox(width: 10),
                   Expanded(
                     child: Column(
                       children: [
@@ -83,7 +81,7 @@ class _CurrentFlightManagementState extends State<CurrentFlightManagement> {
                   ),
                 ],
               ),
-              const SizedBox(height: 30),
+              const SizedBox(height: 24),
               const Expanded(
                 child: Padding(
                   padding: EdgeInsets.symmetric(horizontal: 20),
@@ -97,7 +95,9 @@ class _CurrentFlightManagementState extends State<CurrentFlightManagement> {
                   ),
                 ),
               ),
+              const SizedBox(height: 24),
               ElevatedButton(
+                style: dangerButtonStyle,
                 onPressed: () {
                   // SocketProvider.of(context)!.socket.emit("cancelFlight", "${state.flight!.id}");
                   context
@@ -118,7 +118,7 @@ class _CurrentFlightManagementState extends State<CurrentFlightManagement> {
         }
 
         if (state.flight!.status == 'waiting_takeoff') {
-          return const Text("Waiting for takeoff");
+          return WaitingTakeoff(flight: state.flight!);
         }
 
         if (state.flight!.status == 'in_progress') {

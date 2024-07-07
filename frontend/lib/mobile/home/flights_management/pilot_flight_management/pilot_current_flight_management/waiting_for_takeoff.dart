@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend/mobile/blocs/socket_io/socket_io_bloc.dart';
 import 'package:frontend/models/flight.dart';
+import 'package:frontend/widgets/button.dart';
 import 'package:frontend/widgets/title.dart';
 
 class WaitingForTakeoff extends StatelessWidget {
@@ -30,6 +31,16 @@ const WaitingForTakeoff({ super.key, required this.flight });
                 context.read<SocketIoBloc>().add(SocketIoFlightTakeoff(flightId: flight.id));
               },
               child: const Text('Start takeoff'),
+            ),
+            const SizedBox(
+              height: 24,
+            ),
+            ElevatedButton(
+              style: dangerButtonStyle,
+              onPressed: () {
+                context.read<SocketIoBloc>().add(SocketIoCancelFlight(flightId: flight.id));
+              },
+              child: const Text('Cancel Flight'),
             ),
           ],
         ));

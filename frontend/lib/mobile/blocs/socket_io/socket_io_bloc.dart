@@ -40,6 +40,7 @@ class SocketIoBloc extends Bloc<SocketIoEvent, SocketIoState> {
     on<SocketIoError>(_onSocketIoError);
     on<SocketIoCreateSession>(_onSocketCreateSession);
     on<SocketIoMakePriceProposal>(_onSocketMakePriceProposal);
+    on<SocketIoCancelFlight>(_onSocketCancelFlight);
     on<SocketIoFlightTakeoff>(_onSocketFlightTakeoff);
     on<SocketIoUpdatePilotPosition>(_onSocketUpdatePilotPosition);
     on<SocketIoFlightLanding>(_onSocketFlightLanding);
@@ -155,6 +156,19 @@ class SocketIoBloc extends Bloc<SocketIoEvent, SocketIoState> {
 
     state.socket!
         .emit("pilotPositionUpdate", const JsonEncoder().convert(message));
+
+    emit(state.copyWith(
+      status: SocketIoStatus.connected,
+    ));
+  }
+
+  void _onSocketCancelFlight(
+      SocketIoCancelFlight event, Emitter<SocketIoState> emit) {
+    state.socket!.connect();
+
+    state.socket!.emit("cancelFlight", "${event.flightId}");
+
+    _tickerSubscription?.cancel();
 
     emit(state.copyWith(
       status: SocketIoStatus.connected,

@@ -4,6 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend/mobile/blocs/socket_io/socket_io_bloc.dart';
 import 'package:frontend/models/flight.dart';
+import 'package:frontend/widgets/button.dart';
+import 'package:frontend/widgets/title.dart';
+
 class WaitingProposalApprovalCard extends StatefulWidget {
   final Flight flight;
 
@@ -47,43 +50,84 @@ class _WaitingProposalApprovalCardState
   @override
   Widget build(BuildContext context) {
     return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text("Price offer received !"),
-        const SizedBox(height: 10),
-        Text("Price : ${widget.flight.price}"),
-        const SizedBox(height: 10),
-        Text(
-            "Pilot: ${widget.flight.pilot!.firstName} ${widget.flight.pilot!.lastName}"),
-        const SizedBox(height: 10),
-        Text("Aircraft : ${widget.flight.vehicle!.modelName}"),
-        const SizedBox(height: 10),
+        const SecondaryTitle(content: "Price offer received"),
+        const SizedBox(height: 24),
+        Row(
+          children: [
+            const Text(
+              "Pilot : ",
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            Text(
+                "${widget.flight.pilot!.firstName} ${widget.flight.pilot!.lastName}")
+          ],
+        ),
+        const SizedBox(height: 8),
+        Row(
+          children: [
+            const Text(
+              "Price : ",
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            Text("${widget.flight.price} USD")
+          ],
+        ),
+        const SizedBox(height: 8),
+        Row(
+          children: [
+            const Text(
+              "Aircraft : ",
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            Text(widget.flight.vehicle!.modelName)
+          ],
+        ),
+        const SizedBox(height: 8),
         estimatedFlightTime == null
             ? const CircularProgressIndicator()
-            : Text("Estimated flight time : $estimatedFlightTime"),
+            : Row(
+                children: [
+                  const Text(
+                    "Estimated flight time : ",
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  Text("$estimatedFlightTime")
+                ],
+              ),
+        const SizedBox(height: 24),
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            ElevatedButton(
-              onPressed: () {
-                // SocketProvider.of(context)!.socket.emit("flightProposalChoice", jsonEncode({"flightId": flight!.id, "choice": "accepted"}));
-                _socketIoBloc.state.socket!.emit(
-                  "flightProposalChoice",
-                  jsonEncode(
-                      {"flightId": widget.flight.id, "choice": "accepted"}),
-                );
-              },
-              child: const Text('Accept price offer'),
+            Expanded(
+              child: ElevatedButton(
+                onPressed: () {
+                  // SocketProvider.of(context)!.socket.emit("flightProposalChoice", jsonEncode({"flightId": flight!.id, "choice": "accepted"}));
+                  _socketIoBloc.state.socket!.emit(
+                    "flightProposalChoice",
+                    jsonEncode(
+                        {"flightId": widget.flight.id, "choice": "accepted"}),
+                  );
+                },
+                child: const Text('Accept offer'),
+              ),
             ),
-            ElevatedButton(
-              onPressed: () {
-                _socketIoBloc.state.socket!.emit(
-                  "flightProposalChoice",
-                  jsonEncode(
-                      {"flightId": widget.flight.id, "choice": "rejected"}),
-                );
-              },
-              child: const Text('Reject price offer'),
-            ),
+            const SizedBox(width: 24),
+            Expanded(
+              child: ElevatedButton(
+                style: dangerButtonStyle,
+                onPressed: () {
+                  _socketIoBloc.state.socket!.emit(
+                    "flightProposalChoice",
+                    jsonEncode(
+                        {"flightId": widget.flight.id, "choice": "rejected"}),
+                  );
+                },
+                child: const Text('Reject offer'),
+              ),
+            )
           ],
         ),
       ],

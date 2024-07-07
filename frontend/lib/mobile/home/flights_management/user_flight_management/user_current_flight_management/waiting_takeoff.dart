@@ -1,29 +1,23 @@
-import 'dart:convert';
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend/mobile/blocs/current_flight/current_flight_bloc.dart';
 import 'package:frontend/mobile/blocs/socket_io/socket_io_bloc.dart';
 import 'package:frontend/models/flight.dart';
-import 'package:frontend/utils/utils.dart';
+import 'package:frontend/widgets/button.dart';
 import 'package:frontend/widgets/title.dart';
 
-class InProgressFlightCard extends StatefulWidget {
+class WaitingTakeoff extends StatefulWidget {
   final Flight flight;
 
-  const InProgressFlightCard({super.key, required this.flight});
+  const WaitingTakeoff({super.key, required this.flight});
 
   @override
-  State<InProgressFlightCard> createState() => _InProgressFlightCardState();
+  State<WaitingTakeoff> createState() => _WaitingTakeoffState();
 }
 
-class _InProgressFlightCardState extends State<InProgressFlightCard> {
+class _WaitingTakeoffState extends State<WaitingTakeoff> {
+  String? estimatedFlightTime;
   late SocketIoBloc _socketIoBloc;
-
-  String? remainingTime;
-  num? remainingDistance;
 
   @override
   void initState() {
@@ -31,14 +25,12 @@ class _InProgressFlightCardState extends State<InProgressFlightCard> {
     _socketIoBloc = context.read<SocketIoBloc>();
 
     _socketIoBloc.add(SocketIoListenEvent(
-      eventId: "pilotPositionUpdated2",
-      event: "pilotPositionUpdated",
-      callback: (data) {
-        Map<String, dynamic> jsonData = jsonDecode(data);
+      eventId: "flightTimeUpdated",
+      event: "flightTimeUpdated",
+      callback: (estimatedFlightTime) {
         if (mounted) {
           setState(() {
-            remainingTime = formatFlightTime(jsonData['estimated_flight_time'].toString());
-            remainingDistance = jsonData['remaining_distance'];
+            this.estimatedFlightTime = _formatFlightTime(estimatedFlightTime);
           });
         }
       },
@@ -47,15 +39,16 @@ class _InProgressFlightCardState extends State<InProgressFlightCard> {
 
   @override
   void dispose() {
-    _socketIoBloc.add(SocketIoStopListeningEvent(eventId: 'pilotPositionUpdated2'));
+    _socketIoBloc.add(SocketIoStopListeningEvent(eventId: 'flightTimeUpdated'));
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        const SecondaryTitle(content: 'Flight in progress'),
+        const SecondaryTitle(content: 'Waiting for takeoff'),
         const SizedBox(height: 24),
         Row(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -91,11 +84,32 @@ class _InProgressFlightCardState extends State<InProgressFlightCard> {
             ),
           ],
         ),
-        const SizedBox(height: 10),
-        Text("Remaining time: $remainingTime"),
-        const SizedBox(height: 10),
-        Text("Remaining distance: $remainingDistance nm"),
+        const SizedBox(height: 24),
+        const Text('Please join aircraft the plane before takeoff'),
+        const SizedBox(height: 8),
+        const LinearProgressIndicator(),
+        const SizedBox(
+          height: 24,
+        ),
+        ElevatedButton(
+          style: dangerButtonStyle,
+          onPressed: () {
+            _socketIoBloc.state.socket!.emit(
+              "cancelFlight",
+              '${widget.flight.id}',
+            );
+            context.read<CurrentFlightBloc>().add(CurrentFlightUpdated());
+          },
+          child: const Text('Cancel flight'),
+        ),
       ],
     );
   }
+}
+
+String _formatFlightTime(String estimatedFlightTimeStr) {
+  double hours = double.parse(estimatedFlightTimeStr);
+  int hh = hours.floor();
+  int mm = ((hours - hh) * 60).round();
+  return '${hh.toString().padLeft(2, '0')}h${mm.toString().padLeft(2, '0')}min';
 }
