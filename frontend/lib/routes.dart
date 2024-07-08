@@ -9,6 +9,7 @@ import 'package:frontend/mobile/vehicles_management.dart';
 import 'package:frontend/models/flight.dart';
 import 'package:frontend/web/home_web.dart';
 
+import 'mobile/flight_chat.dart';
 import 'mobile/vehicle_detail.dart';
 
 class Routes {
@@ -63,6 +64,12 @@ class Routes {
   static vehicleDetail(context, {int? vehicleId}) {
     return MaterialPageRoute(
       builder: (context) => VehicleDetailsPage(vehicleId: vehicleId),
+    );
+  }
+
+  static flightChat(context, {required int flightId}) {
+    return MaterialPageRoute(
+      builder: (context) => FlightChat(flightId: flightId),
     );
   }
 }

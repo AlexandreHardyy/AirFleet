@@ -58,6 +58,7 @@ final class SocketIoFlightLanding extends SocketIoEvent {
   SocketIoFlightLanding({required this.flightId});
 }
 
+// TODO: improve to use an event array
 final class SocketIoListenEvent extends SocketIoEvent {
   final String eventId;
   final String event;

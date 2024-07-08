@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:frontend/models/user.dart';
 import 'package:frontend/services/dio.dart';
 import 'package:frontend/storage/user.dart';
@@ -65,6 +66,7 @@ class UserService {
   }
 
   static Future<Map<String, dynamic>> login(String email, String password) async {
+    print(dotenv.env['API_URL']);
     try {
       final response = await dioApi.post(
         '/users/login',

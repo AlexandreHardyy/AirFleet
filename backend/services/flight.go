@@ -13,8 +13,6 @@ import (
 	"math"
 )
 
-const earthRadiusKm = 6371
-
 type FlightServiceInterface interface {
 	//REST
 	GetAllFlights(limit int, offset int) ([]responses.ResponseFlight, error)
@@ -225,31 +223,13 @@ func formatFlights(flights []models.Flight) []responses.ResponseFlight {
 
 //WEBSOCKET
 
-func containsUser(users []*models.User, userID int) bool {
-	for _, user := range users {
-		if user.ID == userID {
-			return true
-		}
-	}
-	return false
-}
-
-func notContainsUser(users []*models.User, userID int) bool {
-	for _, user := range users {
-		if user.ID == userID {
-			return false
-		}
-	}
-	return true
-}
-
 func (s *FlightService) JoinFlightSession(flightID int, userID int) error {
 	flight, err := s.repository.GetFlightByID(flightID)
 	if err != nil {
 		return err
 	}
 
-	if flight.Status == flightStatus.WAITING_PILOT && containsUser(flight.Users, userID) {
+	if flight.Status == flightStatus.WAITING_PILOT && utils.ContainsUser(flight.Users, userID) {
 		return nil
 	}
 
@@ -303,11 +283,11 @@ func (s *FlightService) FlightProposalChoice(input inputs.InputFlightProposalCho
 		return err
 	}
 
-	if flight.Status != flightStatus.WAITING_PROPOSAL_APPROVAL || (notContainsUser(flight.Users, userID) && (flight.PilotID == nil || *flight.PilotID != userID)) {
+	if flight.Status != flightStatus.WAITING_PROPOSAL_APPROVAL || (utils.NotContainsUser(flight.Users, userID) && (flight.PilotID == nil || *flight.PilotID != userID)) {
 		return errors.New("flight is not available for proposal choice")
 	}
 
-	if input.Choice == "accepted" && containsUser(flight.Users, userID) {
+	if input.Choice == "accepted" && utils.ContainsUser(flight.Users, userID) {
 		flight.Status = flightStatus.WAITING_TAKEOFF
 	} else if input.Choice == "rejected" {
 		flight.Status = flightStatus.WAITING_PILOT
@@ -429,7 +409,7 @@ func (s *FlightService) CancelFlight(flightID int, userID int) error {
 		return err
 	}
 
-	if (flight.Status != flightStatus.WAITING_PILOT && flight.Status != flightStatus.WAITING_TAKEOFF && flight.Status != flightStatus.WAITING_PROPOSAL_APPROVAL) || (notContainsUser(flight.Users, userID) && *flight.PilotID != userID) {
+	if (flight.Status != flightStatus.WAITING_PILOT && flight.Status != flightStatus.WAITING_TAKEOFF && flight.Status != flightStatus.WAITING_PROPOSAL_APPROVAL) || (utils.NotContainsUser(flight.Users, userID) && *flight.PilotID != userID) {
 		return errors.New("flight is not available for cancel")
 	}
 
