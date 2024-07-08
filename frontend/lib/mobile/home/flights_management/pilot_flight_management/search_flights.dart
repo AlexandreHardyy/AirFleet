@@ -60,7 +60,11 @@ class SearchFlights extends StatelessWidget {
                   const SizedBox(
                     height: 10,
                   ),
-                  const Expanded(child: PilotFlightRequests())
+                  Expanded(
+                      child: PilotFlightRequests(
+                    status: state.status,
+                    flights: state.flights,
+                  ))
                 ]));
       }
 
