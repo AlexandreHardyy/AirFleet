@@ -66,10 +66,20 @@ func (s *FlightService) CreateFlight(input inputs.CreateFlight, userID int) (res
 		ArrivalAddress:     input.Arrival.Address,
 		ArrivalLatitude:    input.Arrival.Latitude,
 		ArrivalLongitude:   input.Arrival.Longitude,
-		UserID:             userID,
+		Users:              []*models.User{{ID: userID}},
 	}
 
-	flight, err := s.repository.CreateFlight(flight)
+	currentFlight, err := s.repository.GetCurrentFlight(userID)
+
+	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+		return formatFlight(flight), errors.New("error: cannot retrieve current flight")
+	}
+
+	if currentFlight.ID != 0 {
+		return formatFlight(flight), errors.New("cannot create new flight, you still have an active flight")
+	}
+
+	flight, err = s.repository.CreateFlight(flight)
 	if err != nil {
 		return responses.ResponseFlight{}, err
 	}
@@ -154,7 +164,7 @@ func formatFlight(flight models.Flight) responses.ResponseFlight {
 		ID:        flight.ID,
 		Status:    flight.Status,
 		Price:     flight.Price,
-		UserID:    flight.UserID,
+		Users:     formatUsers(flight.Users),
 		PilotID:   flight.PilotID,
 		VehicleID: flight.VehicleID,
 		Departure: responses.ResponseAirport{
@@ -176,6 +186,24 @@ func formatFlight(flight models.Flight) responses.ResponseFlight {
 	}
 }
 
+func formatUsers(users []*models.User) []responses.ListUser {
+	var responseUsers []responses.ListUser
+	for _, user := range users {
+		responseUsers = append(responseUsers, responses.ListUser{
+			ID:         user.ID,
+			FirstName:  user.FirstName,
+			LastName:   user.LastName,
+			Email:      user.Email,
+			Role:       user.Role,
+			IsVerified: user.IsVerified,
+			CreatedAt:  user.CreatedAt,
+			UpdatedAt:  user.UpdatedAt,
+		})
+	}
+	return responseUsers
+
+}
+
 func formatFlights(flights []models.Flight) []responses.ResponseFlight {
 	var responseFlights []responses.ResponseFlight
 	for _, flight := range flights {
@@ -186,13 +214,31 @@ func formatFlights(flights []models.Flight) []responses.ResponseFlight {
 
 //WEBSOCKET
 
+func containsUser(users []*models.User, userID int) bool {
+	for _, user := range users {
+		if user.ID == userID {
+			return true
+		}
+	}
+	return false
+}
+
+func notContainsUser(users []*models.User, userID int) bool {
+	for _, user := range users {
+		if user.ID == userID {
+			return false
+		}
+	}
+	return true
+}
+
 func (s *FlightService) JoinFlightSession(flightID int, userID int) error {
 	flight, err := s.repository.GetFlightByID(flightID)
 	if err != nil {
 		return err
 	}
 
-	if flight.Status == flightStatus.WAITING_PILOT && flight.UserID == userID {
+	if flight.Status == flightStatus.WAITING_PILOT && containsUser(flight.Users, userID) {
 		return nil
 	}
 
@@ -246,11 +292,11 @@ func (s *FlightService) FlightProposalChoice(input inputs.InputFlightProposalCho
 		return err
 	}
 
-	if flight.Status != flightStatus.WAITING_PROPOSAL_APPROVAL || (flight.UserID != userID && (flight.PilotID == nil || *flight.PilotID != userID)) {
+	if flight.Status != flightStatus.WAITING_PROPOSAL_APPROVAL || (notContainsUser(flight.Users, userID) && (flight.PilotID == nil || *flight.PilotID != userID)) {
 		return errors.New("flight is not available for proposal choice")
 	}
 
-	if input.Choice == "accepted" && flight.UserID == userID {
+	if input.Choice == "accepted" && containsUser(flight.Users, userID) {
 		flight.Status = flightStatus.WAITING_TAKEOFF
 	} else if input.Choice == "rejected" {
 		flight.Status = flightStatus.WAITING_PILOT
@@ -372,7 +418,7 @@ func (s *FlightService) CancelFlight(flightID int, userID int) error {
 		return err
 	}
 
-	if (flight.Status != flightStatus.WAITING_PILOT && flight.Status != flightStatus.WAITING_TAKEOFF && flight.Status != flightStatus.WAITING_PROPOSAL_APPROVAL) || (flight.UserID != userID && *flight.PilotID != userID) {
+	if (flight.Status != flightStatus.WAITING_PILOT && flight.Status != flightStatus.WAITING_TAKEOFF && flight.Status != flightStatus.WAITING_PROPOSAL_APPROVAL) || (notContainsUser(flight.Users, userID) && *flight.PilotID != userID) {
 		return errors.New("flight is not available for cancel")
 	}
 

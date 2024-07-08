@@ -16,8 +16,7 @@ type Flight struct {
 	CreatedAt          time.Time `json:"created_at"`
 	UpdatedAt          time.Time `json:"updated_at"`
 	Price              *float64  `json:"price"`
-	UserID             int       `json:"user_id"`
-	User               User      `json:"user" gorm:"foreignkey:UserID"`
+	Users              []*User   `json:"user" gorm:"many2many:flight_users;"`
 	PilotID            *int      `json:"pilot_id"`
 	Pilot              User      `json:"pilot" gorm:"foreignkey:PilotID"`
 	VehicleID          *int      `json:"vehicle_id"`

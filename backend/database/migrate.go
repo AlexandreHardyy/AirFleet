@@ -5,5 +5,8 @@ import (
 )
 
 func Migrate() {
-	DB.AutoMigrate(&models.User{}, &models.File{}, &models.Vehicle{}, &models.Flight{})
+	err := DB.AutoMigrate(&models.User{}, &models.File{}, &models.Vehicle{}, &models.Flight{})
+	if err != nil {
+		return
+	}
 }

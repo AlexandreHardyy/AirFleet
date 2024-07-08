@@ -13,7 +13,7 @@ type ResponseFlight struct {
 	ID        int             `json:"id"  binding:"required"`
 	Status    string          `json:"status"  binding:"required"`
 	Price     *float64        `json:"price"`
-	UserID    int             `json:"user_id"`
+	Users     []ListUser      `json:"users"`
 	PilotID   *int            `json:"pilot_id"`
 	VehicleID *int            `json:"vehicle_id"`
 	Departure ResponseAirport `json:"departure" binding:"required"`

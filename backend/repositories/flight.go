@@ -3,8 +3,6 @@ package repositories
 import (
 	flightStatus "backend/data/flight-status"
 	"backend/models"
-	"errors"
-
 	"gorm.io/gorm"
 )
 
@@ -27,7 +25,7 @@ func NewFlightRepository(db *gorm.DB) *FlightRepository {
 
 func (r *FlightRepository) GetAllFlights(limit int, offset int) ([]models.Flight, error) {
 	var flights []models.Flight
-	query := r.db.Preload("Pilot").Preload("Vehicle").Offset(offset).Limit(limit)
+	query := r.db.Preload("Pilot").Preload("Users").Preload("Vehicle").Offset(offset).Limit(limit)
 	err := query.Find(&flights).Error
 	if err != nil {
 		return flights, err
@@ -37,7 +35,7 @@ func (r *FlightRepository) GetAllFlights(limit int, offset int) ([]models.Flight
 
 func (r *FlightRepository) GetFlightByID(flightID int) (models.Flight, error) {
 	var flight models.Flight
-	err := r.db.Preload("Pilot").Preload("Vehicle").Where("id = ?", flightID).First(&flight).Error
+	err := r.db.Preload("Pilot").Preload("Users").Preload("Vehicle").Where("id = ?", flightID).First(&flight).Error
 	if err != nil {
 		return flight, err
 	}
@@ -46,7 +44,7 @@ func (r *FlightRepository) GetFlightByID(flightID int) (models.Flight, error) {
 
 func (r *FlightRepository) GetFlightRequests() ([]models.Flight, error) {
 	var flights []models.Flight
-	err := r.db.Preload("User").Where(models.Flight{Status: flightStatus.WAITING_PILOT}).Find(&flights).Error
+	err := r.db.Preload("Users").Where(models.Flight{Status: flightStatus.WAITING_PILOT}).Find(&flights).Error
 	if err != nil {
 		return flights, err
 	}
@@ -55,7 +53,13 @@ func (r *FlightRepository) GetFlightRequests() ([]models.Flight, error) {
 
 func (r *FlightRepository) GetCurrentFlight(userID int) (models.Flight, error) {
 	var flight models.Flight
-	err := r.db.Preload("Pilot").Preload("Vehicle").Where("(user_id = ? OR pilot_id = ?) AND status != ? AND status != ?", userID, userID, flightStatus.FINISHED, flightStatus.CANCELLED).First(&flight).Error
+	err := r.db.
+		Preload("Pilot").
+		Preload("Vehicle").
+		Preload("Users").
+		Joins("JOIN flight_users ON flight_users.flight_id = flights.id").
+		Where("(flight_users.user_id = ? OR flights.pilot_id = ?) AND flights.status != ? AND flights.status != ?", userID, userID, flightStatus.FINISHED, flightStatus.CANCELLED).
+		First(&flight).Error
 	if err != nil {
 		return flight, err
 	}
@@ -63,17 +67,7 @@ func (r *FlightRepository) GetCurrentFlight(userID int) (models.Flight, error) {
 }
 
 func (r *FlightRepository) CreateFlight(flight models.Flight) (models.Flight, error) {
-	currentFlight, err := r.GetCurrentFlight(flight.UserID)
-
-	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
-		return flight, errors.New("error: cannot retrieve current flight")
-	}
-
-	if currentFlight.ID != 0 {
-		return flight, errors.New("cannot create new flight, you still have an active flight")
-	}
-
-	err = r.db.Create(&flight).Error
+	err := r.db.Create(&flight).Error
 	if err != nil {
 		return flight, err
 	}
