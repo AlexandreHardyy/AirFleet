@@ -107,6 +107,41 @@ func (h *FlightHandler) GetFlight(c *gin.Context) {
 	c.JSON(http.StatusOK, flight)
 }
 
+// FlightHistory godoc
+//
+// @Summary	Get flight history
+// @Schemes
+// @Description	get flight history
+// @Tags			flight
+// @Accept			json
+// @Produce		json
+//
+// @Success		200				{object}	[]responses.ResponseFlight
+// @Failure		400				{object}	Response
+//
+// @Router			/flights/history [get]
+//
+// @Security	BearerAuth
+func (h *FlightHandler) FlightHistory(c *gin.Context) {
+	userId, err := token.ExtractTokenID(c)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, Response{
+			Message: "Error: cannot extract user ID from token",
+		})
+		return
+	}
+
+	flights, err := h.flightService.GetFlightsByUserID(userId)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, Response{
+			Message: err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, flights)
+}
+
 func (h *FlightHandler) GetFlightRequestsNearBy(c *gin.Context) {
 	var queryParams inputs.NearByParams
 	if err := c.ShouldBindQuery(&queryParams); err != nil {
