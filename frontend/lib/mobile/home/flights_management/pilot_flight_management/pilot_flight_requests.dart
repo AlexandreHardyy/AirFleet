@@ -1,22 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend/mobile/blocs/pilot_status/pilot_status_bloc.dart';
 import 'package:frontend/models/flight.dart';
 import 'package:frontend/routes.dart';
 
 class PilotFlightRequests extends StatelessWidget {
-  const PilotFlightRequests({super.key});
+  final CurrentPilotStatus status;
+  final List<Flight>? flights;
+
+  const PilotFlightRequests({super.key, required this.status, required this.flights});
 
   @override
   Widget build(BuildContext context) {
-    final statePilot = context.read<PilotStatusBloc>().state;
 
-    final flights = statePilot.flights;
     if (flights?.isNotEmpty == true) {
       return ListView.builder(
         itemCount: flights!.length,
         itemBuilder: (context, index) {
-          Flight flight = flights[index];
+          Flight flight = flights![index];
           return Card(
             margin: const EdgeInsets.all(8.0),
             child: ListTile(
@@ -32,7 +32,7 @@ class PilotFlightRequests extends StatelessWidget {
       );
     }
 
-    if (statePilot.status == CurrentPilotStatus.loading) {
+    if (status == CurrentPilotStatus.loading) {
       return const Center(
         child: CircularProgressIndicator(),
       );
