@@ -352,6 +352,29 @@ paths:
       summary: Get current flight
       tags:
       - flight
+  /flights/history:
+    get:
+      consumes:
+      - application/json
+      description: get flight history
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/responses.ResponseFlight'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.Response'
+      security:
+      - BearerAuth: []
+      summary: Get flight history
+      tags:
+      - flight
   /users:
     get:
       consumes:

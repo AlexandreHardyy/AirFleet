@@ -20,6 +20,7 @@ type FlightServiceInterface interface {
 	GetAllFlights(limit int, offset int) ([]responses.ResponseFlight, error)
 	CreateFlight(input inputs.CreateFlight, userID int) (responses.ResponseFlight, error)
 	GetFlight(flightID int) (responses.ResponseFlight, error)
+	GetFlightsByUserID(userID int) ([]responses.ResponseFlight, error)
 	GetCurrentFlight(userID int) (responses.ResponseFlight, error)
 	GetFlightRequestNearBy(position utils.Position, rangeKm float64) ([]responses.ResponseFlight, error)
 	//WEBSOCKET
@@ -98,7 +99,17 @@ func (s *FlightService) GetFlight(flightID int) (responses.ResponseFlight, error
 	formattedFlight := formatFlight(flight)
 
 	return formattedFlight, nil
+}
 
+func (s *FlightService) GetFlightsByUserID(userID int) ([]responses.ResponseFlight, error) {
+	flights, err := s.repository.GetFlightsByUserID(userID)
+	if err != nil {
+		return []responses.ResponseFlight{}, err
+	}
+
+	responseFlights := formatFlights(flights)
+
+	return responseFlights, nil
 }
 
 func (s *FlightService) GetCurrentFlight(userID int) (responses.ResponseFlight, error) {

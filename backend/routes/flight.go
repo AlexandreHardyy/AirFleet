@@ -15,6 +15,7 @@ func InitFlightRoutes(api *gin.RouterGroup) {
 
 	api.GET("", middlewares.IsAuth(), flightHandler.GetAll)
 	api.GET("/:id", middlewares.IsAuth(), flightHandler.GetFlight)
+	api.GET("/history", middlewares.IsAuth(), flightHandler.FlightHistory)
 
 	api.POST("", middlewares.IsAuth(), flightHandler.Create)
 

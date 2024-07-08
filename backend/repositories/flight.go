@@ -9,6 +9,7 @@ import (
 type FlightRepositoryInterface interface {
 	GetAllFlights(limit int, offset int) ([]models.Flight, error)
 	GetFlightByID(flightID int) (models.Flight, error)
+	GetFlightsByUserID(userID int) ([]models.Flight, error)
 	CreateFlight(flight models.Flight) (models.Flight, error)
 	GetCurrentFlight(userID int) (models.Flight, error)
 	GetFlightRequests() ([]models.Flight, error)
@@ -40,6 +41,20 @@ func (r *FlightRepository) GetFlightByID(flightID int) (models.Flight, error) {
 		return flight, err
 	}
 	return flight, nil
+}
+
+func (r *FlightRepository) GetFlightsByUserID(userID int) ([]models.Flight, error) {
+	var flights []models.Flight
+	err := r.db.Preload("Pilot").
+		Preload("Users").
+		Preload("Vehicle").
+		Joins("JOIN flight_users ON flight_users.flight_id = flights.id").
+		Where("flight_users.user_id = ?", userID).
+		Find(&flights).Error
+	if err != nil {
+		return flights, err
+	}
+	return flights, nil
 }
 
 func (r *FlightRepository) GetFlightRequests() ([]models.Flight, error) {
