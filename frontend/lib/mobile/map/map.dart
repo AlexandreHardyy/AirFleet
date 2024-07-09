@@ -25,6 +25,8 @@ class AirFleetMapState extends State<AirFleetMap> {
   Timer? _timer;
   PointAnnotationManager? _pointAnnotationManager;
   PolylineAnnotationManager? _polylineAnnotationManager;
+  PointAnnotation? _departureAnnotation;
+  PointAnnotation? _arrivalAnnotation;
   PointAnnotation? _pilotAnnotation;
 
   var _trackLocation = true;
@@ -134,8 +136,12 @@ class AirFleetMapState extends State<AirFleetMap> {
         await rootBundle.load('assets/symbols/location-pin.png');
     final locationPin = bytes.buffer.asUint8List();
 
-    _createOnePointAnnotation(departurePosition, locationPin);
-    _createOnePointAnnotation(arrivalPosition, locationPin);
+    _createOnePointAnnotation(departurePosition, locationPin)?.then((value) => {
+          _departureAnnotation = value,
+        });
+    _createOnePointAnnotation(arrivalPosition, locationPin)?.then((value) => {
+          _arrivalAnnotation = value,
+        });
     _createOneLineAnnotation(departurePosition, arrivalPosition);
 
     setState(() {
@@ -177,8 +183,13 @@ class AirFleetMapState extends State<AirFleetMap> {
     );
   }
 
-  void _clearMap() {
-    _pointAnnotationManager?.deleteAll();
+  void _clearMap(String flightStatus) {
+    if (flightStatus == "in_progress" && _departureAnnotation != null && _arrivalAnnotation != null) {
+      _pointAnnotationManager?.delete(_departureAnnotation!);
+      _pointAnnotationManager?.delete(_arrivalAnnotation!);
+    } else {
+      _pointAnnotationManager?.deleteAll();
+    }
     _polylineAnnotationManager?.deleteAll();
   }
 
@@ -200,7 +211,7 @@ class AirFleetMapState extends State<AirFleetMap> {
       listener: (context, state) {
         //TODO Remove duplicated code
         if (state.status == CurrentFlightStatus.loaded) {
-          _clearMap();
+          _clearMap(state.flight!.status);
           final flight = state.flight;
           if (flight != null) {
             final departure = flight.departure;
@@ -215,7 +226,7 @@ class AirFleetMapState extends State<AirFleetMap> {
         }
 
         if (state.status == CurrentFlightStatus.selected) {
-          _clearMap();
+          _clearMap(state.flight!.status);
           final flightRequest = state.flightRequest;
           if (flightRequest != null) {
             final departure = flightRequest.departure;
