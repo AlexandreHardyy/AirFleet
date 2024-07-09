@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend/blocs/auth/auth_bloc.dart';
 import 'package:frontend/mobile/auth_screen/login_screen.dart';
 import 'package:frontend/mobile/blocs/current_flight/current_flight_bloc.dart';
+import 'package:frontend/mobile/blocs/message/message_bloc.dart';
 import 'package:frontend/mobile/blocs/pilot_status/pilot_status_bloc.dart';
 import 'package:frontend/mobile/blocs/socket_io/socket_io_bloc.dart';
 import 'package:frontend/mobile/home/home.dart';
@@ -28,6 +29,9 @@ class MobileLayout extends StatelessWidget {
           BlocProvider<CurrentFlightBloc>(
             create: (context) =>
                 CurrentFlightBloc()..add(CurrentFlightInitialized()),
+          ),
+          BlocProvider<MessageBloc>(
+            create: (context) => MessageBloc()..add(MessageLoaded(messages: const [])),
           ),
         ],
         child: MaterialApp(

@@ -9,6 +9,7 @@ import (
 
 func InitFlightSession(socketIoServer *socketio.Server) {
 	flightSocketHandler := handlers.GetFlightSocketHandler(database.DB, socketIoServer)
+	messageSocketHandler := handlers.GetMessageSocketHandler(database.DB, socketIoServer)
 
 	socketIoServer.OnEvent("/flights", "createSession", flightSocketHandler.CreateFlightSession)
 
@@ -23,6 +24,8 @@ func InitFlightSession(socketIoServer *socketio.Server) {
 	socketIoServer.OnEvent("/flights", "flightLanding", flightSocketHandler.FlightLanding)
 
 	socketIoServer.OnEvent("/flights", "cancelFlight", flightSocketHandler.CancelFlight)
+
+	socketIoServer.OnEvent("/flights", "newMessageBack", messageSocketHandler.CreateMessage)
 
 	socketIoServer.OnEvent("/flights", "bye", func(s socketio.Conn) {
 		s.Close()

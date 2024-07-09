@@ -1,8 +1,15 @@
+import 'dart:convert';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend/mobile/blocs/current_flight/current_flight_bloc.dart';
+import 'package:frontend/mobile/blocs/message/message_bloc.dart';
 import 'package:frontend/mobile/blocs/socket_io/socket_io_bloc.dart';
 import 'package:frontend/models/flight.dart';
+import 'package:frontend/models/message.dart';
+import 'package:frontend/routes.dart';
 import 'package:frontend/widgets/button.dart';
 import 'package:frontend/widgets/title.dart';
 
@@ -24,6 +31,7 @@ class _WaitingTakeoffState extends State<WaitingTakeoff> {
     super.initState();
     _socketIoBloc = context.read<SocketIoBloc>();
 
+    // TODO: I think this is not used
     _socketIoBloc.add(SocketIoListenEvent(
       eventId: "flightTimeUpdated",
       event: "flightTimeUpdated",
@@ -49,7 +57,7 @@ class _WaitingTakeoffState extends State<WaitingTakeoff> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         const SecondaryTitle(content: 'Waiting for takeoff'),
-        const SizedBox(height: 24),
+        const SizedBox(height: 10),
         Row(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -57,9 +65,14 @@ class _WaitingTakeoffState extends State<WaitingTakeoff> {
             Expanded(
               child: Column(
                 children: [
-                  const Text("Departure",
-                      style: TextStyle(fontWeight: FontWeight.bold)),
-                  Text(widget.flight.departure.name)
+                  const Text(
+                    "Departure",
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    widget.flight.departure.name,
+                    textAlign: TextAlign.center,
+                  )
                 ],
               ),
             ),
@@ -76,9 +89,14 @@ class _WaitingTakeoffState extends State<WaitingTakeoff> {
             Expanded(
               child: Column(
                 children: [
-                  const Text("Arrival",
-                      style: TextStyle(fontWeight: FontWeight.bold)),
-                  Text(widget.flight.arrival.name)
+                  const Text(
+                    "Arrival",
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    widget.flight.arrival.name,
+                    textAlign: TextAlign.center,
+                  )
                 ],
               ),
             ),
@@ -91,16 +109,33 @@ class _WaitingTakeoffState extends State<WaitingTakeoff> {
         const SizedBox(
           height: 24,
         ),
-        ElevatedButton(
-          style: dangerButtonStyle,
-          onPressed: () {
-            _socketIoBloc.state.socket!.emit(
-              "cancelFlight",
-              '${widget.flight.id}',
-            );
-            context.read<CurrentFlightBloc>().add(CurrentFlightUpdated());
-          },
-          child: const Text('Cancel flight'),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Expanded(
+              child: ElevatedButton(
+                style: dangerButtonStyle,
+                onPressed: () {
+                  _socketIoBloc.state.socket!.emit(
+                    "cancelFlight",
+                    '${widget.flight.id}',
+                  );
+                  context.read<CurrentFlightBloc>().add(CurrentFlightUpdated());
+                },
+                child: const Text('Cancel flight'),
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context)
+                      .push(Routes.flightChat(context, flightId: widget.flight.id));
+                },
+                child: const Icon(Icons.chat),
+              ),
+            ),
+          ],
         ),
       ],
     );

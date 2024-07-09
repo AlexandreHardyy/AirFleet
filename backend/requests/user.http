@@ -14,8 +14,8 @@ POST http://localhost:3001/api/users/login HTTP/1.1
 Content-Type: application/json
 
 {
-    "email": "noepigeau@gmail.com",
-    "password": "test1234"
+    "email": "momo@lepilot.com",
+    "password": "Test1234!"
 }
 
 ### VALIDATE ACCOUNT USER
