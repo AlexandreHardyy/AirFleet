@@ -26,9 +26,14 @@ class _WaitingPilotCardState extends State<WaitingPilotCard> {
             Expanded(
               child: Column(
                 children: [
-                  const Text("Departure",
-                      style: TextStyle(fontWeight: FontWeight.bold)),
-                  Text(widget.flight.departure.name)
+                  const Text(
+                    "Departure",
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    widget.flight.departure.name,
+                    textAlign: TextAlign.center,
+                  )
                 ],
               ),
             ),
@@ -45,9 +50,14 @@ class _WaitingPilotCardState extends State<WaitingPilotCard> {
             Expanded(
               child: Column(
                 children: [
-                  const Text("Arrival",
-                      style: TextStyle(fontWeight: FontWeight.bold)),
-                  Text(widget.flight.arrival.name)
+                  const Text(
+                    "Arrival",
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    widget.flight.arrival.name,
+                    textAlign: TextAlign.center,
+                  )
                 ],
               ),
             ),

@@ -7,6 +7,7 @@ import 'package:frontend/models/flight.dart';
 import 'package:frontend/services/dio.dart';
 import 'package:frontend/services/flight.dart';
 import 'package:frontend/services/position.dart';
+import 'package:frontend/widgets/input.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:dio/dio.dart';
 import 'package:uuid/uuid.dart';
@@ -131,50 +132,70 @@ class _CreateFlightWidgetState extends State<CreateFlightWidget> {
   Widget build(BuildContext context) {
     return departure == null || arrival == null
         ? Column(
-            children: [
-              TextField(
-                focusNode: widget.departureTextFieldFocusNode,
-                controller: departureController,
-                onChanged: (value) async {
-                  final suggestions = await _retrieveNearbyAirport(value);
-                  setState(() {
-                    searchResults = suggestions;
-                  });
-                },
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(left: 8, right: 8, top: 16),
+              child: Column(
+                children: [
+                  TextField(
+                    focusNode: widget.departureTextFieldFocusNode,
+                    controller: departureController,
+                    decoration: getInputDecoration(hintText: 'Departure'),
+                    onChanged: (value) async {
+                      final suggestions = await _retrieveNearbyAirport(value);
+                      setState(() {
+                        searchResults = suggestions;
+                      });
+                    },
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  TextField(
+                    focusNode: widget.arrivalTextFieldFocusNode,
+                    controller: arrivalController,
+                    decoration: getInputDecoration(hintText: 'Arrival'),
+                    onChanged: (value) async {
+                      final suggestions = await _retrieveNearbyAirport(value);
+                      setState(() {
+                        searchResults = suggestions;
+                      });
+                    },
+                  ),
+                ],
               ),
-              TextField(
-                focusNode: widget.arrivalTextFieldFocusNode,
-                controller: arrivalController,
-                onChanged: (value) async {
-                  final suggestions = await _retrieveNearbyAirport(value);
-                  setState(() {
-                    searchResults = suggestions;
-                  });
-                },
-              ),
-              Expanded(
-                child: searchResults != null
-                    ? ListView.builder(
-                        itemCount: searchResults?.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          final airportSuggestion = searchResults![index];
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            Expanded(
+              child: searchResults != null
+                  ? ListView.builder(
+                      itemCount: searchResults?.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        final airportSuggestion = searchResults![index];
 
-                          return GestureDetector(
-                            onTap: () => _onSelectAirport(airportSuggestion),
-                            child: Card(
-                              child: ListTile(
-                                title: Text(airportSuggestion.name),
-                                subtitle:
-                                    Text(airportSuggestion.fullAddress ?? ""),
+                        return GestureDetector(
+                          onTap: () => _onSelectAirport(airportSuggestion),
+                          child: Container(
+                            decoration: const BoxDecoration(
+                              border: Border(
+                                top: BorderSide(width: 1.0, color: Colors.grey),
                               ),
                             ),
-                          );
-                        },
-                      )
-                    : const Text("Type something"),
-              ),
-            ],
-          )
+                            child: ListTile(
+                              title: Text(airportSuggestion.name),
+                              subtitle:
+                                  Text(airportSuggestion.fullAddress ?? ""),
+                            ),
+                          ),
+                        );
+                      },
+                    )
+                  : const Text("Enter a search query"),
+            ),
+          ],
+        )
         : Row(mainAxisAlignment: MainAxisAlignment.center, children: [
             ElevatedButton(
               onPressed: () async {

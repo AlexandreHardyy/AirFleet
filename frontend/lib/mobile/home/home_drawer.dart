@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:frontend/routes.dart';
 import 'package:frontend/services/user.dart';
+import 'package:frontend/storage/user.dart';
 
 class HomeDrawer extends StatelessWidget {
   const HomeDrawer({super.key});
@@ -24,13 +25,16 @@ class HomeDrawer extends StatelessWidget {
               Navigator.of(context).push(Routes.flightHistory(context));
             },
           ),
-          ListTile(
-            leading: const Icon(FontAwesomeIcons.plane),
-            title: const Text("Vehicle"),
-            onTap: () async {
-              Navigator.of(context).push(Routes.vehiclesManagement(context));
-            },
-          ),
+          UserStore.user?.role == Roles.pilot
+              ? ListTile(
+                  leading: const Icon(FontAwesomeIcons.plane),
+                  title: const Text("Vehicle"),
+                  onTap: () async {
+                    Navigator.of(context)
+                        .push(Routes.vehiclesManagement(context));
+                  },
+                )
+              : const SizedBox.shrink(),
           ListTile(
             leading: const Icon(FontAwesomeIcons.rightFromBracket),
             title: const Text("Log out"),
