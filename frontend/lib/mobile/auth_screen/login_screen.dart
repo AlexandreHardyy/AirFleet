@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
+import 'package:frontend/blocs/auth/auth_bloc.dart';
 import 'package:frontend/routes.dart';
 import 'package:frontend/services/user.dart';
 import 'package:frontend/storage/user.dart';
@@ -73,8 +75,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   setState(() {
                     if (result['token'] != null) {
                       _apiMessage = 'Login success !';
-                      Navigator.of(context).popUntil((route) => false);
-                      Navigator.of(context).push(Routes.home(context));
+                      Navigator.of(context).popUntil((route) => route.isFirst);
+                      context.read<AuthBloc>().add(AuthLogIn());
                     } else if (result['message'] != null) {
                       _apiMessage = result['message'];
                     } else {

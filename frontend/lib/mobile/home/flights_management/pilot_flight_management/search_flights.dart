@@ -7,6 +7,7 @@ import 'package:frontend/mobile/home/flights_management/pilot_flight_management/
 import 'package:frontend/models/vehicle.dart';
 import 'package:frontend/routes.dart';
 import 'package:frontend/widgets/input.dart';
+import 'package:frontend/widgets/title.dart';
 
 class SearchFlights extends StatelessWidget {
   final _formKey = GlobalKey<FormBuilderState>();
@@ -25,19 +26,23 @@ class SearchFlights extends StatelessWidget {
 
       if (state.status == CurrentPilotStatus.loaded &&
           (state.vehicles == null || state.vehicles!.isEmpty)) {
-        return Column(
-          children: [
-            const Text('no vehicles availables'),
-            const SizedBox(
-              height: 5,
-            ),
-            ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context)
-                      .push(Routes.vehiclesManagement(context));
-                },
-                child: const Text('Add new vehicle'))
-          ],
+        return Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const SecondaryTitle(content: 'No vehicles availables'),
+              const SizedBox(
+                height: 24,
+              ),
+              ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context)
+                        .push(Routes.vehiclesManagement(context));
+                  },
+                  child: const Text('Add new vehicle'))
+            ],
+          ),
         );
       }
 

@@ -39,9 +39,7 @@ class HomeDrawer extends StatelessWidget {
             leading: const Icon(FontAwesomeIcons.rightFromBracket),
             title: const Text("Log out"),
             onTap: () async {
-              Navigator.of(context).popUntil((route) => false);
-              Navigator.of(context).push(Routes.login(context));
-              UserService.logOut();
+              await UserService.logOut(context);
             },
           )
         ],
