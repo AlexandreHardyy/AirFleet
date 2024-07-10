@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend/mobile/auth_screen/login_screen.dart';
 import 'package:frontend/mobile/auth_screen/register_pilot_screen.dart';
 import 'package:frontend/mobile/auth_screen/register_screen.dart';
+import 'package:frontend/mobile/flight_chat.dart';
 import 'package:frontend/mobile/flight_history.dart';
 import 'package:frontend/mobile/home/home.dart';
 import 'package:frontend/mobile/pilot_flight_request_detail.dart';
