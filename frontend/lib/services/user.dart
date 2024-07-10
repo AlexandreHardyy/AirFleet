@@ -1,5 +1,8 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:frontend/blocs/auth/auth_bloc.dart';
 import 'package:frontend/models/user.dart';
 import 'package:frontend/services/dio.dart';
 import 'package:frontend/storage/user.dart';
@@ -117,8 +120,11 @@ class UserService {
     }
   }
 
-  static Future logOut() async {
+  static Future logOut(BuildContext context) async {
+    Navigator.of(context).popUntil((route) => route.isFirst);
     await UserStore.removeToken();
+    UserStore.user = null;
+    context.read<AuthBloc>().add(AuthLogOut());
   }
 
   static Future<Response> createUser(Map<String, dynamic> data) async {

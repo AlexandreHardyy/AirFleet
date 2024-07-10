@@ -1,7 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend/models/user.dart';
-import 'package:frontend/services/user.dart';
 import 'package:frontend/storage/user.dart';
 
 part 'auth_event.dart';
@@ -10,6 +9,7 @@ part 'auth_state.dart';
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   AuthBloc() : super(AuthState(status: AuthStatus.loading, user: null)) {
     on<AuthInitialized>(_onAuthInitialized);
+    on<AuthLogIn>(_onAuthLogIn);
     on<AuthLogOut>(_onAuthLogOut);
   }
 
@@ -32,7 +32,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   Future<void> _onAuthLogOut(AuthLogOut event, Emitter<AuthState> emit) async {
-    UserService.logOut();
     emit(state.copyWith(status: AuthStatus.disconnected));
   }
 }

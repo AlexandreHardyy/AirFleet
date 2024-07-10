@@ -35,7 +35,9 @@ class MobileLayout extends StatelessWidget {
           ),
         ],
         child: MaterialApp(
-          home: context.read<AuthBloc>().state.status == AuthStatus.connected ? const Home() : const LoginScreen(),
+          home: BlocBuilder<AuthBloc, AuthState>(builder: (context, state) {
+            return state.status == AuthStatus.connected ? const Home() : const LoginScreen();
+          }),
           theme: ThemeData(
             colorSchemeSeed: const Color.fromARGB(255, 13, 0, 59),
             textTheme: TextTheme(

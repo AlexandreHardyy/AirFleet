@@ -13,7 +13,9 @@ class WebLayout extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-          home: context.read<AuthBloc>().state.status == AuthStatus.connected ? const HomeWeb() : const LoginScreen(),
+          home: BlocBuilder<AuthBloc, AuthState>(builder: (context, state) {
+            return state.status == AuthStatus.connected ? const HomeWeb() : const LoginScreen();
+          }),
           theme: ThemeData(
             textTheme: TextTheme(
                 displayLarge: GoogleFonts.prostoOne(
