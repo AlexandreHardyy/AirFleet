@@ -395,9 +395,24 @@ func (s *FlightService) FlightLanding(flightID int, pilotId int) error {
 	flight.Status = flightStatus.FINISHED
 
 	_, err = s.repository.UpdateFlight(flight)
-
 	if err != nil {
 		return err
+	}
+
+	ratingRepository := repositories.NewRatingRepository(database.DB)
+
+	for _, user := range flight.Users {
+		rating := models.Rating{
+			UserID:   user.ID,
+			PilotID:  pilotId,
+			FlightID: flightID,
+			Status:   "waiting_for_review",
+		}
+
+		_, err := ratingRepository.CreateRating(rating)
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil

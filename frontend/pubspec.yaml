@@ -55,6 +55,7 @@ dependencies:
   intl: ^0.18.1
   collection: 1.18.0
   flutter_local_notifications: ^17.1.2
+  flutter_pannable_rating_bar: ^2.7.2+1
 
 
 dev_dependencies:
