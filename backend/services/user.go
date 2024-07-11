@@ -126,3 +126,23 @@ func (s *userService) Delete(id int) error {
 	err = s.repository.Delete(user)
 	return err
 }
+
+func formatUsers(users []*models.User) []responses.ListUser {
+	if len(users) == 0 {
+		return []responses.ListUser{}
+	}
+	var responseUsers []responses.ListUser
+	for _, user := range users {
+		responseUsers = append(responseUsers, responses.ListUser{
+			ID:         user.ID,
+			FirstName:  user.FirstName,
+			LastName:   user.LastName,
+			Email:      user.Email,
+			Role:       user.Role,
+			IsVerified: user.IsVerified,
+			CreatedAt:  user.CreatedAt,
+			UpdatedAt:  user.UpdatedAt,
+		})
+	}
+	return responseUsers
+}
