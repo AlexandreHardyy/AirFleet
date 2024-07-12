@@ -2,7 +2,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend/local_notification_setup.dart';
 import 'package:frontend/models/flight.dart';
+import 'package:frontend/models/rating.dart';
 import 'package:frontend/services/flight.dart';
+import 'package:frontend/services/rating.dart';
 
 part 'current_flight_event.dart';
 part 'current_flight_state.dart';
@@ -23,6 +25,18 @@ class CurrentFlightBloc extends Bloc<CurrentFlightEvent, CurrentFlightState> {
 
     final flight = await FlightService.getCurrentFlight();
 
+    if (flight == null) {
+      final pendingRating = await RatingService.getRatingByUserIDAndStatus("waiting_for_review");
+
+      return emit(CurrentFlightState(
+        status: CurrentFlightStatus.loaded,
+        flight: null,
+        flightRequest: null,
+        pendingRating: pendingRating,
+        errorMessage: null
+      ));
+    }
+
     emit(state.copyWith(
       status: CurrentFlightStatus.loaded,
       flight: flight,
@@ -42,15 +56,18 @@ class CurrentFlightBloc extends Bloc<CurrentFlightEvent, CurrentFlightState> {
     final flight = await FlightService.getCurrentFlight();
 
     if (flight == null) {
-      emit(CurrentFlightState(
+      final pendingRating = await RatingService.getRatingByUserIDAndStatus("waiting_for_review");
+
+      return emit(CurrentFlightState(
         status: CurrentFlightStatus.loaded,
         flight: null,
         flightRequest: null,
+        pendingRating: pendingRating,
         errorMessage: null
       ));
     }
 
-    if (flight?.status == "waiting_proposal_approval" && state.flight?.status == "waiting_pilot") {
+    if (flight.status == "waiting_proposal_approval" && state.flight?.status == "waiting_pilot") {
       LocalNotificationService().showNotification('An offer has been made !', 'A pilot has made an offer for your flight. Check it out !');
     }
 

@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_pannable_rating_bar/flutter_pannable_rating_bar.dart';
 import 'package:frontend/mobile/blocs/current_flight/current_flight_bloc.dart';
 import 'package:frontend/mobile/home/flights_management/pilot_flight_management/pilot_current_flight_management/index.dart';
 import 'package:frontend/mobile/home/flights_management/pilot_flight_management/search_flights.dart';
+import 'package:frontend/models/rating.dart';
+import 'package:frontend/services/rating.dart';
 import 'package:frontend/storage/user.dart';
 
 import 'user_flight_management/create_flight.dart';
@@ -111,7 +114,16 @@ class _FlightsManagementState extends State<FlightsManagement> {
                 child: MediaQuery.removePadding(
                   context: context,
                   removeTop: true,
-                  child: BlocBuilder<CurrentFlightBloc, CurrentFlightState>(
+                  child: BlocConsumer<CurrentFlightBloc, CurrentFlightState>(
+                    listener: (context, state) {
+                      if (state.status == CurrentFlightStatus.loaded &&
+                          state.flight == null &&
+                          state.pendingRating != null) {
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          _dialogBuilder(context);
+                        });
+                      }
+                    },
                     builder: (context, state) {
                       if (state.status == CurrentFlightStatus.loading) {
                         return const Center(
@@ -121,7 +133,9 @@ class _FlightsManagementState extends State<FlightsManagement> {
 
                       if (state.status == CurrentFlightStatus.loaded &&
                           state.flight != null) {
-                        return UserStore.user?.role == Roles.pilot ? const CurrentPilotFlightManagement() : const CurrentFlightManagement();
+                        return UserStore.user?.role == Roles.pilot
+                            ? const CurrentPilotFlightManagement()
+                            : const CurrentFlightManagement();
                       }
 
                       return UserStore.user?.role == Roles.pilot
@@ -178,6 +192,102 @@ class _FlightsManagementState extends State<FlightsManagement> {
           ),
         );
       },
+    );
+  }
+}
+
+Future<void> _dialogBuilder(BuildContext context) async {
+  final result = await showDialog<Map<String, dynamic>>(
+    context: context,
+    builder: (BuildContext context) {
+      return const RateFlightWidget();
+    },
+  );
+
+  final ratingId = context.read<CurrentFlightBloc>().state.pendingRating?.id;
+  if (result != null) {
+    try {
+      await RatingService.updateRating(
+          ratingId!, UpdateRatingRequest(rating: result['rating'], comment: result['comment']));
+    } catch (e) {
+      print(e);
+    }
+    print("Rating: ${result['rating']}, Comment: ${result['comment']}");
+  } else {
+    await RatingService.updateRating(
+        ratingId!, UpdateRatingRequest(rating: null, comment: null));
+  }
+}
+
+class RateFlightWidget extends StatefulWidget {
+  const RateFlightWidget({
+    super.key,
+  });
+
+  @override
+  State<RateFlightWidget> createState() => _RateFlightWidgetState();
+}
+
+class _RateFlightWidgetState extends State<RateFlightWidget> {
+  double rating = 0.0;
+  String comment = "";
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('Rate your previous flight'),
+      scrollable: true,
+      content: Column(
+        children: <Widget>[
+          PannableRatingBar(
+            rate: rating,
+            items: List.generate(5, (index) =>
+            const RatingWidget(
+              selectedColor: Colors.yellow,
+              unSelectedColor: Colors.grey,
+              child: Icon(
+                Icons.star,
+                size: 48,
+              ),
+            )),
+            onChanged: (value) { // the rating value is updated on tap or drag.
+              setState(() {
+                rating = value;
+              });
+            },
+          ),
+          const SizedBox(height: 10),
+          TextField(
+            keyboardType: TextInputType.multiline,
+            maxLines: null,
+            onChanged: (value) {
+              setState(() {
+                comment = value;
+              });
+            },
+          )
+        ],
+      ),
+      actions: <Widget>[
+        TextButton(
+          style: TextButton.styleFrom(
+            textStyle: Theme.of(context).textTheme.labelLarge,
+          ),
+          child: const Text('Maybe later'),
+          onPressed: () {
+            Navigator.of(context).pop(null);
+          },
+        ),
+        TextButton(
+          style: TextButton.styleFrom(
+            textStyle: Theme.of(context).textTheme.labelLarge,
+          ),
+          child: const Text('Submit'),
+          onPressed: () {
+            Navigator.of(context).pop({'rating': rating, 'comment': comment});
+          },
+        ),
+      ],
     );
   }
 }

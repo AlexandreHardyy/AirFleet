@@ -210,7 +210,7 @@ class AirFleetMapState extends State<AirFleetMap> {
     return BlocListener<CurrentFlightBloc, CurrentFlightState>(
       listener: (context, state) {
         //TODO Remove duplicated code
-        if (state.status == CurrentFlightStatus.loaded) {
+        if (state.status == CurrentFlightStatus.loaded && state.flight != null) {
           _clearMap(state.flight!.status);
           final flight = state.flight;
           if (flight != null) {

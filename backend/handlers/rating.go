@@ -1,0 +1,79 @@
+package handlers
+
+import (
+	"backend/inputs"
+	"backend/repositories"
+	"backend/services"
+	"backend/utils/token"
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
+	"net/http"
+	"strconv"
+)
+
+type RatingHandler struct {
+	ratingService services.RatingServiceInterface
+}
+
+func GetRatingHandler(db *gorm.DB) *RatingHandler {
+	ratingRepository := repositories.NewRatingRepository(db)
+	ratingService := services.NewRatingService(ratingRepository)
+	return newRatingHandler(ratingService)
+}
+
+func newRatingHandler(ratingService services.RatingServiceInterface) *RatingHandler {
+	return &RatingHandler{ratingService}
+}
+
+func (h *RatingHandler) Update(c *gin.Context) {
+	ratingID := c.Param("id")
+	convertedRatingID, err := strconv.Atoi(ratingID)
+	if err != nil {
+		c.JSON(400, gin.H{"error": "rating id must be an integer"})
+		return
+	}
+
+	rating := inputs.InputUpdateRating{}
+	err = c.ShouldBindJSON(&rating)
+	if err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
+	userID, err := token.ExtractTokenID(c)
+	if err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
+	response, err := h.ratingService.UpdateRating(convertedRatingID, rating, userID)
+	if err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(200, response)
+}
+
+func (h *RatingHandler) GetRatingByUserIDAndStatus(c *gin.Context) {
+	userID, err := token.ExtractTokenID(c)
+	if err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
+	status := c.Param("status")
+
+	response, err := h.ratingService.GetRatingByUserIDAndStatus(userID, status)
+	if err != nil {
+		response := &Response{
+			Message: err.Error(),
+		}
+
+		//TODO status can be different
+		c.JSON(http.StatusNotFound, response)
+		return
+	}
+
+	c.JSON(200, response)
+}
