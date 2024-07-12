@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/services/vehicle.dart';
 import 'package:frontend/models/vehicle.dart';
-
-import '../routes.dart';
+import 'package:frontend/routes.dart';
 
 class VehiclesManagementScreen extends StatefulWidget {
   const VehiclesManagementScreen({super.key});

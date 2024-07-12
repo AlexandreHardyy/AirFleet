@@ -11,6 +11,7 @@ import (
 
 type ProposalServiceInterface interface {
 	GetAllProposals(limit int, offset int) ([]responses.ResponseProposal, error)
+	GetProposalsForMe(userID int) ([]responses.ResponseProposal, error)
 	CreateProposal(input inputs.InputCreateProposal, userID int) (responses.ResponseProposal, error)
 	GetProposal(proposalID int) (responses.ResponseProposal, error)
 	UpdateProposal(proposalID int, input inputs.InputUpdateProposal) (responses.ResponseProposal, error)
@@ -33,6 +34,17 @@ func NewProposalService(r repositories.ProposalRepositoryInterface, rf repositor
 
 func (s *ProposalService) GetAllProposals(limit int, offset int) ([]responses.ResponseProposal, error) {
 	proposals, err := s.repository.GetAllProposals(limit, offset)
+	if err != nil {
+		return []responses.ResponseProposal{}, err
+	}
+
+	responseProposals := formatProposals(proposals)
+
+	return responseProposals, nil
+}
+
+func (s *ProposalService) GetProposalsForMe(userID int) ([]responses.ResponseProposal, error) {
+	proposals, err := s.repository.GetProposalsForMe(userID)
 	if err != nil {
 		return []responses.ResponseProposal{}, err
 	}

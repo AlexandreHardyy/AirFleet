@@ -73,7 +73,7 @@ func (r *FlightRepository) GetCurrentFlight(userID int) (models.Flight, error) {
 		Preload("Vehicle").
 		Preload("Users").
 		Joins("JOIN flight_users ON flight_users.flight_id = flights.id").
-		Where("(flight_users.user_id = ? OR flights.pilot_id = ?) AND flights.status != ? AND flights.status != ?", userID, userID, flightStatus.FINISHED, flightStatus.CANCELLED).
+		Where("(flight_users.user_id = ? OR flights.pilot_id = ?) AND flights.status != ? AND flights.status != ? AND flights.status != ?", userID, userID, flightStatus.FINISHED, flightStatus.CANCELLED, flightStatus.PROPOSAL).
 		First(&flight).Error
 	if err != nil {
 		return flight, err
@@ -94,5 +94,11 @@ func (r *FlightRepository) UpdateFlight(flight models.Flight) (models.Flight, er
 	if err != nil {
 		return flight, err
 	}
+
+	err = r.db.Model(&flight).Association("Users").Replace(flight.Users)
+	if err != nil {
+		return flight, err
+	}
+
 	return flight, nil
 }

@@ -617,6 +617,29 @@ paths:
       summary: Leave a proposal
       tags:
       - proposals
+  /proposals/me:
+    get:
+      consumes:
+      - application/json
+      description: Get my proposals
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/responses.ResponseProposal'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.Response'
+      security:
+      - BearerAuth: []
+      summary: Get my proposals
+      tags:
+      - proposals
   /users:
     get:
       consumes:

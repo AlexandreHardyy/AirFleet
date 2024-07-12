@@ -8,13 +8,14 @@ import 'package:frontend/mobile/home/home.dart';
 import 'package:frontend/mobile/pilot_flight_request_detail.dart';
 import 'package:frontend/mobile/profile/user_profile.dart';
 import 'package:frontend/mobile/profile/user_vehicles.dart';
+import 'package:frontend/mobile/proposal/proposal_detail.dart';
 import 'package:frontend/mobile/vehicles_management.dart';
 import 'package:frontend/models/flight.dart';
 import 'package:frontend/models/vehicle.dart';
 import 'package:frontend/web/home_web.dart';
 import 'package:frontend/mobile/vehicle_detail.dart';
-
 import 'mobile/flight_details.dart';
+import 'mobile/proposal/proposals_management.dart';
 
 class Routes {
   static home(context) {
@@ -92,6 +93,18 @@ class Routes {
   static flightDetail(context, {required int flightId}) {
     return MaterialPageRoute(
       builder: (context) => FlightDetails(flightId: flightId),
+    );
+  }
+
+  static proposalsManagement(context) {
+    return MaterialPageRoute(
+      builder: (context) => const ProposalsManagementScreen(),
+    );
+  }
+
+  static proposalDetail(context, {required int proposalId}) {
+    return MaterialPageRoute(
+      builder: (context) => ProposalDetail(proposalId: proposalId),
     );
   }
 }

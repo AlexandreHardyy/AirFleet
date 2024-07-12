@@ -3,6 +3,7 @@ package handlers
 import (
 	"backend/inputs"
 	"backend/repositories"
+	"backend/responses"
 	"backend/services"
 	"backend/utils/token"
 	"errors"
@@ -61,7 +62,50 @@ func (h *ProposalHandler) GetAllProposal(c *gin.Context) {
 	c.JSON(http.StatusOK, proposals)
 }
 
-// CreateProposal CreatePropsal Create godoc
+// GetMyProposals godoc
+//
+// @Summary Get my proposals
+// @Schemes
+// @Description Get my proposals
+// @Tags proposals
+// @Accept			json
+// @Produce		json
+//
+// @Success		200				{object}	[]responses.ResponseProposal
+// @Failure		400				{object}	Response
+//
+// @Router			/proposals/me [get]
+//
+// @Security	BearerAuth
+func (h *ProposalHandler) GetMyProposals(c *gin.Context) {
+	userID, err := token.ExtractTokenID(c)
+	if err != nil {
+		response := &Response{
+			Message: "Error: cannot extract user ID",
+		}
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	proposals, err := h.proposalService.GetProposalsForMe(userID)
+	if err != nil {
+		response := &Response{
+			Message: err.Error(),
+		}
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	if len(proposals) == 0 {
+		c.JSON(http.StatusOK, []responses.ResponseProposal{})
+		return
+	}
+
+	c.JSON(http.StatusOK, proposals)
+
+}
+
+// CreateProposal Create godoc
 //
 // @Summary Create a proposal
 // @Schemes
