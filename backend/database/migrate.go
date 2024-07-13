@@ -13,6 +13,7 @@ func Migrate() {
 		&models.Message{},
 		&models.Proposal{},
 		&models.Rating{},
+		&models.MonitoringLog{},
 	)
 	if err != nil {
 		return

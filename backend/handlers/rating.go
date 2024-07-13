@@ -2,13 +2,15 @@ package handlers
 
 import (
 	"backend/inputs"
+	"backend/models"
 	"backend/repositories"
 	"backend/services"
 	"backend/utils/token"
-	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 	"net/http"
 	"strconv"
+
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 type RatingHandler struct {
@@ -48,6 +50,10 @@ func (h *RatingHandler) Update(c *gin.Context) {
 
 	response, err := h.ratingService.UpdateRating(convertedRatingID, rating, userID)
 	if err != nil {
+		repositories.CreateMonitoringLog(models.MonitoringLog{
+			Type:    "error",
+			Content: "[UpdateRating]: " + err.Error(),
+		})
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
@@ -93,6 +99,10 @@ func (h *RatingHandler) GetRatingByUserIDAndStatus(c *gin.Context) {
 
 	response, err := h.ratingService.GetRatingByUserIDAndStatus(userID, status)
 	if err != nil {
+		repositories.CreateMonitoringLog(models.MonitoringLog{
+			Type:    "error",
+			Content: "[GetRatingByUserIDAndStatus]: " + err.Error(),
+		})
 		response := &Response{
 			Message: err.Error(),
 		}

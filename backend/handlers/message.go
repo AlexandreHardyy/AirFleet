@@ -2,16 +2,18 @@ package handlers
 
 import (
 	"backend/inputs"
+	"backend/models"
 	"backend/repositories"
 	"backend/services"
 	"backend/utils/token"
 	"encoding/json"
-	"github.com/gin-gonic/gin"
-	socketio "github.com/googollee/go-socket.io"
-	"gorm.io/gorm"
 	"log"
 	"net/http"
 	"strconv"
+
+	"github.com/gin-gonic/gin"
+	socketio "github.com/googollee/go-socket.io"
+	"gorm.io/gorm"
 )
 
 // REST
@@ -59,6 +61,10 @@ func (h *MessageHandler) GetAllByFlightID(c *gin.Context) {
 
 	messages, err := h.messageService.GetAllMessagesByFlightID(flightID, userID, limit, offset)
 	if err != nil {
+		repositories.CreateMonitoringLog(models.MonitoringLog{
+			Type:    "error",
+			Content: "[GetAllMessagesByFlightID]: " + err.Error(),
+		})
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
@@ -99,6 +105,10 @@ func (h *MessageSocketHandler) CreateMessage(s socketio.Conn, msg string) error 
 
 	message, err := h.messageService.CreateMessage(inputCreateMessage, userId)
 	if err != nil {
+		repositories.CreateMonitoringLog(models.MonitoringLog{
+			Type:    "error",
+			Content: "[CreateMessage]: " + err.Error(),
+		})
 		s.Emit("error", err.Error())
 		log.Println("Error creating message", err.Error())
 		return err

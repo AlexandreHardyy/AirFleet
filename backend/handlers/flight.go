@@ -3,6 +3,7 @@ package handlers
 import (
 	flightStatus "backend/data/flight-status"
 	"backend/inputs"
+	"backend/models"
 	"backend/repositories"
 	"backend/responses"
 	"backend/services"
@@ -62,6 +63,10 @@ func (h *FlightHandler) GetAll(c *gin.Context) {
 		response := &Response{
 			Message: err.Error(),
 		}
+		repositories.CreateMonitoringLog(models.MonitoringLog{
+			Type:    "error",
+			Content: "[GetAllFlights]: " + err.Error(),
+		})
 		c.JSON(http.StatusBadRequest, response)
 		return
 	}
@@ -102,6 +107,10 @@ func (h *FlightHandler) GetFlight(c *gin.Context) {
 
 	flight, err := h.flightService.GetFlight(flightId)
 	if err != nil {
+		repositories.CreateMonitoringLog(models.MonitoringLog{
+			Type:    "error",
+			Content: "[GetFlight]: " + err.Error(),
+		})
 		c.JSON(http.StatusBadRequest, Response{
 			Message: err.Error(),
 		})
@@ -137,6 +146,10 @@ func (h *FlightHandler) FlightHistory(c *gin.Context) {
 
 	flights, err := h.flightService.GetFlightsByUserID(userId)
 	if err != nil {
+		repositories.CreateMonitoringLog(models.MonitoringLog{
+			Type:    "error",
+			Content: "[GetFlightsByUserID]: " + err.Error(),
+		})
 		c.JSON(http.StatusBadRequest, Response{
 			Message: err.Error(),
 		})
@@ -159,6 +172,10 @@ func (h *FlightHandler) GetFlightRequestsNearBy(c *gin.Context) {
 		Latitude: queryParams.Latitude, Longitude: queryParams.Longitude,
 	}, queryParams.Range)
 	if err != nil {
+		repositories.CreateMonitoringLog(models.MonitoringLog{
+			Type:    "error",
+			Content: "[GetFlightRequestNearBy]: " + err.Error(),
+		})
 		c.JSON(http.StatusInternalServerError, Response{
 			Message: err.Error(),
 		})
@@ -206,6 +223,10 @@ func (h *FlightHandler) Create(c *gin.Context) {
 
 	newFlight, err := h.flightService.CreateFlight(input, userID)
 	if err != nil {
+		repositories.CreateMonitoringLog(models.MonitoringLog{
+			Type:    "error",
+			Content: "[CreateFlight]: " + err.Error(),
+		})
 		response := &Response{
 			Message: err.Error(),
 		}
@@ -244,6 +265,10 @@ func (h *FlightHandler) GetCurrentFlight(c *gin.Context) {
 
 	currentFlight, err := h.flightService.GetCurrentFlight(userID)
 	if err != nil {
+		repositories.CreateMonitoringLog(models.MonitoringLog{
+			Type:    "error",
+			Content: "[GetCurrentFlight]: " + err.Error(),
+		})
 		response := &Response{
 			Message: err.Error(),
 		}
@@ -291,6 +316,10 @@ func (h *FlightSocketHandler) CreateFlightSession(s socketio.Conn, flightId stri
 
 	flight, err := h.flightService.GetFlight(convertedFlightId)
 	if err != nil {
+		repositories.CreateMonitoringLog(models.MonitoringLog{
+			Type:    "error",
+			Content: "[GetFlight]: " + err.Error(),
+		})
 		s.Emit("error", err.Error())
 		log.Println("Error getting flight", err.Error())
 		return
@@ -324,6 +353,10 @@ func (h *FlightSocketHandler) MakeFlightPriceProposal(s socketio.Conn, msg strin
 	err = h.flightService.MakeFlightPriceProposal(flightProposalRequest, userId)
 
 	if err != nil {
+		repositories.CreateMonitoringLog(models.MonitoringLog{
+			Type:    "error",
+			Content: "[MakeFlightPriceProposal]: " + err.Error(),
+		})
 		s.Emit("error", err.Error())
 		log.Println("Error making flight proposal", err.Error())
 		return err
@@ -338,6 +371,10 @@ func (h *FlightSocketHandler) MakeFlightPriceProposal(s socketio.Conn, msg strin
 
 		err := estimateAndBroadcastFlightTime(s, flightProposalRequest.FlightId, h.flightService, h.socketIoServer)
 		if err != nil {
+			repositories.CreateMonitoringLog(models.MonitoringLog{
+				Type:    "error",
+				Content: "[estimateAndBroadcastFlightTime]: " + err.Error(),
+			})
 			log.Println("Error estimating flight time:", err)
 		}
 	}()
@@ -362,6 +399,10 @@ func (h *FlightSocketHandler) FlightProposalChoice(s socketio.Conn, msg string) 
 	err = h.flightService.FlightProposalChoice(flightProposalChoice, userId)
 
 	if err != nil {
+		repositories.CreateMonitoringLog(models.MonitoringLog{
+			Type:    "error",
+			Content: "[FlightProposalChoice]: " + err.Error(),
+		})
 		s.Emit("error", err.Error())
 		log.Println("Error making flight proposal choice", err.Error())
 		return err
@@ -391,6 +432,10 @@ func (h *FlightSocketHandler) FlightTakeoff(s socketio.Conn, flightId string) er
 
 	err = h.flightService.FlightTakeoff(convertedFlightId, pilotId)
 	if err != nil {
+		repositories.CreateMonitoringLog(models.MonitoringLog{
+			Type:    "error",
+			Content: "[FlightTakeoff]: " + err.Error(),
+		})
 		s.Emit("error", err.Error())
 		log.Println("Error taking off flight", err.Error())
 		return err
@@ -415,6 +460,10 @@ func (h *FlightSocketHandler) FlightLanding(s socketio.Conn, flightId string) er
 
 	err = h.flightService.FlightLanding(convertedFlightId, pilotId)
 	if err != nil {
+		repositories.CreateMonitoringLog(models.MonitoringLog{
+			Type:    "error",
+			Content: "[FlightLanding]: " + err.Error(),
+		})
 		s.Emit("error", err.Error())
 		log.Println("Error landing flight", err.Error())
 		return err
@@ -441,6 +490,10 @@ func (h *FlightSocketHandler) CancelFlight(s socketio.Conn, flightId string) err
 
 	err = h.flightService.CancelFlight(convertedFlightId, userId)
 	if err != nil {
+		repositories.CreateMonitoringLog(models.MonitoringLog{
+			Type:    "error",
+			Content: "[CancelFlight]: " + err.Error(),
+		})
 		s.Emit("error", err.Error())
 		log.Println("Error cancelling flight", err.Error())
 		return err
@@ -470,6 +523,10 @@ func estimateAndBroadcastFlightTime(s socketio.Conn, flightId int, flightService
 
 	estimateFlightTimeInHour, err := flightService.EstimateFlightTimeInHour(flightId, pilotPosition)
 	if err != nil {
+		repositories.CreateMonitoringLog(models.MonitoringLog{
+			Type:    "error",
+			Content: "[EstimateFlightTimeInHour]: " + err.Error(),
+		})
 		s.Emit("error", err.Error())
 		log.Println("Error estimating flight time", err.Error())
 		return err
@@ -497,6 +554,10 @@ func (h *FlightSocketHandler) PilotPositionUpdate(s socketio.Conn, msg string) e
 
 	response, err := h.flightService.PilotPositionUpdate(pilotPositionUpdate, userId)
 	if err != nil {
+		repositories.CreateMonitoringLog(models.MonitoringLog{
+			Type:    "error",
+			Content: "[PilotPositionUpdate]: " + err.Error(),
+		})
 		s.Emit("error", err.Error())
 		log.Println("Error updating pilot position", err.Error())
 		return err
@@ -534,6 +595,10 @@ func (h *FlightSocketHandler) startPilotPositionUpdate(s socketio.Conn, flightId
 
 	flight, err := h.flightService.GetFlight(convertedFlightId)
 	if err != nil {
+		repositories.CreateMonitoringLog(models.MonitoringLog{
+			Type:    "error",
+			Content: "[GetFlight]: " + err.Error(),
+		})
 		s.Emit("error", err.Error())
 		log.Println("Error getting flight", err.Error())
 		return

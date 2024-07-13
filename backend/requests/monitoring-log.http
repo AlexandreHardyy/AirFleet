@@ -1,0 +1,6 @@
+### GET ALL LOGS
+GET http://localhost:5000/api/monitoring-logs HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTEsImV4cCI6MTc1MTk2MDM4MH0.-4fwIFBvPhcfl70c5PzouzxF8P382Xvu3A8_IsCI4Xs
+
+###

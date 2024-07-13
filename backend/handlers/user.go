@@ -122,6 +122,10 @@ func (th *UserHandler) RegisterPilot(c *gin.Context) {
 	})
 
 	if err != nil {
+		repositories.CreateMonitoringLog(models.MonitoringLog{
+			Type:    "error",
+			Content: "[Register]: " + err.Error(),
+		})
 		response := &Response{
 			Message: err.Error(),
 		}
@@ -151,6 +155,11 @@ func (th *UserHandler) RegisterPilot(c *gin.Context) {
 		}
 
 	}
+
+	repositories.CreateMonitoringLog(models.MonitoringLog{
+		Type:    "info",
+		Content: "[RegisterPilot]: " + input.Email,
+	})
 
 	brevo.SendEmailToVerify(newUser.Email, newUser.FirstName+" "+newUser.LastName, tokenVerify)
 
@@ -190,6 +199,11 @@ func (th *UserHandler) Login(c *gin.Context) {
 		return
 	}
 
+	repositories.CreateMonitoringLog(models.MonitoringLog{
+		Type:    "info",
+		Content: "[Login]: " + input.Email,
+	})
+
 	c.JSON(http.StatusOK, gin.H{
 		"token": tkn,
 	})
@@ -221,11 +235,20 @@ func (th *UserHandler) ValidateAccount(c *gin.Context) {
 
 	err := th.userService.ValidateAccount(tokenParam)
 	if err != nil {
+		repositories.CreateMonitoringLog(models.MonitoringLog{
+			Type:    "error",
+			Content: "[ValidateAccount]: " + err.Error(),
+		})
 		c.JSON(http.StatusBadRequest, &Response{
 			Message: "Wrong token parameter",
 		})
 		return
 	}
+
+	repositories.CreateMonitoringLog(models.MonitoringLog{
+		Type:    "info",
+		Content: "[ValidateAccount]: account validated",
+	})
 
 	c.JSON(http.StatusOK, &Response{
 		Message: "Email was verified successfully",
@@ -273,6 +296,10 @@ func (th *UserHandler) Update(c *gin.Context) {
 
 	user, err := th.userService.Update(id, input)
 	if err != nil {
+		repositories.CreateMonitoringLog(models.MonitoringLog{
+			Type:    "error",
+			Content: "[UpdateUser]: " + err.Error(),
+		})
 		c.JSON(http.StatusBadRequest, &Response{
 			Message: "Wrong id parameter",
 		})
@@ -316,6 +343,11 @@ func (th *UserHandler) ValidatePilotAccount(c *gin.Context) {
 		return
 	}
 
+	repositories.CreateMonitoringLog(models.MonitoringLog{
+		Type:    "info",
+		Content: "[ValidatePilotAccount]: " + user.Email,
+	})
+
 	brevo.SendEmailPilotAccountValidate(user.Email, user.FirstName)
 
 	c.JSON(http.StatusOK, user)
@@ -348,6 +380,10 @@ func (th *UserHandler) CurrentUser(c *gin.Context) {
 	userById, err := th.userService.GetById(userId)
 
 	if err != nil {
+		repositories.CreateMonitoringLog(models.MonitoringLog{
+			Type:    "error",
+			Content: "[UserGetById]: " + err.Error(),
+		})
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
@@ -383,6 +419,10 @@ func (th *UserHandler) GetAll(c *gin.Context) {
 	users, err := th.userService.GetAll()
 
 	if err != nil {
+		repositories.CreateMonitoringLog(models.MonitoringLog{
+			Type:    "error",
+			Content: "[UserGetAll]: " + err.Error(),
+		})
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
@@ -414,6 +454,10 @@ func (th *UserHandler) Delete(c *gin.Context) {
 
 	err = th.userService.Delete(userId)
 	if err != nil {
+		repositories.CreateMonitoringLog(models.MonitoringLog{
+			Type:    "error",
+			Content: "[UserDelete]: " + err.Error(),
+		})
 		response := &Response{
 			Message: err.Error(),
 		}

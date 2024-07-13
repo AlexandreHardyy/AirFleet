@@ -24,11 +24,14 @@ Future<void> main() async {
 
   MapboxOptions.setAccessToken(mapboxAccessToken);
 
+
+
   await Future.delayed(const Duration(seconds: 3));
 
   FlutterNativeSplash.remove();
-
-  await LocalNotificationService().init();
+  if (!kIsWeb) {
+    await LocalNotificationService().init();
+  }
 
   runApp(const App());
 }

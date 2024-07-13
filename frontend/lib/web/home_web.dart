@@ -6,6 +6,7 @@ import 'package:frontend/services/user.dart';
 import 'package:frontend/services/vehicle.dart';
 import 'package:frontend/web/charts/bar_chart.dart';
 import 'package:frontend/web/charts/pie_chart.dart';
+import 'package:frontend/web/monitoring-logs/index.dart';
 import 'package:frontend/web/user/user.dart';
 import 'package:frontend/web/vehicle/vehicle.dart';
 import 'package:intl/intl.dart';
@@ -79,8 +80,7 @@ class _HomeWebState extends State<HomeWeb> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
+    return Scaffold(
         key: _scaffoldKey,
         body: Stack(
           children: [
@@ -123,6 +123,18 @@ class _HomeWebState extends State<HomeWeb> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(builder: (context) => const VehicleScreen()),
+                          );
+                        },
+                      ),
+                      ListTile(
+                        leading: const Icon(Icons.insert_chart_sharp,
+                            color: Color(0xFFDCA200)),
+                        title: const Text('Monitoring logs',
+                            style: TextStyle(color: Colors.white)),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => const MonitoringLogScreen()),
                           );
                         },
                       ),
@@ -203,23 +215,8 @@ class _HomeWebState extends State<HomeWeb> {
           ],
         ),
         endDrawer: _buildUnverifiedVehiclesDrawer(),
-      ),
-      theme: ThemeData(
-        textTheme: const TextTheme(
-          bodyLarge: TextStyle(color: Color(0xFF131141)),
-          bodyMedium: TextStyle(color: Color(0xFF131141)),
-        ),
-        iconTheme: const IconThemeData(
-          color: Color(0xFFDCA200),
-        ),
-        appBarTheme: const AppBarTheme(
-          backgroundColor: Colors.white,
-          iconTheme: IconThemeData(color: Color(0xFFDCA200)),
-          titleTextStyle: TextStyle(color: Color(0xFF131141), fontSize: 20),
-          toolbarTextStyle: TextStyle(color: Color(0xFF131141)),
-        ),
-      ),
-    );
+      );
+
   }
 
   Widget _buildUnverifiedVehiclesDrawer() {

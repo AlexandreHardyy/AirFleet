@@ -73,7 +73,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   setState(() {
                     if (result['token'] != null) {
                       _apiMessage = 'Login success !';
-                      Navigator.of(context).popUntil((route) => false);
+                      Navigator.of(context).popUntil((route) => route.isFirst);
                       context.read<AuthBloc>().add(AuthLogIn());
                     } else if (result['message'] != null) {
                       _apiMessage = result['message'];
