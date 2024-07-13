@@ -44,6 +44,11 @@ class _FlightChatState extends State<FlightChat> {
           }
 
           if (state.status == MessageStatus.loaded) {
+
+            if (!state.isModuleEnabled) {
+              return const Center(child: Text("Chat module is disabled"));
+            }
+
             return Column(
               children: [
                 Expanded(

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend/mobile/blocs/current_flight/current_flight_bloc.dart';
 import 'package:frontend/mobile/blocs/socket_io/socket_io_bloc.dart';
-import 'package:frontend/mobile/widget/departure_to_arrival.dart';
+import 'package:frontend/widgets/departure_to_arrival.dart';
 import 'package:frontend/models/flight.dart';
 import 'package:frontend/routes.dart';
 import 'package:frontend/widgets/button.dart';

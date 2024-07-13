@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/mobile/flight_details.dart';
 import 'package:frontend/models/rating.dart';
 import 'package:frontend/models/user.dart';
 import 'package:frontend/models/flight.dart';
@@ -262,10 +261,7 @@ class _ExpandableFlightListState extends State<ExpandableFlightList> {
               subtitle: Text(flightsToShow[index].status),
               onTap: () {
                 Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) =>
-                        FlightDetails(flightId: flightsToShow[index].id),
-                  ),
+                    Routes.flightDetails(context, flightId: flightsToShow[index].id)
                 );
               },
             );

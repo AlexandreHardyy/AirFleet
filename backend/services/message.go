@@ -25,6 +25,11 @@ func NewMessageService(repository repositories.MessageRepositoryInterface) *Mess
 }
 
 func (s *MessageService) GetAllMessages(limit int, offset int) ([]models.Message, error) {
+	isModuleAvailable := checkChatModuleAvailability()
+	if !isModuleAvailable {
+		return nil, errors.New("chat module is not available")
+	}
+
 	messages, err := s.repository.GetAllMessages(limit, offset)
 	if err != nil {
 		return messages, err
@@ -34,6 +39,11 @@ func (s *MessageService) GetAllMessages(limit int, offset int) ([]models.Message
 }
 
 func (s *MessageService) GetAllMessagesByFlightID(flightID int, userID int, limit int, offset int) ([]models.Message, error) {
+	isModuleAvailable := checkChatModuleAvailability()
+	if !isModuleAvailable {
+		return nil, errors.New("chat module is not available")
+	}
+
 	flightRepository := repositories.NewFlightRepository(database.DB)
 
 	flight, err := flightRepository.GetFlightByID(flightID)
@@ -54,6 +64,11 @@ func (s *MessageService) GetAllMessagesByFlightID(flightID int, userID int, limi
 }
 
 func (s *MessageService) CreateMessage(message inputs.InputCreateMessage, userID int) (responses.ResponseMessage, error) {
+	isModuleAvailable := checkChatModuleAvailability()
+	if !isModuleAvailable {
+		return responses.ResponseMessage{}, errors.New("chat module is not available")
+	}
+
 	flightRepository := repositories.NewFlightRepository(database.DB)
 
 	flight, err := flightRepository.GetFlightByID(message.FlightID)
@@ -95,4 +110,17 @@ func (s *MessageService) CreateMessage(message inputs.InputCreateMessage, userID
 	}
 
 	return formattedMessage, nil
+}
+
+// TODO: How can I factorize this function?
+func checkChatModuleAvailability() bool {
+	filters := map[string]interface{}{
+		"name": "chat",
+	}
+
+	moduleRepository := repositories.NewModuleRepository(database.DB)
+
+	module, _ := moduleRepository.GetModule(filters)
+
+	return module.IsEnabled
 }
