@@ -90,7 +90,7 @@ class _CreateProposalViewState extends State<CreateProposalView> {
                 },
               ),
               TextFormField(
-                decoration: InputDecoration(labelText: 'Arrival Longitude'),
+                decoration: const InputDecoration(labelText: 'Arrival Longitude'),
                 keyboardType: TextInputType.number,
                 onSaved: (value) => arrivalLongitude = double.parse(value!),
                 validator: (value) {
@@ -101,7 +101,7 @@ class _CreateProposalViewState extends State<CreateProposalView> {
                 },
               ),
               TextFormField(
-                decoration: InputDecoration(labelText: 'Arrival Name'),
+                decoration: const InputDecoration(labelText: 'Arrival Name'),
                 onSaved: (value) => arrivalName = value!,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -111,7 +111,7 @@ class _CreateProposalViewState extends State<CreateProposalView> {
                 },
               ),
               TextFormField(
-                decoration: InputDecoration(labelText: 'Departure Address'),
+                decoration: const InputDecoration(labelText: 'Departure Address'),
                 onSaved: (value) => departureAddress = value!,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -121,7 +121,7 @@ class _CreateProposalViewState extends State<CreateProposalView> {
                 },
               ),
               TextFormField(
-                decoration: InputDecoration(labelText: 'Departure Latitude'),
+                decoration: const InputDecoration(labelText: 'Departure Latitude'),
                 keyboardType: TextInputType.number,
                 onSaved: (value) => departureLatitude = double.parse(value!),
                 validator: (value) {
@@ -132,7 +132,7 @@ class _CreateProposalViewState extends State<CreateProposalView> {
                 },
               ),
               TextFormField(
-                decoration: InputDecoration(labelText: 'Departure Longitude'),
+                decoration: const InputDecoration(labelText: 'Departure Longitude'),
                 keyboardType: TextInputType.number,
                 onSaved: (value) => departureLongitude = double.parse(value!),
                 validator: (value) {
@@ -143,7 +143,7 @@ class _CreateProposalViewState extends State<CreateProposalView> {
                 },
               ),
               TextFormField(
-                decoration: InputDecoration(labelText: 'Departure Name'),
+                decoration: const InputDecoration(labelText: 'Departure Name'),
                 onSaved: (value) => departureName = value!,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -153,7 +153,7 @@ class _CreateProposalViewState extends State<CreateProposalView> {
                 },
               ),
               TextFormField(
-                decoration: InputDecoration(labelText: 'Departure Time'),
+                decoration: const InputDecoration(labelText: 'Departure Time'),
                 onSaved: (value) => departureTime = value!,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -163,7 +163,7 @@ class _CreateProposalViewState extends State<CreateProposalView> {
                 },
               ),
               TextFormField(
-                decoration: InputDecoration(labelText: 'Description'),
+                decoration: const InputDecoration(labelText: 'Description'),
                 onSaved: (value) => description = value!,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -173,7 +173,7 @@ class _CreateProposalViewState extends State<CreateProposalView> {
                 },
               ),
               TextFormField(
-                decoration: InputDecoration(labelText: 'Price'),
+                decoration: const InputDecoration(labelText: 'Price'),
                 keyboardType: TextInputType.number,
                 onSaved: (value) => price = double.parse(value!),
                 validator: (value) {
@@ -184,7 +184,7 @@ class _CreateProposalViewState extends State<CreateProposalView> {
                 },
               ),
               FormBuilderDropdown(
-                name: "vehicle_selected",
+                name: "vehicleId",
                 decoration: getInputDecoration(hintText: 'Select vehicle'),
                 items: _vehicleDropdownItems,
               ),

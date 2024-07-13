@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend/models/proposal.dart';
 import 'package:frontend/services/proposal.dart';
 import 'package:frontend/storage/user.dart';
+import 'package:intl/intl.dart';
 
 class ProposalDetail extends StatefulWidget {
   final int proposalId;
@@ -66,79 +67,146 @@ class _ProposalDetailState extends State<ProposalDetail> {
           } else if (snapshot.hasData) {
             final proposal = snapshot.data!;
             _isUserInProposal = proposal.flight.users?.any((user) => user.id == UserStore.user?.id) ?? false;
+            DateTime parsedDepartureTime = DateTime.parse(proposal.departureTime);
+            String formattedDepartureTime = DateFormat('dd/MM/yyyy HH:mm').format(parsedDepartureTime);
+
             return Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  Text('Description: ${proposal.description}'),
-                  Text('Departure Time: ${proposal.departureTime}'),
-                  Text('Seats Available: ${proposal.availableSeats}'),
-                  const SizedBox(height: 20),
-                  if (_isPilot)
-                    ElevatedButton(
-                      onPressed: () async {
-                        //await Navigator.of(context).push(Routes.editProposal(context, proposalId: proposal.id));
-                      },
-                      child: const Text('Edit Proposal'),
+                  Center(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: <Widget>[
+                        Text(
+                          proposal.flight.departure.name,
+                          style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                        ),
+                        Text(
+                          formattedDepartureTime,
+                          style: const TextStyle(fontSize: 18),
+                        ),
+                        const Icon(Icons.arrow_downward),
+                        Text(
+                          proposal.flight.arrival.name,
+                          style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                        ),
+                      ],
                     ),
-                  if (_isPilot)
-                  ElevatedButton(
-                    onPressed: () async {
-                      final confirm = await showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return AlertDialog(
-                            title: const Text('Confirm'),
-                            content: const Text(
-                                'Are you sure you want to delete this proposal ?'),
-                            actions: <Widget>[
-                              TextButton(
-                                onPressed: () =>
-                                    Navigator.of(context).pop(true),
-                                child: const Text('Yes'),
-                              ),
-                              TextButton(
-                                onPressed: () =>
-                                    Navigator.of(context)
-                                        .pop(false),
-                                child: const Text('No'),
-                              ),
-                            ],
-                          );
-                        },
-                      );
-
-                      if (confirm == true) {
-                        try {
-                          await ProposalService.deleteProposal(proposal.id);
-                          Navigator.of(context).pop();
-                        } on DioException catch (e) {
-                          ScaffoldMessenger.of(context)
-                              .showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                  'Error: ${e.response?.data['message']}'),
-                            ),
-                          );
-                        }
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red,
-                      foregroundColor: Colors.white,
-                    ),
-                    child: const Text('Delete Proposal'),
                   ),
+                  const SizedBox(height: 20),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      const Text('Proposed by', style: TextStyle(fontSize: 18)),
+                      const SizedBox(height: 10),
+                      Row(
+                        children: <Widget>[
+                          const CircleAvatar(
+                            backgroundImage: AssetImage('assets/images/default_profile.png'),
+                          ),
+                          const SizedBox(width: 10), // Add some spacing between the image and the text
+                          Text('${proposal.flight.pilot?.firstName} ${proposal.flight.pilot?.lastName}',
+                              style: const TextStyle(fontSize: 18)),
+                        ],
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  Text(proposal.description, style: const TextStyle(fontSize: 18)),
+                  const SizedBox(height: 20),
+                  Text(
+                    'People already in flight: ${proposal.flight.users?.length ?? 0} / ${proposal.availableSeats}',
+                    style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 10),
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: proposal.flight.users?.length ?? 0,
+                      itemBuilder: (context, index) {
+                        final user = proposal.flight.users![index];
+                        return ListTile(
+                          leading: const CircleAvatar(
+                            backgroundImage: AssetImage('assets/images/default_profile.png'),
+                          ),
+                          title: Text('${user.firstName} ${user.lastName}'),
+                        );
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  Text(
+                    'Price: ${proposal.flight.price} €',
+                    style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 10),
+                  if (_isPilot)
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          final confirm = await showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: const Text('Confirm'),
+                                content: const Text('Are you sure you want to delete this proposal?'),
+                                actions: <Widget>[
+                                  TextButton(
+                                    onPressed: () => Navigator.of(context).pop(true),
+                                    child: const Text('Yes'),
+                                  ),
+                                  TextButton(
+                                    onPressed: () => Navigator.of(context).pop(false),
+                                    child: const Text('No'),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+
+                          if (confirm == true) {
+                            try {
+                              await ProposalService.deleteProposal(proposal.id);
+                              Navigator.of(context).pop();
+                            } on DioException catch (e) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('Error: ${e.response?.data['message']}'),
+                                ),
+                              );
+                            }
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.red,
+                          foregroundColor: Colors.white,
+                        ),
+                        child: const Text('Delete Proposal'),
+                      ),
+                    ),
                   if (!_isUserInProposal && !_isPilot)
-                    ElevatedButton(
-                      onPressed: () => _joinProposal(id: proposal.id),
-                      child: const Text('Join Flight'),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 20.0), // Add padding at the bottom
+                      child: SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: () => _joinProposal(id: proposal.id),
+                          child: const Text('Join Flight'),
+                        ),
+                      ),
                     ),
                   if (_isUserInProposal && !_isPilot)
-                    ElevatedButton(
-                      onPressed: () => _leaveProposal(id: proposal.id),
-                      child: const Text('Leave Flight'),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 20.0), // Add padding at the bottom
+                      child: SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: () => _leaveProposal(id: proposal.id),
+                          child: const Text('Leave Flight'),
+                        ),
+                      ),
                     ),
                 ],
               ),
