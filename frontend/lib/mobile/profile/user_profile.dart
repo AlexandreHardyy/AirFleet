@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/mobile/flight_details.dart';
+import 'package:frontend/models/rating.dart';
 import 'package:frontend/models/user.dart';
 import 'package:frontend/models/flight.dart';
 import 'package:frontend/models/vehicle.dart';
 import 'package:frontend/routes.dart';
 import 'package:frontend/services/flight.dart';
+import 'package:frontend/services/rating.dart';
 import 'package:frontend/services/vehicle.dart';
 import 'package:frontend/services/user.dart';
+import 'package:frontend/storage/user.dart';
 
 class UserProfileScreen extends StatefulWidget {
   const UserProfileScreen({super.key});
@@ -18,6 +22,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
   late Future<User?> _currentUser;
   late Future<List<Vehicle>> _userVehicles;
   Future<List<Flight>>? _recentFlights;
+  late Future<List<Rating>> _ratings;
 
   @override
   void initState() {
@@ -25,6 +30,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
     _currentUser = UserService.getCurrentUser();
     _userVehicles = VehicleService.getVehiclesForMe();
     _recentFlights = FlightService.getFlightsHistory();
+    _ratings = RatingService.getAllRatings({"status": "reviewed"});
   }
 
   @override
@@ -52,35 +58,82 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                     },
                   ),
                 ),
-                Expanded(
-                  child: FutureBuilder<List<Vehicle>>(
-                    future: _userVehicles,
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const CircularProgressIndicator();
-                      } else if (snapshot.hasError) {
-                        return Text('Error: ${snapshot.error}');
-                      } else if (snapshot.data != null) {
-                        return InkWell(
-                          onTap: () {
-                            Navigator.of(context).push(Routes.userVehicles(context, vehicles: snapshot.data!));
-                          },
-                          child: Card(
-                            child: ListTile(
-                              leading: const Icon(Icons.directions_car, color: Color(0xFFDCA200),),
-                              title: const Text('Vehicles'),
-                              subtitle: Text('Total: ${snapshot.data!.length}'),
+                if (UserStore.user?.role == 'ROLE_PILOT')
+                  Expanded(
+                    child: FutureBuilder<List<Vehicle>>(
+                      future: _userVehicles,
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const CircularProgressIndicator();
+                        } else if (snapshot.hasError) {
+                          return Text('Error: ${snapshot.error}');
+                        } else if (snapshot.data != null) {
+                          return InkWell(
+                            onTap: () {
+                              Navigator.of(context).push(Routes.userVehicles(
+                                  context,
+                                  vehicles: snapshot.data!));
+                            },
+                            child: Card(
+                              child: ListTile(
+                                leading: const Icon(
+                                  Icons.directions_car,
+                                  color: Color(0xFFDCA200),
+                                ),
+                                title: const Text('Vehicles'),
+                                subtitle:
+                                    Text('Total: ${snapshot.data!.length}'),
+                              ),
                             ),
-                          ),
-                        );
-                      } else {
-                        return const Text('No vehicles found.');
-                      }
-                    },
+                          );
+                        } else {
+                          return const Text('No vehicles found.');
+                        }
+                      },
+                    ),
                   ),
-                ),
               ],
             ),
+            if (UserStore.user?.role == 'ROLE_PILOT')
+              Row(
+                children: [
+                  Expanded(
+                    child: FutureBuilder<List<Flight>>(
+                      future: _recentFlights,
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const CircularProgressIndicator();
+                        } else if (snapshot.hasError) {
+                          return Text('Error: ${snapshot.error}');
+                        } else if (snapshot.data != null) {
+                          return TotalRevenueInfo(flights: snapshot.data!);
+                        } else {
+                          return const Text('No recent flights found.');
+                        }
+                      },
+                    ),
+                  ),
+                  Expanded(
+                    child: FutureBuilder<List<Rating>>(
+                      future: _ratings,
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const CircularProgressIndicator();
+                        } else if (snapshot.hasError) {
+                          return Text('Error: ${snapshot.error}');
+                        } else if (snapshot.data != null) {
+                          return TotalRatingInfo(ratings: snapshot.data!);
+                        } else {
+                          return const Text('No ratings found.');
+                        }
+                      },
+                    ),
+                  ),
+                ],
+              ),
             if (_recentFlights != null)
               FutureBuilder<List<Flight>>(
                 future: _recentFlights,
@@ -112,7 +165,7 @@ class UserInfoCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       child: ListTile(
-        leading: const Icon(Icons.person, color : Color(0xFFDCA200)),
+        leading: const Icon(Icons.person, color: Color(0xFFDCA200)),
         title: Text('${user.firstName} ${user.lastName}'),
         subtitle: _displayRole(user.role),
       ),
@@ -133,6 +186,52 @@ Widget _displayRole(String role) {
   }
 }
 
+class TotalRevenueInfo extends StatelessWidget {
+  final List<Flight> flights;
+
+  const TotalRevenueInfo({super.key, required this.flights});
+
+  double get totalRevenue => flights.fold(
+      0,
+      (previousValue, flight) => flight.status == "finished"
+          ? previousValue + flight.price!
+          : previousValue);
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: ListTile(
+        leading: const Icon(Icons.attach_money, color: Color(0xFFDCA200)),
+        title: const Text('Total Revenue'),
+        subtitle: Text('\$$totalRevenue'),
+      ),
+    );
+  }
+}
+
+class TotalRatingInfo extends StatelessWidget {
+  final List<Rating> ratings;
+
+  const TotalRatingInfo({super.key, required this.ratings});
+
+  double get sumRate => ratings.fold(
+      0, (previousValue, rating) => previousValue + rating.rating!);
+
+  double get globalRate =>
+      double.parse((sumRate / ratings.length).toStringAsFixed(2));
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: ListTile(
+        leading: const Icon(Icons.star, color: Color(0xFFDCA200)),
+        title: const Text('Global Rate'),
+        subtitle: Text('$globalRate'),
+      ),
+    );
+  }
+}
+
 class ExpandableFlightList extends StatefulWidget {
   final List<Flight> flights;
 
@@ -147,7 +246,8 @@ class _ExpandableFlightListState extends State<ExpandableFlightList> {
 
   @override
   Widget build(BuildContext context) {
-    final flightsToShow = _isExpanded ? widget.flights : widget.flights.take(3).toList();
+    final flightsToShow =
+        _isExpanded ? widget.flights : widget.flights.take(3).toList();
 
     return Column(
       children: [
@@ -157,8 +257,17 @@ class _ExpandableFlightListState extends State<ExpandableFlightList> {
           itemCount: flightsToShow.length,
           itemBuilder: (context, index) {
             return ListTile(
-              title: Text('${flightsToShow[index].departure.name} - ${flightsToShow[index].arrival.name}'),
+              title: Text(
+                  '${flightsToShow[index].departure.name} - ${flightsToShow[index].arrival.name}'),
               subtitle: Text(flightsToShow[index].status),
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        FlightDetails(flightId: flightsToShow[index].id),
+                  ),
+                );
+              },
             );
           },
         ),

@@ -1,14 +1,14 @@
 import 'dart:convert';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:frontend/mobile/blocs/current_flight/current_flight_bloc.dart';
 import 'package:frontend/mobile/blocs/socket_io/socket_io_bloc.dart';
+import 'package:frontend/mobile/widget/departure_to_arrival.dart';
 import 'package:frontend/models/flight.dart';
 import 'package:frontend/routes.dart';
 import 'package:frontend/utils/utils.dart';
 import 'package:frontend/widgets/title.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class InProgressFlightCard extends StatefulWidget {
   final Flight flight;
@@ -24,6 +24,7 @@ class _InProgressFlightCardState extends State<InProgressFlightCard> {
 
   String? remainingTime;
   num? remainingDistance;
+  double? progress;
 
   @override
   void initState() {
@@ -39,7 +40,14 @@ class _InProgressFlightCardState extends State<InProgressFlightCard> {
           setState(() {
             remainingTime =
                 formatFlightTime(jsonData['estimated_flight_time'].toString());
+
             remainingDistance = jsonData['remaining_distance'];
+
+            final totalDistance = jsonData['total_distance'];
+
+            if (totalDistance != 0) {
+              progress = (totalDistance - remainingDistance!) / totalDistance;
+            }
           });
         }
       },
@@ -59,62 +67,46 @@ class _InProgressFlightCardState extends State<InProgressFlightCard> {
       children: [
         const SecondaryTitle(content: 'Flight in progress'),
         const SizedBox(height: 24),
+        DepartureToArrivalWidget(flight: widget.flight),
+        const SizedBox(height: 10),
         Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            Expanded(
-              child: Column(
-                children: [
-                  const Text(
-                    "Departure",
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  Text(
-                    widget.flight.departure.name,
-                    textAlign: TextAlign.center,
-                  )
-                ],
-              ),
+            Row(
+              children: [
+                const Icon(Icons.access_time, color: Color(0xFF131141)),
+                const SizedBox(width: 5),
+                Skeletonizer(
+                  enabled: remainingTime == null,
+                  child: Text(remainingTime == null ? "Loading" : remainingTime!),
+                )
+              ],
             ),
-            const SizedBox(width: 10),
-            TextButton(
-              onPressed: () {
-                context
-                    .read<CurrentFlightBloc>()
-                    .add(CurrentFlightLoaded(flight: widget.flight));
-              },
-              child: const Icon(Icons.arrow_circle_right),
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Column(
-                children: [
-                  const Text(
-                    "Arrival",
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  Text(
-                    widget.flight.arrival.name,
-                    textAlign: TextAlign.center,
-                  )
-                ],
-              ),
+            Row(
+              children: [
+                const Icon(Icons.map, color: Color(0xFF131141)),
+                const SizedBox(width: 5),
+                Skeletonizer(
+                  enabled: remainingDistance == null,
+                  child: Text(remainingDistance == null ? "Loading" : "$remainingDistance km"),
+                )
+              ],
             ),
           ],
         ),
-        const SizedBox(height: 10),
-        Text("Remaining time: $remainingTime"),
-        const SizedBox(height: 10),
-        Text("Remaining distance: $remainingDistance nm"),
-        const SizedBox(height: 30),
+        const SizedBox(height: 16),
+        LinearProgressIndicator(
+          value: progress,
+          color: const Color(0xFF131141),
+        ),
+        const SizedBox(height: 16),
         Row(
           children: [
             Expanded(
               child: ElevatedButton(
                 onPressed: () {
-                  Navigator.of(context)
-                      .push(Routes.flightChat(context, flightId: widget.flight.id));
+                  Navigator.of(context).push(
+                      Routes.flightChat(context, flightId: widget.flight.id));
                 },
                 child: const Icon(Icons.chat),
               ),

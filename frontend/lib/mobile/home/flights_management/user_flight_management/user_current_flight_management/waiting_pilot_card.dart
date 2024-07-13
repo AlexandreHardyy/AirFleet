@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:frontend/mobile/blocs/current_flight/current_flight_bloc.dart';
 import 'package:frontend/mobile/blocs/socket_io/socket_io_bloc.dart';
+import 'package:frontend/mobile/widget/departure_to_arrival.dart';
 import 'package:frontend/models/flight.dart';
 import 'package:frontend/widgets/button.dart';
 
@@ -20,49 +20,7 @@ class _WaitingPilotCardState extends State<WaitingPilotCard> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            Expanded(
-              child: Column(
-                children: [
-                  const Text(
-                    "Departure",
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  Text(
-                    widget.flight.departure.name,
-                    textAlign: TextAlign.center,
-                  )
-                ],
-              ),
-            ),
-            const SizedBox(width: 10),
-            TextButton(
-              onPressed: () {
-                context
-                    .read<CurrentFlightBloc>()
-                    .add(CurrentFlightLoaded(flight: widget.flight));
-              },
-              child: const Icon(Icons.arrow_circle_right),
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Column(
-                children: [
-                  const Text(
-                    "Arrival",
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  Text(
-                    widget.flight.arrival.name,
-                    textAlign: TextAlign.center,
-                  )
-                ],
-              ),
-            ),
-          ],
-        ),
+        DepartureToArrivalWidget(flight: widget.flight),
         const SizedBox(height: 24),
         const Expanded(
           child: Padding(
@@ -72,7 +30,7 @@ class _WaitingPilotCardState extends State<WaitingPilotCard> {
               children: [
                 Text("Waiting for a pilot to accept the flight"),
                 SizedBox(height: 10),
-                LinearProgressIndicator(),
+                LinearProgressIndicator(color: Color(0xFF131141),),
               ],
             ),
           ),

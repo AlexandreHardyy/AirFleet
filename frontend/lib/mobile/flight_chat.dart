@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:frontend/storage/user.dart';
+import 'package:intl/intl.dart';
 
 import 'blocs/message/message_bloc.dart';
 import 'blocs/socket_io/socket_io_bloc.dart';
@@ -48,19 +50,48 @@ class _FlightChatState extends State<FlightChat> {
                   child: ListView.builder(
                     itemCount: state.messages.length,
                     itemBuilder: (context, index) {
-                      return ListTile(
-                        leading: const CircleAvatar(
-                          child: Icon(Icons.person),
+                      final isCurrentUser = state.messages[index].user.id == UserStore.user?.id;
+                      final DateTime parsedDate = DateTime.parse(state.messages[index].createdAt);
+                      final String formattedDate = DateFormat('yyyy-MM-dd – kk:mm').format(parsedDate);
+
+                      return Align(
+                        alignment: isCurrentUser ? Alignment.centerRight : Alignment.centerLeft,
+                        child: Container(
+                          margin: EdgeInsets.only(
+                            top: 4.0,
+                            bottom: 4.0,
+                            left: isCurrentUser ? 50.0 : 8.0,
+                            right: isCurrentUser ? 8.0 : 50.0,
+                          ),
+                          padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(12),
+                            color: isCurrentUser ? const Color(0xFFDCA200) : const Color(0xFF131141),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: isCurrentUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                state.messages[index].user.firstName,
+                                style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+                              ),
+                              Text(
+                                state.messages[index].content,
+                                style: const TextStyle(color: Colors.white),
+                              ),
+                              Text(
+                                formattedDate,
+                                style: const TextStyle(color: Colors.white70, fontSize: 12),
+                              ),
+                            ],
+                          ),
                         ),
-                        title: Text(state.messages[index].user.firstName),
-                        subtitle: Text(state.messages[index].content),
-                        trailing: Text(state.messages[index].createdAt),
                       );
                     },
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.all(8.0),
+                  padding: const EdgeInsets.all(24.0),
                   child: Row(
                     children: [
                       Expanded(
@@ -85,6 +116,7 @@ class _FlightChatState extends State<FlightChat> {
                             }),
                           );
 
+                          _controller.clear();
                         },
                         child: const Text("Send"),
                       ),

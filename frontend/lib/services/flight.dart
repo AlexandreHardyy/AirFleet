@@ -67,4 +67,16 @@ class FlightService {
       throw Exception('Something went wrong: $e');
     }
   }
+
+  static Future<Flight> getFlight(int flightId) async {
+    try {
+      final response = await dioApi.get("/flights/$flightId");
+
+      return Flight.fromJson(response.data);
+    } on DioException catch (e) {
+      throw Exception('Something went wrong during flight retrieval: ${e.response}');
+    } catch (e) {
+      throw Exception('Something went wrong: $e');
+    }
+  }
 }

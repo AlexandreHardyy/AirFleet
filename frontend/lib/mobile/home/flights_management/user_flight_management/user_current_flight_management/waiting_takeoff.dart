@@ -1,14 +1,9 @@
-import 'dart:convert';
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend/mobile/blocs/current_flight/current_flight_bloc.dart';
-import 'package:frontend/mobile/blocs/message/message_bloc.dart';
 import 'package:frontend/mobile/blocs/socket_io/socket_io_bloc.dart';
+import 'package:frontend/mobile/widget/departure_to_arrival.dart';
 import 'package:frontend/models/flight.dart';
-import 'package:frontend/models/message.dart';
 import 'package:frontend/routes.dart';
 import 'package:frontend/widgets/button.dart';
 import 'package:frontend/widgets/title.dart';
@@ -58,54 +53,11 @@ class _WaitingTakeoffState extends State<WaitingTakeoff> {
       children: [
         const SecondaryTitle(content: 'Waiting for takeoff'),
         const SizedBox(height: 10),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Expanded(
-              child: Column(
-                children: [
-                  const Text(
-                    "Departure",
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  Text(
-                    widget.flight.departure.name,
-                    textAlign: TextAlign.center,
-                  )
-                ],
-              ),
-            ),
-            const SizedBox(width: 10),
-            TextButton(
-              onPressed: () {
-                context
-                    .read<CurrentFlightBloc>()
-                    .add(CurrentFlightLoaded(flight: widget.flight));
-              },
-              child: const Icon(Icons.arrow_circle_right),
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Column(
-                children: [
-                  const Text(
-                    "Arrival",
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  Text(
-                    widget.flight.arrival.name,
-                    textAlign: TextAlign.center,
-                  )
-                ],
-              ),
-            ),
-          ],
-        ),
+        DepartureToArrivalWidget(flight: widget.flight),
         const SizedBox(height: 24),
         const Text('Please join aircraft the plane before takeoff'),
         const SizedBox(height: 8),
-        const LinearProgressIndicator(),
+        const LinearProgressIndicator(color: Color(0xFF131141),),
         const SizedBox(
           height: 24,
         ),

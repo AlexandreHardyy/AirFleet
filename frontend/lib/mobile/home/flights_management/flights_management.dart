@@ -4,7 +4,9 @@ import 'package:flutter_pannable_rating_bar/flutter_pannable_rating_bar.dart';
 import 'package:frontend/mobile/blocs/current_flight/current_flight_bloc.dart';
 import 'package:frontend/mobile/home/flights_management/pilot_flight_management/pilot_current_flight_management/index.dart';
 import 'package:frontend/mobile/home/flights_management/pilot_flight_management/search_flights.dart';
+import 'package:frontend/models/flight.dart';
 import 'package:frontend/models/rating.dart';
+import 'package:frontend/models/user.dart';
 import 'package:frontend/services/rating.dart';
 import 'package:frontend/storage/user.dart';
 
@@ -197,22 +199,27 @@ class _FlightsManagementState extends State<FlightsManagement> {
 }
 
 Future<void> _dialogBuilder(BuildContext context) async {
+  final Rating? pendingRating = context.read<CurrentFlightBloc>().state.pendingRating;
+
+  if (pendingRating == null) {
+    return;
+  }
+
   final result = await showDialog<Map<String, dynamic>>(
     context: context,
     builder: (BuildContext context) {
-      return const RateFlightWidget();
+      return RateFlightWidget(pilot: pendingRating.pilot,);
     },
   );
 
-  final ratingId = context.read<CurrentFlightBloc>().state.pendingRating?.id;
+  final ratingId = pendingRating.id;
   if (result != null) {
     try {
       await RatingService.updateRating(
-          ratingId!, UpdateRatingRequest(rating: result['rating'], comment: result['comment']));
+          ratingId, UpdateRatingRequest(rating: result['rating'], comment: result['comment']));
     } catch (e) {
       print(e);
     }
-    print("Rating: ${result['rating']}, Comment: ${result['comment']}");
   } else {
     await RatingService.updateRating(
         ratingId!, UpdateRatingRequest(rating: null, comment: null));
@@ -220,8 +227,11 @@ Future<void> _dialogBuilder(BuildContext context) async {
 }
 
 class RateFlightWidget extends StatefulWidget {
+  final User pilot;
+
   const RateFlightWidget({
     super.key,
+    required this.pilot,
   });
 
   @override
@@ -235,29 +245,46 @@ class _RateFlightWidgetState extends State<RateFlightWidget> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Rate your previous flight'),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20.0),
+      ),
+      title: const Text(
+        'Rate your previous flight',
+        style: TextStyle(fontWeight: FontWeight.bold),
+      ),
       scrollable: true,
       content: Column(
-        children: <Widget>[
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text('How was your experience with ${widget.pilot.firstName}?', style: Theme.of(context).textTheme.labelLarge),
+          const SizedBox(height: 20),
           PannableRatingBar(
             rate: rating,
-            items: List.generate(5, (index) =>
-            const RatingWidget(
-              selectedColor: Colors.yellow,
-              unSelectedColor: Colors.grey,
-              child: Icon(
-                Icons.star,
-                size: 48,
+            items: List.generate(
+              5,
+                  (index) => const RatingWidget(
+                selectedColor: Color(0xFFDCA200),
+                unSelectedColor: Colors.grey,
+                child: Icon(
+                  Icons.star,
+                  size: 40,
+                ),
               ),
-            )),
-            onChanged: (value) { // the rating value is updated on tap or drag.
+            ),
+            onChanged: (value) {
               setState(() {
                 rating = value;
               });
             },
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 20),
           TextField(
+            decoration: InputDecoration(
+              labelText: 'Comments',
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+            ),
             keyboardType: TextInputType.multiline,
             maxLines: null,
             onChanged: (value) {
@@ -265,7 +292,7 @@ class _RateFlightWidgetState extends State<RateFlightWidget> {
                 comment = value;
               });
             },
-          )
+          ),
         ],
       ),
       actions: <Widget>[
@@ -273,14 +300,15 @@ class _RateFlightWidgetState extends State<RateFlightWidget> {
           style: TextButton.styleFrom(
             textStyle: Theme.of(context).textTheme.labelLarge,
           ),
-          child: const Text('Maybe later'),
+          child: const Text('Ignore'),
           onPressed: () {
             Navigator.of(context).pop(null);
           },
         ),
-        TextButton(
-          style: TextButton.styleFrom(
-            textStyle: Theme.of(context).textTheme.labelLarge,
+        ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: const Color(0xFFDCA200),
+            textStyle: const TextStyle(color: Colors.white),
           ),
           child: const Text('Submit'),
           onPressed: () {

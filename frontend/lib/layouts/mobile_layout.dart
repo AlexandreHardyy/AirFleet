@@ -9,11 +9,8 @@ import 'package:frontend/mobile/blocs/socket_io/socket_io_bloc.dart';
 import 'package:frontend/mobile/home/home.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-
-
 class MobileLayout extends StatelessWidget {
   const MobileLayout({super.key});
-
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +28,8 @@ class MobileLayout extends StatelessWidget {
                 CurrentFlightBloc()..add(CurrentFlightInitialized()),
           ),
           BlocProvider<MessageBloc>(
-            create: (context) => MessageBloc()..add(MessageLoaded(messages: const [])),
+            create: (context) =>
+                MessageBloc()..add(MessageLoaded(messages: const [])),
           ),
         ],
         child: MaterialApp(
@@ -39,7 +37,7 @@ class MobileLayout extends StatelessWidget {
             return state.status == AuthStatus.connected ? const Home() : const LoginScreen();
           }),
           theme: ThemeData(
-            colorSchemeSeed: const Color.fromARGB(255, 13, 0, 59),
+            colorSchemeSeed: const Color(0xFF0D003B),
             textTheme: TextTheme(
                 displayLarge: GoogleFonts.prostoOne(
               color: const Color(0xFFDCA200),
@@ -48,18 +46,17 @@ class MobileLayout extends StatelessWidget {
             )),
             elevatedButtonTheme: ElevatedButtonThemeData(
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFDCA200),
-                foregroundColor: Colors.white,
-                textStyle: const TextStyle(
-                  // fontWeight: FontWeight.bold,
-                  fontSize: 16
-                ), // Couleur du texte blanc
-                shape: RoundedRectangleBorder(
-                  borderRadius:
-                      BorderRadius.circular(8.0), // Coins arrondis de 4px
-                ),
-                padding: const EdgeInsets.all(14) 
-              ),
+                  backgroundColor: const Color(0xFFDCA200),
+                  foregroundColor: Colors.white,
+                  textStyle: const TextStyle(
+                      // fontWeight: FontWeight.bold,
+                      fontSize: 16),
+                  // Couleur du texte blanc
+                  shape: RoundedRectangleBorder(
+                    borderRadius:
+                        BorderRadius.circular(8.0), // Coins arrondis de 4px
+                  ),
+                  padding: const EdgeInsets.all(14)),
             ),
             // ALTERNATIVE
             /*textTheme: GoogleFonts.prostoOneTextTheme(),*/
