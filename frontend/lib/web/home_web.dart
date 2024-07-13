@@ -6,6 +6,7 @@ import 'package:frontend/services/user.dart';
 import 'package:frontend/services/vehicle.dart';
 import 'package:frontend/web/charts/bar_chart.dart';
 import 'package:frontend/web/charts/pie_chart.dart';
+import 'package:frontend/web/flights/flight.dart';
 import 'package:frontend/web/module/module.dart';
 import 'package:frontend/web/monitoring-logs/index.dart';
 import 'package:frontend/web/user/user.dart';
@@ -90,55 +91,78 @@ class _HomeWebState extends State<HomeWeb> {
               Container(
                 width: 200,
                 color: const Color(0xFF131141),
-                child: ListView(
-                  padding: EdgeInsets.zero,
-                  children: <Widget>[
-                    const Padding(
-                      padding: EdgeInsets.all(16.0),
-                      child: Text(
-                        'Admin Menu',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 24,
-                        ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: ListView(
+                        padding: EdgeInsets.zero,
+                        children: <Widget>[
+                          const Padding(
+                            padding: EdgeInsets.all(16.0),
+                            child: Text(
+                              'Admin Menu',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 24,
+                              ),
+                            ),
+                          ),
+                          ListTile(
+                            leading: const Icon(FontAwesomeIcons.userTie,
+                                color: Color(0xFFDCA200)),
+                            title: const Text('Users',
+                                style: TextStyle(color: Colors.white)),
+                            onTap: () {
+                              UserScreen.navigateTo(context);
+                            },
+                          ),
+                          ListTile(
+                            leading: const Icon(Icons.airplanemode_active,
+                                color: Color(0xFFDCA200)),
+                            title: const Text('Vehicles',
+                                style: TextStyle(color: Colors.white)),
+                            onTap: () {
+                              VehicleScreen.navigateTo(context);
+                            },
+                          ),
+                          ListTile(
+                            leading: const Icon(Icons.airplane_ticket,
+                                color: Color(0xFFDCA200)),
+                            title: const Text('Flights',
+                                style: TextStyle(color: Colors.white)),
+                            onTap: () {
+                              FlightsWebScreen.navigateTo(context);
+                            },
+                          ),
+                          ListTile(
+                            leading: const Icon(Icons.insert_chart_sharp,
+                                color: Color(0xFFDCA200)),
+                            title: const Text('Monitoring logs',
+                                style: TextStyle(color: Colors.white)),
+                            onTap: () {
+                              MonitoringLogScreen.navigate(context);
+                            },
+                          ),
+                          ListTile(
+                            leading: const Icon(Icons.dashboard,
+                                color: Color(0xFFDCA200)),
+                            title: const Text('Modules',
+                                style: TextStyle(color: Colors.white)),
+                            onTap: () {
+                              ModuleScreen.navigateTo(context);
+                            },
+                          ),
+                        ],
                       ),
                     ),
                     ListTile(
-                      leading: const Icon(FontAwesomeIcons.userTie,
-                          color: Color(0xFFDCA200)),
-                      title: const Text('Users',
-                          style: TextStyle(color: Colors.white)),
-                      onTap: () {
-                        UserScreen.navigateTo(context);
+                      leading: const Icon(Icons.logout, color: Color(0xFFDCA200)),
+                      title: const Text('Logout', style: TextStyle(color: Colors.white)),
+                      onTap: () async {
+                        await UserService.logOut(context);
                       },
                     ),
-                    ListTile(
-                      leading: const Icon(Icons.airplanemode_active,
-                          color: Color(0xFFDCA200)),
-                      title: const Text('Vehicles',
-                          style: TextStyle(color: Colors.white)),
-                      onTap: () {
-                        VehicleScreen.navigateTo(context);
-                      },
-                    ),
-                    ListTile(
-                      leading: const Icon(Icons.insert_chart_sharp,
-                          color: Color(0xFFDCA200)),
-                      title: const Text('Monitoring logs',
-                          style: TextStyle(color: Colors.white)),
-                      onTap: () {
-                        MonitoringLogScreen.navigate(context);
-                      },
-                    ),
-                    ListTile(
-                      leading:
-                          const Icon(Icons.dashboard, color: Color(0xFFDCA200)),
-                      title: const Text('Modules',
-                          style: TextStyle(color: Colors.white)),
-                      onTap: () {
-                        ModuleScreen.navigateTo(context);
-                      },
-                    )
                   ],
                 ),
               ),
@@ -169,6 +193,15 @@ class _HomeWebState extends State<HomeWeb> {
                           ],
                         ),
                       ),
+                      ListTile(
+                        leading: const Icon(Icons.airplane_ticket,
+                            color: Color(0xFFDCA200)),
+                        title: const Text('Flights',
+                            style: TextStyle(color: Colors.white)),
+                        onTap: () {
+                          FlightsWebScreen.navigateTo(context);
+                        },
+                      ),
                     ],
                   ),
                 ),
@@ -185,8 +218,7 @@ class _HomeWebState extends State<HomeWeb> {
                     _scaffoldKey.currentState?.openEndDrawer();
                   },
                   backgroundColor: const Color(0xFF131141),
-                  child:
-                      const Icon(Icons.notifications, color: Color(0xFFDCA200)),
+                  child: const Icon(Icons.notifications, color: Color(0xFFDCA200)),
                 ),
                 if (_unverifiedVehicles.isNotEmpty)
                   Positioned(
@@ -248,8 +280,7 @@ class _HomeWebState extends State<HomeWeb> {
                 subtitle: Text(DateFormat('yyyy-MM-dd')
                     .format(DateTime.parse(vehicle.createdAt!))),
                 trailing: IconButton(
-                  icon:
-                      const Icon(Icons.check_circle, color: Color(0xFFDCA200)),
+                  icon: const Icon(Icons.check_circle, color: Color(0xFFDCA200)),
                   tooltip: 'Verify this vehicle',
                   onPressed: () => _verifyVehicle(vehicle),
                 ),

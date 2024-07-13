@@ -293,7 +293,6 @@ func GetFlightSocketHandler(db *gorm.DB, server *socketio.Server) *FlightSocketH
 	flightRepository := repositories.NewFlightRepository(db)
 	flightService := services.NewFlightService(flightRepository)
 	return NewFlightSocketHandler(flightService, server)
-
 }
 
 func NewFlightSocketHandler(flightService services.FlightServiceInterface, server *socketio.Server) *FlightSocketHandler {
@@ -647,4 +646,105 @@ func ExtractIdFromWebSocketHeader(s socketio.Conn) (int, error) {
 		return 0, err
 	}
 	return userId, nil
+}
+
+func (h *FlightSocketHandler) StartAndCompleteFlight(s socketio.Conn, msg string) error {
+	log.Println("Starting flight simulation")
+
+	var simulationRequest inputs.InputSimulateFlight
+	err := json.Unmarshal([]byte(msg), &simulationRequest)
+	if err != nil {
+		s.Emit("error", err.Error())
+		log.Println("Error unmarshalling flight simulation request", err.Error())
+		return err
+	}
+
+	flight, err := h.flightService.GetFlight(simulationRequest.FlightId)
+	if err != nil {
+		s.Emit("error", err.Error())
+		return err
+	}
+
+	if flight.Status != flightStatus.WAITING_TAKEOFF {
+		s.Emit("error", "Flight is not ready to take off")
+		log.Println("Flight is not ready to take off")
+		return nil
+	}
+
+	err = h.flightService.FlightTakeoff(simulationRequest.FlightId, simulationRequest.PilotId)
+	if err != nil {
+		s.Emit("error", err.Error())
+		return err
+	}
+	log.Println("Flight has taken off")
+
+	go func() {
+		ticker := time.NewTicker(5 * time.Second)
+		defer ticker.Stop()
+
+		latDiff := flight.Arrival.Latitude - flight.Departure.Latitude
+		longDiff := flight.Arrival.Longitude - flight.Departure.Longitude
+
+		totalDistance := utils.CalculateDistance(flight.Departure.Latitude, flight.Departure.Longitude, flight.Arrival.Latitude, flight.Arrival.Longitude)
+
+		cruiseSpeedKmH := flight.Vehicle.CruiseSpeed * 1.852 // Convert knots to km/h
+		intervalSeconds := 5.0
+		steps := int(totalDistance / (cruiseSpeedKmH * (intervalSeconds / 3600)))
+
+		latIncrement := latDiff / float64(steps)
+		longIncrement := longDiff / float64(steps)
+
+		currentPosition := flight.Departure
+
+		estimatedTime := totalDistance / cruiseSpeedKmH
+		estimatedTimeInHours := int(estimatedTime)
+		estimatedTimeInMinutes := int((estimatedTime - float64(estimatedTimeInHours)) * 60)
+		log.Println("Estimated flight time:", estimatedTimeInHours, "hours", estimatedTimeInMinutes, "minutes")
+
+		for i := 0; i < steps; i++ {
+			select {
+			case <-ticker.C:
+				currentPosition.Latitude += latIncrement
+				currentPosition.Longitude += longIncrement
+
+				newPosition := inputs.InputPilotPositionUpdate{
+					FlightId:  simulationRequest.FlightId,
+					Latitude:  currentPosition.Latitude,
+					Longitude: currentPosition.Longitude,
+				}
+
+				response, err := h.flightService.PilotPositionUpdate(newPosition, simulationRequest.PilotId)
+				if err != nil {
+					s.Emit("error", err.Error())
+					return
+				}
+
+				responseBytes, err := json.Marshal(response)
+				if err != nil {
+					log.Println("Error marshalling pilot position:", err)
+					return
+				}
+
+				responseString := string(responseBytes)
+
+				h.socketIoServer.BroadcastToRoom("/flights", strconv.Itoa(simulationRequest.FlightId), "pilotPositionUpdated", responseString)
+				log.Println("Pilot position updated")
+
+				if currentPosition.Latitude >= flight.Arrival.Latitude && currentPosition.Longitude >= flight.Arrival.Longitude {
+					break
+				}
+			}
+		}
+
+		err = h.flightService.FlightLanding(simulationRequest.FlightId, simulationRequest.PilotId)
+		if err != nil {
+			s.Emit("error", err.Error())
+			return
+		}
+		log.Println("Flight has landed")
+
+		s.Leave(strconv.Itoa(simulationRequest.FlightId))
+	}()
+
+	return nil
 }

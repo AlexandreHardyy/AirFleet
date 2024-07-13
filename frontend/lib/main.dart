@@ -21,7 +21,9 @@ Future<void> main() async {
 
   await dotenv.load(fileName: ".env");
 
-  Stripe.publishableKey = dotenv.get("PUBLIC_API_KEY_STRIPE");
+  if (!kIsWeb) {
+    Stripe.publishableKey = dotenv.get("PUBLIC_API_KEY_STRIPE");
+  }
 
   final String mapboxAccessToken =
       const String.fromEnvironment("PUBLIC_ACCESS_TOKEN") != ""
@@ -29,8 +31,6 @@ Future<void> main() async {
           : dotenv.get("PUBLIC_ACCESS_TOKEN_MAPBOX");
 
   MapboxOptions.setAccessToken(mapboxAccessToken);
-
-
 
   await Future.delayed(const Duration(seconds: 3));
 

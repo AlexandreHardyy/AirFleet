@@ -35,3 +35,8 @@ type InputPilotPositionUpdate struct {
 	Latitude  float64 `json:"latitude" binding:"required"`
 	Longitude float64 `json:"longitude" binding:"required"`
 }
+
+type InputSimulateFlight struct {
+	FlightId int `json:"flightId" binding:"required"`
+	PilotId  int `json:"pilotId" binding:"required"`
+}

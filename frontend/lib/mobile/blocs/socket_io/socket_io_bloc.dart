@@ -57,17 +57,15 @@ class SocketIoBloc extends Bloc<SocketIoEvent, SocketIoState> {
           OptionBuilder()
               .setTransports(['websocket'])
               .disableAutoConnect()
-              .disableAutoConnect()
               .setExtraHeaders({'Bearer': bearerToken})
-              .build(),
-      );
+              .build());
 
       socket.onConnect((_) {
         print('Connection established');
       });
       socket.onDisconnect((_) => print('Connection Disconnection'));
-      socket.onConnectError((err) => print(err));
-      socket.onError((err) => print(err));
+      socket.onConnectError((err) => print("Connection error: $err"));
+      socket.onError((err) => print("Error: $err"));
 
       socket.on('error', (data) {
         toastification.show(
@@ -135,7 +133,6 @@ class SocketIoBloc extends Bloc<SocketIoEvent, SocketIoState> {
   }
 
   void updatePilotPosition(int flightId) async {
-    print('update !!!!');
     final currentPosition = await determinePosition();
     state.socket!.connect();
 
