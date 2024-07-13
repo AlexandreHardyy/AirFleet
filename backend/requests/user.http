@@ -32,8 +32,8 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsImV4cCI6M
 ###
 
 ### GET ALL USER
-GET http://localhost:3001/api/users HTTP/1.1
+GET http://localhost:5000/api/users HTTP/1.1
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZXhwIjoxNzQzNzU4MTEzfQ.dtjeeBAbPnhT4IZOSCGSHbe3Wnr03AQ8Jsuy6OY7NkE
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTEsImV4cCI6MTc1MTk5NzUyNH0.ZigCeukUPkioAL-Fln9sUQ6wtzTBrjG-MyUnKRrNdug
 
 ###

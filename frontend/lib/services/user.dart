@@ -69,7 +69,6 @@ class UserService {
   }
 
   static Future<Map<String, dynamic>> login(String email, String password) async {
-    print(dotenv.env['API_URL']);
     try {
       final response = await dioApi.post(
         '/users/login',
@@ -163,9 +162,15 @@ class UserService {
     }
   }
 
-  static Future<void> update(int id, Map<String, dynamic> data) async {
+  static Future<Map<String, dynamic>> update(int id, Map<String, dynamic> data) async {
     try {
-      await dioApi.put('/users/$id', data: data);
+      final response = await dioApi.put('/users/$id', data: data);
+      if (response.statusCode == 200) {
+        return { 'message': 'user updated !' };
+      }
+
+      return { 'message': 'error occured' };
+
     } catch (error) {
       if (error is DioException) {
         throw Exception('Failed to update user: ${error.message}');

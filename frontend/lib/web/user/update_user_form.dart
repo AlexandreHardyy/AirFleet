@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:frontend/models/user.dart';
 import 'package:frontend/services/user.dart';
+import 'package:frontend/storage/user.dart';
 
 class UpdateUserForm extends StatefulWidget {
   final User user;
@@ -12,44 +15,37 @@ class UpdateUserForm extends StatefulWidget {
 }
 
 class _UpdateUserFormState extends State<UpdateUserForm> {
-  final _formKey = GlobalKey<FormState>();
-  late TextEditingController _firstNameController;
-  late TextEditingController _lastNameController;
-  late TextEditingController _emailController;
-  late TextEditingController _roleController;
+  final _formKey = GlobalKey<FormBuilderState>();
+  var _apiMessage = "";
 
   @override
   void initState() {
     super.initState();
-    _firstNameController = TextEditingController(text: widget.user.firstName);
-    _lastNameController = TextEditingController(text: widget.user.lastName);
-    _emailController = TextEditingController(text: widget.user.email);
-    _roleController = TextEditingController(text: widget.user.role);
-  }
-
-  @override
-  void dispose() {
-    _firstNameController.dispose();
-    _lastNameController.dispose();
-    _emailController.dispose();
-    _roleController.dispose();
-    super.dispose();
   }
 
   Future<void> _updateUser() async {
-    if (_formKey.currentState!.validate()) {
-      try {
-        await UserService.update(widget.user.id, {
-          'first_name': _firstNameController.text,
-          'last_name': _lastNameController.text,
-          'email': _emailController.text,
-          'role': _roleController.text,
-        });
-        Navigator.pop(context, true);
-      } catch (e) {
-        print(e);
-      }
+    final state = _formKey.currentState;
+    if (state == null) {
+      return;
     }
+    setState(() {
+      _apiMessage = "";
+    });
+
+    state.saveAndValidate();
+
+    state.validate();
+    final formValues = state.instantValue;
+
+    final result = await UserService.update(widget.user.id, formValues);
+
+    setState(() {
+      if (result['message'] != null) {
+        _apiMessage = result['message'];
+      } else {
+        _apiMessage = 'An error occurred';
+      }
+    });
   }
 
   @override
@@ -59,60 +55,84 @@ class _UpdateUserFormState extends State<UpdateUserForm> {
         title: const Text('Update User'),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
+          padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
-              TextFormField(
-                controller: _firstNameController,
-                decoration: const InputDecoration(labelText: 'First Name'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter a first name';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                controller: _lastNameController,
-                decoration: const InputDecoration(labelText: 'Last Name'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter a last name';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                controller: _emailController,
-                decoration: const InputDecoration(labelText: 'Email'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter an email';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                controller: _roleController,
-                decoration: const InputDecoration(labelText: 'Role'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter a role';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: _updateUser,
-                child: const Text('Update User'),
+              FormBuilder(
+                key: _formKey,
+                child: Column(
+                  children: [
+                    FormBuilderTextField(
+                      name: 'email',
+                      initialValue: widget.user.email,
+                      decoration: const InputDecoration(labelText: 'Email'),
+                      validator: FormBuilderValidators.compose([
+                        FormBuilderValidators.required(),
+                        FormBuilderValidators.email(),
+                      ]),
+                    ),
+                    const SizedBox(height: 10),
+                    FormBuilderTextField(
+                      name: 'first_name',
+                      initialValue: widget.user.firstName,
+                      decoration:
+                          const InputDecoration(labelText: 'First Name'),
+                      validator: FormBuilderValidators.compose([
+                        FormBuilderValidators.required(),
+                      ]),
+                    ),
+                    const SizedBox(height: 10),
+                    FormBuilderTextField(
+                      name: 'last_name',
+                      initialValue: widget.user.lastName,
+                      decoration: const InputDecoration(labelText: 'Last Name'),
+                      validator: FormBuilderValidators.compose([
+                        FormBuilderValidators.required(),
+                      ]),
+                    ),
+                    FormBuilderDropdown(
+                      name: "role",
+                      initialValue: widget.user.role,
+                      validator: FormBuilderValidators.compose([
+                        FormBuilderValidators.required(),
+                      ]),
+                      items: [Roles.pilot, Roles.user]
+                          .map((role) => DropdownMenuItem(
+                                value: role,
+                                child: Text(role),
+                              ))
+                          .toList(),
+                    ),
+                    FormBuilderCheckbox(
+                      title: const Text("is verified"),
+                      name: "is_verified",
+                      initialValue: widget.user.isVerified,
+                      validator: FormBuilderValidators.compose([
+                        FormBuilderValidators.required(),
+                      ]),
+                    ),
+                    widget.user.role == Roles.pilot
+                        ? FormBuilderCheckbox(
+                            title: const Text("is pilot verified"),
+                            name: "is_pilot_verified",
+                            initialValue: widget.user.isPilotVerified,
+                            validator: FormBuilderValidators.compose([
+                              FormBuilderValidators.required(),
+                            ]),
+                          )
+                        : const Text(''),
+                    const SizedBox(height: 10),
+                    ElevatedButton(
+                      onPressed: _updateUser,
+                      child: const Text('Update user'),
+                    ),
+                    const SizedBox(height: 10),
+                    Text(_apiMessage)
+                  ],
+                ),
               ),
             ],
-          ),
-        ),
-      ),
+          )),
     );
   }
 }

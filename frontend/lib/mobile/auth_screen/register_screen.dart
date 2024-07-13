@@ -64,6 +64,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 FormBuilderValidators.required(),
               ]),
             ),
+            const SizedBox(height: 24),
+            FormBuilderTextField(
+              name: 'confirm_password',
+              decoration: getInputDecoration(hintText: 'Confirm password'),
+              obscureText: true,
+              validator: (val) {
+                if (val != _formKey.currentState?.fields['password']?.value) {
+                  return 'Passwords do not match';
+                }
+                return null;
+              },
+            ),
             const SizedBox(height: 32),
             ElevatedButton(
               // : Theme.of(context).colorScheme.secondary,
@@ -74,7 +86,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 }
                 state.saveAndValidate();
 
-                state.validate();
+                final isValid = state.validate();
+                if (!isValid) {
+                  return;
+                }
                 final formValues = state.instantValue;
                 final result = await UserService.register(
                     formValues['email'],

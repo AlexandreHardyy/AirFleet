@@ -73,6 +73,18 @@ class _RegisterPilotScreenState extends State<RegisterPilotScreen> {
                 ]),
               ),
               const SizedBox(height: 24),
+              FormBuilderTextField(
+                name: 'confirm_password',
+                decoration: getInputDecoration(hintText: 'Confirm password'),
+                obscureText: true,
+                validator: (val) {
+                  if (val != _formKey.currentState?.fields['password']?.value) {
+                    return 'Passwords do not match';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 24),
               FormBuilderFilePicker(
                 name: "id_card",
                 decoration: getInputDecoration(hintText: 'Card ID'),
@@ -133,7 +145,11 @@ class _RegisterPilotScreenState extends State<RegisterPilotScreen> {
                   });
                   state.saveAndValidate();
 
-                  state.validate();
+                  final isValid = state.validate();
+                  if (!isValid) {
+                    return;
+                  }
+                  
                   final formValues = state.instantValue;
 
                   final result = await UserService.registerPilot(
