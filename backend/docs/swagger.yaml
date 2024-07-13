@@ -68,6 +68,41 @@ definitions:
     - seat
     - type
     type: object
+  inputs.InputCreateProposal:
+    properties:
+      availableSeats:
+        type: integer
+      createFlight:
+        $ref: '#/definitions/inputs.CreateFlight'
+      departureTime:
+        type: string
+      description:
+        type: string
+      price:
+        type: number
+      vehicleId:
+        type: integer
+    required:
+    - availableSeats
+    - createFlight
+    - departureTime
+    - description
+    - price
+    - vehicleId
+    type: object
+  inputs.InputUpdateProposal:
+    properties:
+      availableSeats:
+        type: integer
+      departureTime:
+        type: string
+      description:
+        type: string
+      price:
+        type: number
+      vehicleId:
+        type: integer
+    type: object
   inputs.LoginUser:
     properties:
       email:
@@ -185,6 +220,19 @@ definitions:
     - id
     - status
     type: object
+  responses.ResponseProposal:
+    properties:
+      available_seats:
+        type: integer
+      departure_time:
+        type: string
+      description:
+        type: string
+      flight:
+        $ref: '#/definitions/responses.ResponseFlight'
+      id:
+        type: integer
+    type: object
   responses.User:
     properties:
       created_at:
@@ -251,10 +299,6 @@ paths:
         in: query
         name: offset
         type: integer
-      - description: Filter
-        in: query
-        name: filter
-        type: string
       produces:
       - application/json
       responses:
@@ -375,6 +419,227 @@ paths:
       summary: Get flight history
       tags:
       - flight
+  /proposals:
+    get:
+      consumes:
+      - application/json
+      description: Get all proposals
+      parameters:
+      - description: Limit
+        in: query
+        name: limit
+        type: integer
+      - description: Offset
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/responses.ResponseProposal'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.Response'
+      security:
+      - BearerAuth: []
+      summary: Get all proposals
+      tags:
+      - proposals
+    post:
+      consumes:
+      - application/json
+      description: Create a proposal
+      parameters:
+      - description: Proposal
+        in: body
+        name: proposal
+        required: true
+        schema:
+          $ref: '#/definitions/inputs.InputCreateProposal'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/responses.ResponseProposal'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.Response'
+      security:
+      - BearerAuth: []
+      summary: Create a proposal
+      tags:
+      - proposals
+  /proposals/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a proposal
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.Response'
+      security:
+      - BearerAuth: []
+      summary: Delete a proposal
+      tags:
+      - proposals
+    get:
+      consumes:
+      - application/json
+      description: Get a proposal
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/responses.ResponseProposal'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.Response'
+      security:
+      - BearerAuth: []
+      summary: Get a proposal
+      tags:
+      - proposals
+    patch:
+      consumes:
+      - application/json
+      description: Update a proposal
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Proposal
+        in: body
+        name: proposal
+        required: true
+        schema:
+          $ref: '#/definitions/inputs.InputUpdateProposal'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/responses.ResponseProposal'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.Response'
+      security:
+      - BearerAuth: []
+      summary: Update a proposal
+      tags:
+      - proposals
+  /proposals/{id}/join:
+    patch:
+      consumes:
+      - application/json
+      description: Join a proposal
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.Response'
+      security:
+      - BearerAuth: []
+      summary: Join a proposal
+      tags:
+      - proposals
+  /proposals/{id}/leave:
+    patch:
+      consumes:
+      - application/json
+      description: Leave a proposal
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.Response'
+      security:
+      - BearerAuth: []
+      summary: Leave a proposal
+      tags:
+      - proposals
+  /proposals/me:
+    get:
+      consumes:
+      - application/json
+      description: Get my proposals
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/responses.ResponseProposal'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.Response'
+      security:
+      - BearerAuth: []
+      summary: Get my proposals
+      tags:
+      - proposals
   /users:
     get:
       consumes:
@@ -699,6 +964,8 @@ paths:
           description: Not Found
           schema:
             $ref: '#/definitions/handlers.Response'
+      security:
+      - BearerAuth: []
       summary: get vehicle by id
       tags:
       - vehicle

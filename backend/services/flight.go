@@ -195,24 +195,6 @@ func formatFlight(flight models.Flight) responses.ResponseFlight {
 	}
 }
 
-func formatUsers(users []*models.User) []responses.ListUser {
-	var responseUsers []responses.ListUser
-	for _, user := range users {
-		responseUsers = append(responseUsers, responses.ListUser{
-			ID:         user.ID,
-			FirstName:  user.FirstName,
-			LastName:   user.LastName,
-			Email:      user.Email,
-			Role:       user.Role,
-			IsVerified: user.IsVerified,
-			CreatedAt:  user.CreatedAt,
-			UpdatedAt:  user.UpdatedAt,
-		})
-	}
-	return responseUsers
-
-}
-
 func formatFlights(flights []models.Flight) []responses.ResponseFlight {
 	var responseFlights []responses.ResponseFlight
 	for _, flight := range flights {

@@ -5,6 +5,7 @@ import (
 	"backend/database"
 	"backend/repositories"
 	"backend/utils/token"
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -14,6 +15,7 @@ func IsAuth() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		println("middleware auth")
 		err := token.TokenValid(c)
+		log.Print(err)
 		if err != nil {
 			c.Status(http.StatusUnauthorized)
 			c.Abort()

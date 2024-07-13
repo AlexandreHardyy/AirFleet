@@ -28,6 +28,7 @@ class Flight {
   Airport arrival;
   User? pilot;
   Vehicle? vehicle;
+  List<User>? users;
 
   Flight({
     required this.id,
@@ -39,6 +40,7 @@ class Flight {
     required this.arrival,
     this.pilot,
     this.vehicle,
+    this.users,
   });
 
   factory Flight.fromJson(Map<String, dynamic> json) {
@@ -52,6 +54,7 @@ class Flight {
       arrival: Airport.fromJson(json['arrival']),
       pilot: json['pilot'] != null ? User.fromJson(json['pilot']) : null,
       vehicle: json['vehicle'] != null ? Vehicle.fromJson(json['vehicle']) : null,
+      users: json['users'] != null ? (json['users'] as List).map((user) => User.fromJson(user)).toList() : null,
     );
   }
 
@@ -65,7 +68,8 @@ class Flight {
       'departure': departure.toJson(),
       'arrival': arrival.toJson(),
       'pilot': pilot?.toJson(),
-      'vehicle': vehicle?.toJson()
+      'vehicle': vehicle?.toJson(),
+      'users': users?.map((user) => user.toJson()).toList(),
     };
   }
 }

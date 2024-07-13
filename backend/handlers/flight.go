@@ -46,7 +46,6 @@ func NewFlightHandler(flightService services.FlightServiceInterface) *FlightHand
 //
 // @Param			limit	query	int		false	"Limit"
 // @Param			offset	query	int		false	"Offset"
-// @Param			filter	query	string	false	"Filter"
 //
 // @Success		200				{object}	[]responses.ResponseFlight
 // @Failure		400				{object}	Response
@@ -64,6 +63,11 @@ func (h *FlightHandler) GetAll(c *gin.Context) {
 			Message: err.Error(),
 		}
 		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	if len(flights) == 0 {
+		c.JSON(http.StatusOK, []responses.ResponseFlight{})
 		return
 	}
 

@@ -36,6 +36,14 @@ class HomeDrawer extends StatelessWidget {
                 )
               : const SizedBox.shrink(),
           ListTile(
+            leading: const Icon(FontAwesomeIcons.planeDeparture),
+            title: const Text("Offer flight"),
+            onTap: () async {
+              Navigator.of(context)
+                  .push(Routes.proposalsManagement(context));
+            },
+          ),
+          ListTile(
             leading: const Icon(FontAwesomeIcons.rightFromBracket),
             title: const Text("Log out"),
             onTap: () async {
