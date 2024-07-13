@@ -55,6 +55,33 @@ func (h *RatingHandler) Update(c *gin.Context) {
 	c.JSON(200, response)
 }
 
+func (h *RatingHandler) GetAllRatings(c *gin.Context) {
+	filters := make(map[string]interface{})
+	queryParams := c.Request.URL.Query()
+	for key, values := range queryParams {
+		if len(values) > 0 {
+			filters[key] = values[0]
+		}
+	}
+
+	userID, err := token.ExtractTokenID(c)
+	if err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
+	filters["pilot_id"] = userID
+
+	response, err := h.ratingService.GetAllRatings(filters)
+	if err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(200, response)
+
+}
+
 func (h *RatingHandler) GetRatingByUserIDAndStatus(c *gin.Context) {
 	userID, err := token.ExtractTokenID(c)
 	if err != nil {

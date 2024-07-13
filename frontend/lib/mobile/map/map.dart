@@ -157,10 +157,10 @@ class AirFleetMapState extends State<AirFleetMap> {
             infiniteBounds: true,
           ),
           MbxEdgeInsets(
-            top: 1,
-            left: 2,
-            bottom: 3,
-            right: 4,
+            top: 65,
+            left: 65,
+            bottom: 65,
+            right: 65,
           ),
           10,
           20,
@@ -183,8 +183,8 @@ class AirFleetMapState extends State<AirFleetMap> {
     );
   }
 
-  void _clearMap(String flightStatus) {
-    if (flightStatus == "in_progress" && _departureAnnotation != null && _arrivalAnnotation != null) {
+  void _clearMap(String? flightStatus) {
+    if (flightStatus != null && flightStatus == "in_progress" && _departureAnnotation != null && _arrivalAnnotation != null) {
       _pointAnnotationManager?.delete(_departureAnnotation!);
       _pointAnnotationManager?.delete(_arrivalAnnotation!);
     } else {
@@ -210,14 +210,15 @@ class AirFleetMapState extends State<AirFleetMap> {
     return BlocListener<CurrentFlightBloc, CurrentFlightState>(
       listener: (context, state) {
         //TODO Remove duplicated code
-        if (state.status == CurrentFlightStatus.loaded && state.flight != null) {
-          _clearMap(state.flight!.status);
+        if (state.status == CurrentFlightStatus.loaded) {
           final flight = state.flight;
           if (flight != null) {
+            _clearMap(state.flight!.status);
             final departure = flight.departure;
             final arrival = flight.arrival;
             _createRouteOnMap(departure, arrival);
           } else {
+            _clearMap(null);
             setState(() {
               _trackLocation = true;
               _refreshTrackLocation();
@@ -226,7 +227,7 @@ class AirFleetMapState extends State<AirFleetMap> {
         }
 
         if (state.status == CurrentFlightStatus.selected) {
-          _clearMap(state.flight!.status);
+          _clearMap(null);
           final flightRequest = state.flightRequest;
           if (flightRequest != null) {
             final departure = flightRequest.departure;

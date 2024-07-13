@@ -14,6 +14,8 @@ import 'package:frontend/models/vehicle.dart';
 import 'package:frontend/web/home_web.dart';
 import 'package:frontend/mobile/vehicle_detail.dart';
 
+import 'mobile/flight_details.dart';
+
 class Routes {
   static home(context) {
     return MaterialPageRoute(
@@ -84,6 +86,12 @@ class Routes {
   static flightChat(context, {required int flightId}) {
     return MaterialPageRoute(
       builder: (context) => FlightChat(flightId: flightId),
+    );
+  }
+
+  static flightDetail(context, {required int flightId}) {
+    return MaterialPageRoute(
+      builder: (context) => FlightDetails(flightId: flightId),
     );
   }
 }

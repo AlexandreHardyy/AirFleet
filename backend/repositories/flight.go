@@ -49,7 +49,7 @@ func (r *FlightRepository) GetFlightsByUserID(userID int) ([]models.Flight, erro
 		Preload("Users").
 		Preload("Vehicle").
 		Joins("JOIN flight_users ON flight_users.flight_id = flights.id").
-		Where("flight_users.user_id = ?", userID).
+		Where("flight_users.user_id = ? OR flights.pilot_id = ?", userID, userID).
 		Find(&flights).Error
 	if err != nil {
 		return flights, err

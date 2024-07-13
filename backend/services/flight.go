@@ -356,6 +356,17 @@ func (s *FlightService) PilotPositionUpdate(input inputs.InputPilotPositionUpdat
 		return responses.ResponsePilotPositionUpdate{}, err
 	}
 
+	totalDistance := utils.ComputeDistanceInNauticalMiles(
+		utils.Position{
+			Latitude:  flight.DepartureLatitude,
+			Longitude: flight.DepartureLongitude,
+		},
+		utils.Position{
+			Latitude:  flight.ArrivalLatitude,
+			Longitude: flight.ArrivalLongitude,
+		},
+	)
+
 	remainingDistance := utils.ComputeDistanceInNauticalMiles(
 		utils.Position{
 			Latitude:  input.Latitude,
@@ -371,6 +382,7 @@ func (s *FlightService) PilotPositionUpdate(input inputs.InputPilotPositionUpdat
 		Latitude:            input.Latitude,
 		Longitude:           input.Longitude,
 		EstimatedFlightTime: estimatedFlightTime,
+		TotalDistance:       totalDistance,
 		RemainingDistance:   remainingDistance,
 	}
 

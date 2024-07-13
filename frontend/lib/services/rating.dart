@@ -32,4 +32,21 @@ class RatingService {
       throw Exception('Something went wrong: $e');
     }
   }
+
+  static Future<List<Rating>> getAllRatings(Map<String, String>? filters) async {
+    try {
+      final response = await dioApi.get("/ratings", queryParameters: filters);
+
+      if (response.data == null) {
+        return [];
+      }
+
+      List<dynamic> data = response.data;
+      return data.map((json) => Rating.fromJson(json)).toList();
+    } on DioException catch (e) {
+      throw Exception('Something went wrong during rating retrieval: ${e.response}');
+    } catch (e) {
+      throw Exception('Something went wrong: $e');
+    }
+  }
 }

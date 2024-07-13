@@ -36,5 +36,6 @@ type ResponsePilotPositionUpdate struct {
 	Latitude            float64 `json:"latitude"`
 	Longitude           float64 `json:"longitude"`
 	EstimatedFlightTime float64 `json:"estimated_flight_time"`
+	TotalDistance       float64 `json:"total_distance"`
 	RemainingDistance   float64 `json:"remaining_distance"`
 }
