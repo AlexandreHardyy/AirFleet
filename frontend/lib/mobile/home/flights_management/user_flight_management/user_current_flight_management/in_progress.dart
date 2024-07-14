@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_translate/flutter_translate.dart';
 import 'package:frontend/mobile/blocs/socket_io/socket_io_bloc.dart';
 import 'package:frontend/widgets/departure_to_arrival.dart';
 import 'package:frontend/models/flight.dart';
@@ -65,7 +66,7 @@ class _InProgressFlightCardState extends State<InProgressFlightCard> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        const SecondaryTitle(content: 'Flight in progress'),
+        SecondaryTitle(content: translate('home.flight_management.user_current_flight_management.in_progress.title')),
         const SizedBox(height: 24),
         DepartureToArrivalWidget(flight: widget.flight),
         const SizedBox(height: 10),

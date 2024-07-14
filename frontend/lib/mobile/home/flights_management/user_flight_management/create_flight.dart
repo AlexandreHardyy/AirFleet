@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_translate/flutter_translate.dart';
 import 'package:frontend/mobile/blocs/current_flight/current_flight_bloc.dart';
 import 'package:frontend/mobile/map/mapbox_endpoint/retrieve.dart';
 import 'package:frontend/mobile/map/mapbox_endpoint/suggest.dart';
@@ -140,7 +141,7 @@ class _CreateFlightWidgetState extends State<CreateFlightWidget> {
                   TextField(
                     focusNode: widget.departureTextFieldFocusNode,
                     controller: departureController,
-                    decoration: getInputDecoration(hintText: 'Departure'),
+                    decoration: getInputDecoration(hintText: translate('common.departure')),
                     onChanged: (value) async {
                       final suggestions = await _retrieveNearbyAirport(value);
                       setState(() {
@@ -154,7 +155,7 @@ class _CreateFlightWidgetState extends State<CreateFlightWidget> {
                   TextField(
                     focusNode: widget.arrivalTextFieldFocusNode,
                     controller: arrivalController,
-                    decoration: getInputDecoration(hintText: 'Arrival'),
+                    decoration: getInputDecoration(hintText: translate('common.arrival')),
                     onChanged: (value) async {
                       final suggestions = await _retrieveNearbyAirport(value);
                       setState(() {
@@ -192,7 +193,7 @@ class _CreateFlightWidgetState extends State<CreateFlightWidget> {
                         );
                       },
                     )
-                  : const Text("Enter a search query"),
+                  : Text(translate('home.flight_management.create.idle_label')),
             ),
           ],
         )
@@ -211,7 +212,7 @@ class _CreateFlightWidgetState extends State<CreateFlightWidget> {
                       .add(CurrentFlightLoaded(flight: flight));
                 }
               },
-              child: const Text("Create Flight"),
+              child: Text(translate('common.input.create_flight')),
             ),
             const SizedBox(width: 10),
             ElevatedButton(
@@ -225,7 +226,7 @@ class _CreateFlightWidgetState extends State<CreateFlightWidget> {
                 departureController.clear();
                 arrivalController.clear();
               },
-              child: const Text("Cancel Selection"),
+              child: Text(translate('common.input.cancel_selection')),
             ),
           ]);
   }

@@ -20,8 +20,13 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
   Future<void> _onMessageInitialized(MessageInitialized event, Emitter<MessageState> emit) async {
     emit(state.copyWith(status: MessageStatus.loading));
 
-    final messages = await MessageService.getMessagesByFlightId(event.flightId);
     final module = await ModuleService.getModuleByName("chat");
+    if (!module.isEnabled) {
+      emit(state.copyWith(status: MessageStatus.loaded, isModuleEnabled: false));
+      return;
+    }
+
+    final messages = await MessageService.getMessagesByFlightId(event.flightId);
 
     emit(state.copyWith(
       status: MessageStatus.loaded,

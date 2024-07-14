@@ -1,0 +1,51 @@
+{
+  "common": {
+    "departure": "Départ",
+    "arrival": "Arrivée",
+    "input": {
+      "create_flight": "Créer un vol",
+      "cancel_selection": "Annuler la sélection",
+      "cancel_flight": "Annuler le vol",
+      "accept_offer": "Accepter l'offre",
+      "reject_offer": "Rejeter l'offre",
+      "submit": "Soumettre",
+      "ignore": "Ignorer"
+    }
+  },
+  "home": {
+    "flight_management": {
+      "create": {
+        "idle_label": "Entrez une requête de recherche"
+      },
+      "user_current_flight_management": {
+        "waiting_pilot": {
+          "subtitle": "En attente qu'un pilote accepte le vol."
+        },
+        "waiting_proposal_approval": {
+          "title": "Offre de prix reçue",
+          "pilot": "Pilote",
+          "price": "Prix",
+          "aircraft": "Avion",
+          "estimated_flight_time": "Temps de vol estimé"
+        },
+        "waiting_takeoff": {
+          "title": "En attente de décollage",
+          "subtitle": "Veuillez rejoindre l'avion avant le décollage."
+        },
+        "in_progress": {
+          "title": "Vol en cours"
+        }
+      },
+      "rating": {
+        "title": "Évaluez votre vol précédent",
+        "subtitle": "Comment était votre expérience avec {pilotName} ?",
+        "input_label": "Commentaires"
+      }
+    }
+  },
+  "chat": {
+    "module_disabled": "Module de chat désactivé",
+    "text_field_label": "Tapez un message",
+    "send_button": "Envoyer"
+  }
+}

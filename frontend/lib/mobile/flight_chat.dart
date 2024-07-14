@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_translate/flutter_translate.dart';
 import 'package:frontend/storage/user.dart';
 import 'package:intl/intl.dart';
 
@@ -46,7 +47,7 @@ class _FlightChatState extends State<FlightChat> {
           if (state.status == MessageStatus.loaded) {
 
             if (!state.isModuleEnabled) {
-              return const Center(child: Text("Chat module is disabled"));
+              return Center(child: Text(translate('chat.module_disabled')));
             }
 
             return Column(
@@ -103,7 +104,7 @@ class _FlightChatState extends State<FlightChat> {
                         child: TextField(
                           controller: _controller,
                           decoration: InputDecoration(
-                            hintText: "Type a message",
+                            hintText: translate('chat.text_field_label'),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
@@ -123,7 +124,7 @@ class _FlightChatState extends State<FlightChat> {
 
                           _controller.clear();
                         },
-                        child: const Text("Send"),
+                        child: Text(translate('chat.send_button')),
                       ),
                     ],
                   ),

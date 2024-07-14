@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_translate/flutter_translate.dart';
 import 'package:frontend/mobile/blocs/socket_io/socket_io_bloc.dart';
 import 'package:frontend/widgets/departure_to_arrival.dart';
 import 'package:frontend/models/flight.dart';
@@ -22,15 +23,15 @@ class _WaitingPilotCardState extends State<WaitingPilotCard> {
       children: [
         DepartureToArrivalWidget(flight: widget.flight),
         const SizedBox(height: 24),
-        const Expanded(
+        Expanded(
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20),
+            padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text("Waiting for a pilot to accept the flight"),
-                SizedBox(height: 10),
-                LinearProgressIndicator(color: Color(0xFF131141),),
+                Text(translate('home.flight_management.user_current_flight_management.waiting_pilot.subtitle')),
+                const SizedBox(height: 10),
+                const LinearProgressIndicator(color: Color(0xFF131141),),
               ],
             ),
           ),
@@ -46,7 +47,7 @@ class _WaitingPilotCardState extends State<WaitingPilotCard> {
                 .socket!
                 .emit("cancelFlight", "${widget.flight.id}");
           },
-          child: const Text("Cancel flight"),
+          child: Text(translate('common.input.cancel_flight')),
         ),
         const SizedBox(height: 30),
       ],

@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_translate/flutter_translate.dart';
 import 'package:frontend/blocs/auth/auth_bloc.dart';
 import 'package:frontend/layouts/mobile_layout.dart';
 import 'package:frontend/layouts/web_layout.dart';
@@ -34,7 +35,12 @@ Future<void> main() async {
     await LocalNotificationService().init();
   }
 
-  runApp(const App());
+  var delegate = await LocalizationDelegate.create(
+      fallbackLocale: 'en',
+      supportedLocales: ['en', 'fr'],
+  );
+
+  runApp(LocalizedApp(delegate, const App()));
 }
 
 class App extends StatelessWidget {

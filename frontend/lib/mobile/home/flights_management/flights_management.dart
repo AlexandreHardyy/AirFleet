@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_pannable_rating_bar/flutter_pannable_rating_bar.dart';
+import 'package:flutter_translate/flutter_translate.dart';
 import 'package:frontend/mobile/blocs/current_flight/current_flight_bloc.dart';
 import 'package:frontend/mobile/home/flights_management/pilot_flight_management/pilot_current_flight_management/index.dart';
 import 'package:frontend/mobile/home/flights_management/pilot_flight_management/search_flights.dart';
@@ -248,15 +249,15 @@ class _RateFlightWidgetState extends State<RateFlightWidget> {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20.0),
       ),
-      title: const Text(
-        'Rate your previous flight',
-        style: TextStyle(fontWeight: FontWeight.bold),
+      title: Text(
+        translate('home.flight_management.rating.title'),
+        style: const TextStyle(fontWeight: FontWeight.bold),
       ),
       scrollable: true,
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text('How was your experience with ${widget.pilot.firstName}?', style: Theme.of(context).textTheme.labelLarge),
+          Text(translate('home.flight_management.rating.subtitle', args: {'pilotName': widget.pilot.firstName}), style: Theme.of(context).textTheme.labelLarge),
           const SizedBox(height: 20),
           PannableRatingBar(
             rate: rating,
@@ -280,7 +281,7 @@ class _RateFlightWidgetState extends State<RateFlightWidget> {
           const SizedBox(height: 20),
           TextField(
             decoration: InputDecoration(
-              labelText: 'Comments',
+              labelText: translate('home.flight_management.rating.input_label'),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10.0),
               ),
@@ -300,7 +301,7 @@ class _RateFlightWidgetState extends State<RateFlightWidget> {
           style: TextButton.styleFrom(
             textStyle: Theme.of(context).textTheme.labelLarge,
           ),
-          child: const Text('Ignore'),
+          child: Text(translate('common.input.ignore')),
           onPressed: () {
             Navigator.of(context).pop(null);
           },
@@ -310,7 +311,7 @@ class _RateFlightWidgetState extends State<RateFlightWidget> {
             backgroundColor: const Color(0xFFDCA200),
             textStyle: const TextStyle(color: Colors.white),
           ),
-          child: const Text('Submit'),
+          child: Text(translate('common.input.submit')),
           onPressed: () {
             Navigator.of(context).pop({'rating': rating, 'comment': comment});
           },

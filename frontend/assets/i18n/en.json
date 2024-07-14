@@ -1,0 +1,51 @@
+{
+  "common": {
+    "departure": "Departure",
+    "arrival": "Arrival",
+    "input": {
+      "create_flight": "Create flight",
+      "cancel_selection": "Cancel selection",
+      "cancel_flight": "Cancel flight",
+      "accept_offer": "Accept offer",
+      "reject_offer": "Reject offer",
+      "submit": "Submit",
+      "ignore": "Ignore"
+    }
+  },
+  "home": {
+    "flight_management": {
+      "create": {
+        "idle_label": "Enter a search query"
+      },
+      "user_current_flight_management": {
+        "waiting_pilot": {
+          "subtitle": "Waiting for a pilot to accept the flight."
+        },
+        "waiting_proposal_approval": {
+          "title": "Price offer received",
+          "pilot": "Pilot",
+          "price": "Price",
+          "aircraft": "Aircraft",
+          "estimated_flight_time": "Estimated flight time"
+        },
+        "waiting_takeoff": {
+          "title": "Waiting for takeoff",
+          "subtitle": "Please join the aircraft before takeoff."
+        },
+        "in_progress": {
+          "title": "Flight in progress"
+        }
+      },
+      "rating": {
+        "title": "Rate your previous flight",
+        "subtitle": "How was your experience with {pilotName}?",
+        "input_label": "Comments"
+      }
+    }
+  },
+  "chat": {
+    "module_disabled": "Chat module is disabled",
+    "text_field_label": "Type a message",
+    "send_button": "Send"
+  }
+}
