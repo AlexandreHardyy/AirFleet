@@ -14,6 +14,9 @@ import 'package:frontend/models/flight.dart';
 import 'package:frontend/models/vehicle.dart';
 import 'package:frontend/web/home_web.dart';
 import 'package:frontend/mobile/vehicle_detail.dart';
+import 'package:frontend/web/module/module.dart';
+import 'package:frontend/web/user/user.dart';
+import 'package:frontend/web/vehicle/vehicle.dart';
 import 'mobile/flight_details.dart';
 import 'mobile/proposal/proposals_management.dart';
 
@@ -90,7 +93,7 @@ class Routes {
     );
   }
 
-  static flightDetail(context, {required int flightId}) {
+  static flightDetails(context, {required int flightId}) {
     return MaterialPageRoute(
       builder: (context) => FlightDetails(flightId: flightId),
     );
@@ -105,6 +108,26 @@ class Routes {
   static proposalDetail(context, {required int proposalId}) {
     return MaterialPageRoute(
       builder: (context) => ProposalDetail(proposalId: proposalId),
+    );
+  }
+
+  //WEB
+
+  static userScreen(context) {
+    return MaterialPageRoute(
+      builder: (context) => const UserScreen(),
+    );
+  }
+
+  static vehicleScreen(context) {
+    return MaterialPageRoute(
+      builder: (context) => const VehicleScreen(),
+    );
+  }
+
+  static moduleScreen(context) {
+    return MaterialPageRoute(
+      builder: (context) => const ModuleScreen(),
     );
   }
 }

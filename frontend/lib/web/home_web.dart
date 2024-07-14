@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:frontend/models/user.dart';
 import 'package:frontend/models/vehicle.dart';
+import 'package:frontend/routes.dart';
 import 'package:frontend/services/user.dart';
 import 'package:frontend/services/vehicle.dart';
 import 'package:frontend/web/charts/bar_chart.dart';
@@ -81,142 +82,147 @@ class _HomeWebState extends State<HomeWeb> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        key: _scaffoldKey,
-        body: Stack(
-          children: [
-            Row(
-              children: [
-                Container(
-                  width: 200,
-                  color: const Color(0xFF131141),
-                  child: ListView(
-                    padding: EdgeInsets.zero,
-                    children: <Widget>[
-                      const Padding(
-                        padding: EdgeInsets.all(16.0),
-                        child: Text(
-                          'Admin Menu',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 24,
-                          ),
+      key: _scaffoldKey,
+      body: Stack(
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 200,
+                color: const Color(0xFF131141),
+                child: ListView(
+                  padding: EdgeInsets.zero,
+                  children: <Widget>[
+                    const Padding(
+                      padding: EdgeInsets.all(16.0),
+                      child: Text(
+                        'Admin Menu',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 24,
                         ),
                       ),
-                      ListTile(
-                        leading: const Icon(FontAwesomeIcons.userTie, color: Color(0xFFDCA200)),
-                        title: const Text('Users',
-                            style: TextStyle(color: Colors.white)),
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const UserScreen()),
-                          );
-                        },
+                    ),
+                    ListTile(
+                      leading: const Icon(FontAwesomeIcons.userTie,
+                          color: Color(0xFFDCA200)),
+                      title: const Text('Users',
+                          style: TextStyle(color: Colors.white)),
+                      onTap: () {
+                        Navigator.push(context, Routes.userScreen(context));
+                      },
+                    ),
+                    ListTile(
+                      leading: const Icon(Icons.airplanemode_active,
+                          color: Color(0xFFDCA200)),
+                      title: const Text('Vehicles',
+                          style: TextStyle(color: Colors.white)),
+                      onTap: () {
+                        Navigator.push(context, Routes.vehicleScreen(context));
+                      },
+                    ),
+                    ListTile(
+                      leading: const Icon(Icons.insert_chart_sharp,
+                          color: Color(0xFFDCA200)),
+                      title: const Text('Monitoring logs',
+                          style: TextStyle(color: Colors.white)),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  const MonitoringLogScreen()),
+                        );
+                      },
+                    ),
+                    ListTile(
+                      leading:
+                          const Icon(Icons.dashboard, color: Color(0xFFDCA200)),
+                      title: const Text('Modules',
+                          style: TextStyle(color: Colors.white)),
+                      onTap: () {
+                        Navigator.push(context, Routes.moduleScreen(context));
+                      },
+                    )
+                  ],
+                ),
+              ),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Dashboard',
+                        style: TextStyle(
+                          fontSize: 32,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF131141),
+                        ),
                       ),
-                      ListTile(
-                        leading: const Icon(Icons.airplanemode_active,
-                            color: Color(0xFFDCA200)),
-                        title: const Text('Vehicles',
-                            style: TextStyle(color: Colors.white)),
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => const VehicleScreen()),
-                          );
-                        },
-                      ),
-                      ListTile(
-                        leading: const Icon(Icons.insert_chart_sharp,
-                            color: Color(0xFFDCA200)),
-                        title: const Text('Monitoring logs',
-                            style: TextStyle(color: Colors.white)),
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => const MonitoringLogScreen()),
-                          );
-                        },
+                      const SizedBox(height: 20),
+                      Expanded(
+                        child: GridView.count(
+                          crossAxisCount: 2,
+                          crossAxisSpacing: 16,
+                          mainAxisSpacing: 16,
+                          childAspectRatio: 1.8,
+                          children: [
+                            _buildChart(CustomBarChart(users: _users)),
+                            _buildChart(CustomPieChart(vehicles: _vehicles)),
+                          ],
+                        ),
                       ),
                     ],
                   ),
                 ),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'Dashboard',
-                          style: TextStyle(
-                            fontSize: 32,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF131141),
-                          ),
-                        ),
-                        const SizedBox(height: 20),
-                        Expanded(
-                          child: GridView.count(
-                            crossAxisCount: 2,
-                            crossAxisSpacing: 16,
-                            mainAxisSpacing: 16,
-                            childAspectRatio: 1.8,
-                            children: [
-                              _buildChart(CustomBarChart(users: _users)),
-                              _buildChart(CustomPieChart(vehicles: _vehicles)),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+              ),
+            ],
+          ),
+          Positioned(
+            top: 16.0,
+            right: 16.0,
+            child: Stack(
+              children: [
+                FloatingActionButton(
+                  onPressed: () {
+                    _scaffoldKey.currentState?.openEndDrawer();
+                  },
+                  backgroundColor: const Color(0xFF131141),
+                  child:
+                      const Icon(Icons.notifications, color: Color(0xFFDCA200)),
                 ),
-              ],
-            ),
-            Positioned(
-              top: 16.0,
-              right: 16.0,
-              child: Stack(
-                children: [
-                  FloatingActionButton(
-                    onPressed: () {
-                      _scaffoldKey.currentState?.openEndDrawer();
-                    },
-                    backgroundColor: const Color(0xFF131141),
-                    child: const Icon(Icons.notifications, color: Color(0xFFDCA200)),
-                  ),
-                  if (_unverifiedVehicles.isNotEmpty)
-                    Positioned(
-                      right: 0,
-                      child: Container(
-                        padding: const EdgeInsets.all(2),
-                        decoration: BoxDecoration(
-                          color: Colors.red,
-                          borderRadius: BorderRadius.circular(12),
+                if (_unverifiedVehicles.isNotEmpty)
+                  Positioned(
+                    right: 0,
+                    child: Container(
+                      padding: const EdgeInsets.all(2),
+                      decoration: BoxDecoration(
+                        color: Colors.red,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      constraints: const BoxConstraints(
+                        minWidth: 24,
+                        minHeight: 24,
+                      ),
+                      child: Text(
+                        '${_unverifiedVehicles.length}',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
                         ),
-                        constraints: const BoxConstraints(
-                          minWidth: 24,
-                          minHeight: 24,
-                        ),
-                        child: Text(
-                          '${_unverifiedVehicles.length}',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 12,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
+                        textAlign: TextAlign.center,
                       ),
                     ),
-                ],
-              ),
+                  ),
+              ],
             ),
-          ],
-        ),
-        endDrawer: _buildUnverifiedVehiclesDrawer(),
-      );
-
+          ),
+        ],
+      ),
+      endDrawer: _buildUnverifiedVehiclesDrawer(),
+    );
   }
 
   Widget _buildUnverifiedVehiclesDrawer() {
@@ -244,9 +250,11 @@ class _HomeWebState extends State<HomeWeb> {
             children: [
               ListTile(
                 title: Text(vehicle.modelName),
-                subtitle: Text(DateFormat('yyyy-MM-dd').format(DateTime.parse(vehicle.createdAt!))),
+                subtitle: Text(DateFormat('yyyy-MM-dd')
+                    .format(DateTime.parse(vehicle.createdAt!))),
                 trailing: IconButton(
-                  icon: const Icon(Icons.check_circle, color: Color(0xFFDCA200)),
+                  icon:
+                      const Icon(Icons.check_circle, color: Color(0xFFDCA200)),
                   tooltip: 'Verify this vehicle',
                   onPressed: () => _verifyVehicle(vehicle),
                 ),

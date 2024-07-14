@@ -3,13 +3,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend/local_notification_setup.dart';
 import 'package:frontend/models/message.dart';
 import 'package:frontend/services/message.dart';
+import 'package:frontend/services/module.dart';
 import 'package:frontend/storage/user.dart';
 
 part 'message_event.dart';
 part 'message_state.dart';
 
 class MessageBloc extends Bloc<MessageEvent, MessageState> {
-  MessageBloc() : super(MessageState(status: MessageStatus.initial, messages: [])) {
+  MessageBloc() : super(MessageState(status: MessageStatus.initial, messages: [], isModuleEnabled: true)) {
     on<MessageInitialized>(_onMessageInitialized);
     on<MessageLoading>(_onMessageLoading);
     on<MessageLoaded>(_onMessageLoaded);
@@ -20,10 +21,12 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
     emit(state.copyWith(status: MessageStatus.loading));
 
     final messages = await MessageService.getMessagesByFlightId(event.flightId);
+    final module = await ModuleService.getModuleByName("chat");
 
     emit(state.copyWith(
       status: MessageStatus.loaded,
       messages: messages,
+      isModuleEnabled: module.isEnabled,
     ));
   }
 

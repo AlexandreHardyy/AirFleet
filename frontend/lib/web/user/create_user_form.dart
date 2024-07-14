@@ -9,6 +9,7 @@ class CreateUserForm extends StatefulWidget {
   @override
   State<CreateUserForm> createState() => _CreateUserFormState();
 }
+
 class _CreateUserFormState extends State<CreateUserForm> {
   final _formKey = GlobalKey<FormBuilderState>();
   var _apiMessage = "";
@@ -36,13 +37,11 @@ class _CreateUserFormState extends State<CreateUserForm> {
               FormBuilderTextField(
                   name: 'firstName',
                   decoration: const InputDecoration(labelText: 'First Name'),
-                  validator: FormBuilderValidators.required()
-              ),
+                  validator: FormBuilderValidators.required()),
               FormBuilderTextField(
                   name: 'lastName',
                   decoration: const InputDecoration(labelText: 'Last Name'),
-                  validator: FormBuilderValidators.required()
-              ),
+                  validator: FormBuilderValidators.required()),
               FormBuilderTextField(
                 name: 'password',
                 decoration: const InputDecoration(labelText: 'Password'),

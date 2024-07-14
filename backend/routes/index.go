@@ -14,4 +14,5 @@ func InitRoutes(router *gin.Engine) {
 	InitRatingRoutes(api)
 	InitProposalRoutes(api)
 	initMonitoringLogRoutes(api)
+	InitModuleRoutes(api)
 }
