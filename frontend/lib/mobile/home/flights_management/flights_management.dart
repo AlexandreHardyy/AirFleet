@@ -4,6 +4,7 @@ import 'package:flutter_pannable_rating_bar/flutter_pannable_rating_bar.dart';
 import 'package:frontend/mobile/blocs/current_flight/current_flight_bloc.dart';
 import 'package:frontend/mobile/home/flights_management/pilot_flight_management/pilot_current_flight_management/index.dart';
 import 'package:frontend/mobile/home/flights_management/pilot_flight_management/search_flights.dart';
+import 'package:frontend/mobile/home/flights_management/user_flight_management/search_flight.dart';
 import 'package:frontend/models/flight.dart';
 import 'package:frontend/models/rating.dart';
 import 'package:frontend/models/user.dart';
@@ -160,28 +161,26 @@ class _FlightsManagementState extends State<FlightsManagement> {
                               ),
                             )
                           : DefaultTabController(
-                              length: 3,
+                              length: 2,
                               child: Scaffold(
                                 appBar: AppBar(
                                   toolbarHeight: 0,
                                   bottom: const TabBar(
                                     tabs: [
-                                      Text("Search"),
                                       Text("Create"),
-                                      Text("List"),
+                                      Text("Search"),
                                     ],
                                   ),
                                 ),
                                 body: TabBarView(
                                   children: [
-                                    const Icon(Icons.directions_car),
                                     CreateFlightWidget(
                                       departureTextFieldFocusNode:
                                           departureTextFieldFocusNode,
                                       arrivalTextFieldFocusNode:
                                           arrivalTextFieldFocusNode,
                                     ),
-                                    const Icon(Icons.directions_bike),
+                                    const SearchFlightWaitingTakeOff(),
                                   ],
                                 ),
                               ),

@@ -46,6 +46,7 @@ func NewFlightHandler(flightService services.FlightServiceInterface) *FlightHand
 //
 // @Param			limit	query	int		false	"Limit"
 // @Param			offset	query	int		false	"Offset"
+// @Param			status	query	string	false	"Status"
 //
 // @Success		200				{object}	[]responses.ResponseFlight
 // @Failure		400				{object}	Response
@@ -56,8 +57,13 @@ func NewFlightHandler(flightService services.FlightServiceInterface) *FlightHand
 func (h *FlightHandler) GetAll(c *gin.Context) {
 	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "10"))
 	offset, _ := strconv.Atoi(c.DefaultQuery("offset", "0"))
+	status := c.Query("status")
 
-	flights, err := h.flightService.GetAllFlights(limit, offset)
+	filter := inputs.FilterFlights{
+		Status: status,
+	}
+
+	flights, err := h.flightService.GetAllFlights(limit, offset, filter)
 	if err != nil {
 		response := &Response{
 			Message: err.Error(),
@@ -281,6 +287,7 @@ func NewFlightSocketHandler(flightService services.FlightServiceInterface, serve
 
 func (h *FlightSocketHandler) CreateFlightSession(s socketio.Conn, flightId string) {
 	log.Println("Flight session created")
+	userId, _ := ExtractIdFromWebSocketHeader(s)
 
 	convertedFlightId, err := strconv.Atoi(flightId)
 	if err != nil {
@@ -305,6 +312,37 @@ func (h *FlightSocketHandler) CreateFlightSession(s socketio.Conn, flightId stri
 	if flight.Status == flightStatus.WAITING_TAKEOFF || flight.Status == flightStatus.IN_PROGRESS {
 		//h.startPilotPositionUpdate(s, flightId)
 	}
+
+	userFound := false
+	for _, user := range flight.Users {
+		if user.ID == userId {
+			userFound = true
+			break
+		}
+	}
+	if flight.Status == flightStatus.WAITING_TAKEOFF && !userFound && flight.Pilot.ID != userId {
+		h.socketIoServer.BroadcastToRoom("/flights", flightId, "askPilotToJoin", userId)
+	}
+}
+
+func (h *FlightSocketHandler) ManageUserJoiningFlight(s socketio.Conn, msg string) error {
+	var request inputs.UserFlightJoinRequest
+	err := json.Unmarshal([]byte(msg), &request)
+	if err != nil {
+		s.Emit("error", err.Error())
+		log.Println("Error unmarshalling message", err.Error())
+		return err
+	}
+
+	err = h.flightService.ManageUserJoiningFlight(request.FlightId, request.UserId)
+	if err != nil {
+		s.Emit("error", err.Error())
+		log.Println("Error managing user joining flight", err.Error())
+		return err
+	}
+
+	h.socketIoServer.BroadcastToRoom("/flights", strconv.Itoa(request.FlightId), "userJoinedFlight")
+	return nil
 }
 
 func (h *FlightSocketHandler) MakeFlightPriceProposal(s socketio.Conn, msg string) error {

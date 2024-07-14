@@ -9,6 +9,7 @@ import 'package:frontend/mobile/pilot_flight_request_detail.dart';
 import 'package:frontend/mobile/profile/user_profile.dart';
 import 'package:frontend/mobile/profile/user_vehicles.dart';
 import 'package:frontend/mobile/proposal/proposal_detail.dart';
+import 'package:frontend/mobile/proposal/search.dart';
 import 'package:frontend/mobile/vehicles_management.dart';
 import 'package:frontend/models/flight.dart';
 import 'package:frontend/models/vehicle.dart';

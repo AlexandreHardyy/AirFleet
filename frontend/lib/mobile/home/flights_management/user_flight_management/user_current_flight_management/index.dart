@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend/mobile/blocs/current_flight/current_flight_bloc.dart';
 import 'package:frontend/mobile/blocs/message/message_bloc.dart';
 import 'package:frontend/mobile/blocs/socket_io/socket_io_bloc.dart';
+import 'package:frontend/mobile/home/flights_management/pilot_flight_management/pilot_current_flight_management/waiting_pilot_accept_join_card.dart';
 import 'package:frontend/mobile/home/flights_management/user_flight_management/user_current_flight_management/waiting_pilot_card.dart';
 import 'package:frontend/mobile/home/flights_management/user_flight_management/user_current_flight_management/waiting_proposal_approval_card.dart';
 import 'package:frontend/mobile/home/flights_management/user_flight_management/user_current_flight_management/waiting_takeoff.dart';

@@ -13,6 +13,8 @@ func InitFlightSession(socketIoServer *socketio.Server) {
 
 	socketIoServer.OnEvent("/flights", "createSession", flightSocketHandler.CreateFlightSession)
 
+	socketIoServer.OnEvent("/flights", "manageUserJoiningFlight", flightSocketHandler.ManageUserJoiningFlight)
+
 	socketIoServer.OnEvent("/flights", "makeFlightProposal", flightSocketHandler.MakeFlightPriceProposal)
 
 	socketIoServer.OnEvent("/flights", "flightProposalChoice", flightSocketHandler.FlightProposalChoice)

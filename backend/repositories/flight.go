@@ -2,12 +2,13 @@ package repositories
 
 import (
 	flightStatus "backend/data/flight-status"
+	"backend/inputs"
 	"backend/models"
 	"gorm.io/gorm"
 )
 
 type FlightRepositoryInterface interface {
-	GetAllFlights(limit int, offset int) ([]models.Flight, error)
+	GetAllFlights(limit int, offset int, filter inputs.FilterFlights) ([]models.Flight, error)
 	GetFlightByID(flightID int) (models.Flight, error)
 	GetFlightsByUserID(userID int) ([]models.Flight, error)
 	CreateFlight(flight models.Flight) (models.Flight, error)
@@ -24,9 +25,16 @@ func NewFlightRepository(db *gorm.DB) *FlightRepository {
 	return &FlightRepository{db}
 }
 
-func (r *FlightRepository) GetAllFlights(limit int, offset int) ([]models.Flight, error) {
+func (r *FlightRepository) GetAllFlights(limit int, offset int, filter inputs.FilterFlights) ([]models.Flight, error) {
 	var flights []models.Flight
-	query := r.db.Preload("Pilot").Preload("Users").Preload("Vehicle").Offset(offset).Limit(limit)
+	query := r.db.Preload("Pilot").
+		Preload("Users").
+		Preload("Vehicle").
+		Offset(offset).
+		Limit(limit)
+	if filter.Status != "" {
+		query = query.Where("status = ?", filter.Status)
+	}
 	err := query.Find(&flights).Error
 	if err != nil {
 		return flights, err

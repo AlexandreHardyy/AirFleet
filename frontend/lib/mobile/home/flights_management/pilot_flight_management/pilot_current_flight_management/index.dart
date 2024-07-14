@@ -5,6 +5,7 @@ import 'package:frontend/mobile/blocs/socket_io/socket_io_bloc.dart';
 import 'package:frontend/mobile/home/flights_management/pilot_flight_management/pilot_current_flight_management/in_progress.dart';
 import 'package:frontend/mobile/home/flights_management/pilot_flight_management/pilot_current_flight_management/waiting_for_takeoff.dart';
 import 'package:frontend/mobile/home/flights_management/pilot_flight_management/pilot_current_flight_management/waiting_proposal_approval_card.dart';
+import 'package:frontend/mobile/home/flights_management/pilot_flight_management/pilot_current_flight_management/waiting_pilot_accept_join_card.dart';
 
 class CurrentPilotFlightManagement extends StatefulWidget {
   const CurrentPilotFlightManagement({super.key});
@@ -27,12 +28,30 @@ class _CurrentPilotFlightManagementState
           .add(SocketIoCreateSession(flightId: currentFlightState.flight!.id));
 
       context.read<SocketIoBloc>().add(SocketIoListenEvent(
-            eventId: "flightUpdated",
-            event: "flightUpdated",
-            callback: (_) {
-              context.read<CurrentFlightBloc>().add(CurrentFlightUpdated());
+        eventId: "flightUpdated",
+        event: "flightUpdated",
+        callback: (_) {
+          context.read<CurrentFlightBloc>().add(CurrentFlightUpdated());
+          },
+      ));
+
+
+      context.read<SocketIoBloc>().add(SocketIoListenEvent(
+        eventId: "askPilotToJoin",
+        event: "askPilotToJoin",
+        callback: (message) {
+          int userId = message as int;
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return Dialog(
+                child: WaitingPilotAcceptJoinCard(userId: userId),
+              );
             },
-          ));
+          );
+        },
+      ));
+
     }
     return Center(
       child: BlocConsumer<CurrentFlightBloc, CurrentFlightState>(

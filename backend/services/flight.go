@@ -15,7 +15,7 @@ import (
 
 type FlightServiceInterface interface {
 	//REST
-	GetAllFlights(limit int, offset int) ([]responses.ResponseFlight, error)
+	GetAllFlights(limit int, offset int, filter inputs.FilterFlights) ([]responses.ResponseFlight, error)
 	CreateFlight(input inputs.CreateFlight, userID int) (responses.ResponseFlight, error)
 	GetFlight(flightID int) (responses.ResponseFlight, error)
 	GetFlightsByUserID(userID int) ([]responses.ResponseFlight, error)
@@ -24,6 +24,7 @@ type FlightServiceInterface interface {
 	//WEBSOCKET
 	JoinFlightSession(flightID int, userID int) error
 	MakeFlightPriceProposal(input inputs.InputCreateFlightProposal, userID int) error
+	ManageUserJoiningFlight(flightID int, userID int) error
 	FlightProposalChoice(input inputs.InputFlightProposalChoice, userID int) error
 	FlightTakeoff(flightID int, pilotId int) error
 	PilotPositionUpdate(input inputs.InputPilotPositionUpdate, pilotId int) (responses.ResponsePilotPositionUpdate, error)
@@ -42,8 +43,8 @@ func NewFlightService(r repositories.FlightRepositoryInterface) *FlightService {
 
 //REST
 
-func (s *FlightService) GetAllFlights(limit int, offset int) ([]responses.ResponseFlight, error) {
-	flights, err := s.repository.GetAllFlights(limit, offset)
+func (s *FlightService) GetAllFlights(limit int, offset int, filter inputs.FilterFlights) ([]responses.ResponseFlight, error) {
+	flights, err := s.repository.GetAllFlights(limit, offset, filter)
 	if err != nil {
 		return []responses.ResponseFlight{}, err
 	}
@@ -257,6 +258,27 @@ func (s *FlightService) MakeFlightPriceProposal(input inputs.InputCreateFlightPr
 	}
 
 	return nil
+}
+
+func (s *FlightService) ManageUserJoiningFlight(flightID int, userID int) error {
+	flight, err := s.repository.GetFlightByID(flightID)
+	if err != nil {
+		return err
+	}
+
+	if len(flight.Users) >= flight.Vehicle.Seat {
+		return errors.New("no available seats")
+	}
+
+	flight.Users = append(flight.Users, &models.User{ID: userID})
+	_, err = s.repository.UpdateFlight(flight)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+
 }
 
 func (s *FlightService) FlightProposalChoice(input inputs.InputFlightProposalChoice, userID int) error {

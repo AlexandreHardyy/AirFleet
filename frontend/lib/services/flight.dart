@@ -5,6 +5,23 @@ import 'package:frontend/services/position.dart';
 import 'dio.dart';
 
 class FlightService {
+  static Future<List<Flight>?> getFlights(FlightFilters filters) async {
+    try {
+      final response = await dioApi.get("/flights", queryParameters: {
+        if (filters.limit != null) 'limit': filters.limit,
+        if (filters.offset != null) 'offset': filters.offset,
+        if (filters.status != null) 'status': filters.status,
+      });
+
+      List<dynamic> data = response.data;
+      return data.map((json) => Flight.fromJson(json)).toList();
+    } on DioException catch (e) {
+      throw Exception('Something went wrong during flights retrieval: ${e.response}');
+    } catch (e) {
+      throw Exception('Something went wrong: $e');
+    }
+  }
+
   static Future<Flight> createFlight(CreateFlightRequest flightRequest) async {
     try {
       final response = await dioApi.post("/flights", data: flightRequest.toJson());
@@ -79,4 +96,12 @@ class FlightService {
       throw Exception('Something went wrong: $e');
     }
   }
+}
+
+class FlightFilters {
+  int? limit;
+  int? offset;
+  String? status;
+
+  FlightFilters({this.limit, this.offset, this.status});
 }

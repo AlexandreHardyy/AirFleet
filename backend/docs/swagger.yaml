@@ -299,6 +299,10 @@ paths:
         in: query
         name: offset
         type: integer
+      - description: Status
+        in: query
+        name: status
+        type: string
       produces:
       - application/json
       responses:

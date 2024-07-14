@@ -18,6 +18,10 @@ type CreateFlight struct {
 	Arrival   Airport `json:"arrival" binding:"required"`
 }
 
+type FilterFlights struct {
+	Status string `form:"status"`
+}
+
 // WEBSOCKET
 
 type InputCreateFlightProposal struct {
@@ -34,4 +38,9 @@ type InputPilotPositionUpdate struct {
 	FlightId  int     `json:"flightId" binding:"required"`
 	Latitude  float64 `json:"latitude" binding:"required"`
 	Longitude float64 `json:"longitude" binding:"required"`
+}
+
+type UserFlightJoinRequest struct {
+	FlightId int `json:"flightId"`
+	UserId   int `json:"userId"`
 }
