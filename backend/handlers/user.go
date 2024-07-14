@@ -8,14 +8,12 @@ import (
 	"backend/repositories"
 	"backend/responses"
 	"backend/services"
+	amazonS3 "backend/services/amazon-s3"
 	"backend/services/brevo"
 	"backend/utils"
 	"backend/utils/token"
-	"fmt"
 	"mime/multipart"
 	"net/http"
-	"os"
-	"path/filepath"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -110,7 +108,6 @@ func (th *UserHandler) RegisterPilot(c *gin.Context) {
 		return
 	}
 
-	dir, _ := os.Getwd()
 	tokenVerify := utils.GenerateRandomString()
 	newUser, err := th.userService.Register(models.User{
 		Email:       input.Email,
@@ -141,13 +138,12 @@ func (th *UserHandler) RegisterPilot(c *gin.Context) {
 	} {
 		extension := utils.GetFileExtension(fileToUpload.Filename)
 		newFileName := utils.GenerateRandomString() + "." + extension
-		if err := c.SaveUploadedFile(fileToUpload, filepath.Join(dir, "public", "files", fileType+"s", newFileName)); err != nil {
-			c.JSON(http.StatusInternalServerError, &Response{Message: fmt.Sprintf("%s upload failed", fileType)})
-			return
-		}
+
+		amazonS3.UploadToBucketS3(fileToUpload, newFileName)
+
 		_, err := fileRepository.Create(models.File{
 			Type:   fileType,
-			Path:   filepath.Join("public", "files", fileType+"s", newFileName),
+			Path:   newFileName,
 			UserID: newUser.ID,
 		})
 		if err != nil {

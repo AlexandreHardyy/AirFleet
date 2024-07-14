@@ -1,4 +1,6 @@
 
+import 'package:frontend/models/file.dart';
+
 class User {
   int id;
   String email;
@@ -7,6 +9,7 @@ class User {
   String role;
   bool isVerified;
   bool isPilotVerified;
+  List<File>? files;
   String createdAt;
   String updatedAt;
 
@@ -28,8 +31,12 @@ class User {
         firstName = json['first_name'] as String,
         lastName = json['last_name'] as String,
         role = json['role'] as String,
-        isVerified = json['is_verified'] != null ? json['is_verified'] as bool : false,
-        isPilotVerified = json['is_pilot_verified'] != null ? json['is_pilot_verified'] as bool : false,
+        isVerified =
+            json['is_verified'] != null ? json['is_verified'] as bool : false,
+        isPilotVerified = json['is_pilot_verified'] != null
+            ? json['is_pilot_verified'] as bool
+            : false,
+        files = json['files'] != null ? (json['files'] as List<dynamic>).map( (file) => File.fromJson(file)).toList() : null,
         createdAt = json['created_at'] as String,
         updatedAt = json['updated_at'] as String;
 

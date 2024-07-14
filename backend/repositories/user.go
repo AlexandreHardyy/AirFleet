@@ -81,7 +81,7 @@ func (r *userRepository) GetById(id int) (models.User, error) {
 
 func (r *userRepository) FindAll() ([]responses.ListUser, error) {
 	var users []responses.ListUser
-	err := r.db.Model(&models.User{}).Find(&users).Error
+	err := r.db.Preload("Files").Model(&models.User{}).Find(&users).Error
 	if err != nil {
 		return users, err
 	}

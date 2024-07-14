@@ -16,7 +16,7 @@ type User struct {
 	IsPilotVerified bool      `json:"is_pilot_verified"`
 	CreatedAt       time.Time `json:"created_at"`
 	UpdatedAt       time.Time `json:"updated_at"`
-	Files           []File    `json:"files"`
+	Files           []File    `json:"files" gorm:"foreignkey:UserID"`
 	Vehicles        []Vehicle `json:"vehicles" gorm:"foreignkey:UserID"`
 	Flights         []Flight  `json:"flights" gorm:"many2many:flight_users;"`
 }

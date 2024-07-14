@@ -1,56 +1,41 @@
 package amazonS3
 
 import (
-	"context"
 	"fmt"
+	"log"
 	"mime/multipart"
+	"os"
+	"path/filepath"
 
-	"github.com/aws/aws-sdk-go-v2/aws"
-	"github.com/aws/aws-sdk-go-v2/config"
-	"github.com/aws/aws-sdk-go-v2/service/s3"
-	"github.com/aws/aws-sdk-go-v2/service/s3/types"
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/credentials"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/s3"
 )
 
-type AWSCredentials struct {
-	AccessKeyID     string
-	SecretAccessKey string
-	SessionToken    string
-	Region          string
-}
-
-func loadAWSConfigFromToken(creds AWSCredentials) (aws.Config, error) {
-	staticProvider := aws.CredentialsProviderFunc(func(context.Context) (aws.Credentials, error) {
-		return aws.Credentials{
-			AccessKeyID:     creds.AccessKeyID,
-			SecretAccessKey: creds.SecretAccessKey,
-			SessionToken:    creds.SessionToken,
-			Source:          "TemporaryCredentials",
-		}, nil
-	})
-
-	cfg, err := config.LoadDefaultConfig(
-		context.TODO(),
-		config.WithRegion(creds.Region),
-		config.WithCredentialsProvider(staticProvider),
-	)
-	if err != nil {
-		return aws.Config{}, fmt.Errorf("unable to load SDK config, %v", err)
-	}
-
-	return cfg, nil
-}
-
 func UploadToBucketS3(file *multipart.FileHeader, key string) error {
-	bucketName := "bucket-name"
-	cfg, err := loadAWSConfigFromToken(AWSCredentials{
-		AccessKeyID: "",
-		SecretAccessKey: "",
-		SessionToken: "",
-		Region: "",
+	accessKeyID := os.Getenv("AWS_ACCESS_KEY_ID")
+	secretAccessKey := os.Getenv("AWS_SECRET_ACCESS_KEY")
+	region := os.Getenv("AWS_REGION")
+	bucketName := "airfleet-prod"
+
+	if accessKeyID == "" || secretAccessKey == "" || region == "" || bucketName == "" {
+		log.Fatal("Les variables d'environnement AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_REGION, S3_BUCKET_NAME et FILE_PATH doivent être définies")
+	}
+
+	sess, err := session.NewSession(&aws.Config{
+		Region: aws.String(region),
+		Credentials: credentials.NewStaticCredentials(
+			accessKeyID,
+			secretAccessKey,
+			"",
+		),
 	})
 	if err != nil {
-		return fmt.Errorf("unable to load SDK config, %v", err)
+		log.Fatal(err)
 	}
+
+	s3Client := s3.New(sess)
 
 	srcFile, err := file.Open()
 	if err != nil {
@@ -58,19 +43,16 @@ func UploadToBucketS3(file *multipart.FileHeader, key string) error {
 	}
 	defer srcFile.Close()
 
-	svc := s3.NewFromConfig(cfg)
-
-	_, err = svc.PutObject(context.TODO(), &s3.PutObjectInput{
-		Bucket:      aws.String(bucketName),
-		Key:         aws.String(key),
-		Body:        srcFile,
-		ContentType: aws.String(file.Header.Get("Content-Type")),
-		ACL:         types.ObjectCannedACLPublicRead, // default autorisation, here the file will be public
-	})
-	if err != nil {
-		return fmt.Errorf("unable to upload %q to %q, %v", file.Filename, bucketName, err)
+	uploadInput := &s3.PutObjectInput{
+		Bucket:        aws.String(bucketName),
+		Key:           aws.String(filepath.Base(key)),
+		Body:          srcFile,
+		ContentLength: aws.Int64(file.Size),
 	}
 
-	fmt.Printf("Successfully uploaded %q to %q\n", file.Filename, bucketName)
+	_, err = s3Client.PutObject(uploadInput)
+	if err != nil {
+		log.Fatalf("Erreur d'upload du fichier: %v", err)
+	}
 	return nil
 }

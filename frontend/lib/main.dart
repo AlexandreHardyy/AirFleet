@@ -17,7 +17,6 @@ Future<void> main() async {
 
   await dotenv.load(fileName: ".env");
 
-  //TODO: problème avec le token mapbox lorsqu'on le lance sans le run arguments.
   final String mapboxAccessToken =
       const String.fromEnvironment("PUBLIC_ACCESS_TOKEN") != ""
           ? const String.fromEnvironment("PUBLIC_ACCESS_TOKEN")

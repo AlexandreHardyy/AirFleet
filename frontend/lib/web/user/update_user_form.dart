@@ -4,6 +4,8 @@ import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:frontend/models/user.dart';
 import 'package:frontend/services/user.dart';
 import 'package:frontend/storage/user.dart';
+import 'package:frontend/web/user/files_pilot.dart';
+import 'package:frontend/widgets/title.dart';
 
 class UpdateUserForm extends StatefulWidget {
   final User user;
@@ -131,6 +133,10 @@ class _UpdateUserFormState extends State<UpdateUserForm> {
                   ],
                 ),
               ),
+              const SizedBox(
+                height: 24,
+              ),
+              FilesPilot(user: widget.user)
             ],
           )),
     );
