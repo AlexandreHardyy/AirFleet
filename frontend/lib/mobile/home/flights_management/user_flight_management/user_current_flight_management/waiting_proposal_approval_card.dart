@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_translate/flutter_translate.dart';
 import 'package:frontend/mobile/blocs/socket_io/socket_io_bloc.dart';
 import 'package:frontend/models/flight.dart';
 import 'package:frontend/widgets/button.dart';
@@ -53,13 +54,15 @@ class _WaitingProposalApprovalCardState
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SecondaryTitle(content: "Price offer received"),
+        SecondaryTitle(
+            content: translate(
+                'home.flight_management.user_current_flight_management.waiting_proposal_approval.title')),
         const SizedBox(height: 24),
         Row(
           children: [
-            const Text(
-              "Pilot : ",
-              style: TextStyle(fontWeight: FontWeight.bold),
+            Text(
+              "${translate('home.flight_management.user_current_flight_management.waiting_proposal_approval.pilot')}: ",
+              style: const TextStyle(fontWeight: FontWeight.bold),
             ),
             Text(
                 "${widget.flight.pilot!.firstName} ${widget.flight.pilot!.lastName}")
@@ -68,9 +71,9 @@ class _WaitingProposalApprovalCardState
         const SizedBox(height: 8),
         Row(
           children: [
-            const Text(
-              "Price : ",
-              style: TextStyle(fontWeight: FontWeight.bold),
+            Text(
+              "${translate('home.flight_management.user_current_flight_management.waiting_proposal_approval.price')}: ",
+              style: const TextStyle(fontWeight: FontWeight.bold),
             ),
             Text("${widget.flight.price} USD")
           ],
@@ -78,9 +81,9 @@ class _WaitingProposalApprovalCardState
         const SizedBox(height: 8),
         Row(
           children: [
-            const Text(
-              "Aircraft : ",
-              style: TextStyle(fontWeight: FontWeight.bold),
+            Text(
+              "${translate('home.flight_management.user_current_flight_management.waiting_proposal_approval.aircraft')}: ",
+              style: const TextStyle(fontWeight: FontWeight.bold),
             ),
             Text(widget.flight.vehicle!.modelName)
           ],
@@ -90,9 +93,9 @@ class _WaitingProposalApprovalCardState
             ? const CircularProgressIndicator()
             : Row(
                 children: [
-                  const Text(
-                    "Estimated flight time : ",
-                    style: TextStyle(fontWeight: FontWeight.bold),
+                  Text(
+                    "${translate('home.flight_management.user_current_flight_management.waiting_proposal_approval.estimated_flight_time')}: ",
+                    style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                   Text("$estimatedFlightTime")
                 ],
@@ -111,7 +114,7 @@ class _WaitingProposalApprovalCardState
                         {"flightId": widget.flight.id, "choice": "accepted"}),
                   );
                 },
-                child: const Text('Accept offer'),
+                child: Text(translate('common.input.accept_offer')),
               ),
             ),
             const SizedBox(width: 24),
@@ -125,7 +128,7 @@ class _WaitingProposalApprovalCardState
                         {"flightId": widget.flight.id, "choice": "rejected"}),
                   );
                 },
-                child: const Text('Reject offer'),
+                child: Text(translate('common.input.reject_offer')),
               ),
             )
           ],
