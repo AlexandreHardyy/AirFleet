@@ -2,6 +2,7 @@ package handlers
 
 import (
 	flightStatus "backend/data/flight-status"
+	"backend/database"
 	"backend/inputs"
 	"backend/models"
 	"backend/repositories"
@@ -394,6 +395,15 @@ func (h *FlightSocketHandler) FlightProposalChoice(s socketio.Conn, msg string) 
 		s.Emit("error", err.Error())
 		log.Println("Error unmarshalling flight proposal choice", err.Error())
 		return err
+	}
+
+	if flightProposalChoice.Choice == "accepted" {
+		payment, err := repositories.NewPaymentRepository(database.DB).GetById(userId, flightProposalChoice.FlightId)
+		if err != nil || payment.ID == 0 {
+			s.Emit("error", err.Error())
+			log.Println("Error unmarshalling flight proposal choice", err.Error())
+			return err
+		}
 	}
 
 	err = h.flightService.FlightProposalChoice(flightProposalChoice, userId)

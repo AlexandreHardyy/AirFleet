@@ -40,6 +40,7 @@ class SocketIoBloc extends Bloc<SocketIoEvent, SocketIoState> {
     on<SocketIoError>(_onSocketIoError);
     on<SocketIoCreateSession>(_onSocketCreateSession);
     on<SocketIoMakePriceProposal>(_onSocketMakePriceProposal);
+    on<SocketIoAcceptProposal>(_onSocketAcceptProposal);
     on<SocketIoCancelFlight>(_onSocketCancelFlight);
     on<SocketIoFlightTakeoff>(_onSocketFlightTakeoff);
     on<SocketIoUpdatePilotPosition>(_onSocketUpdatePilotPosition);
@@ -138,6 +139,20 @@ class SocketIoBloc extends Bloc<SocketIoEvent, SocketIoState> {
 
     state.socket!
         .emit("makeFlightProposal", const JsonEncoder().convert(message));
+
+    emit(state.copyWith(
+      status: SocketIoStatus.connected,
+    ));
+  }
+
+  void _onSocketAcceptProposal(
+      SocketIoAcceptProposal event, Emitter<SocketIoState> emit) {
+    state.socket!.connect();
+
+    final message = {"flightId": event.flightId, "choice": "accepted"};
+
+    state.socket!
+        .emit("flightProposalChoice", const JsonEncoder().convert(message));
 
     emit(state.copyWith(
       status: SocketIoStatus.connected,

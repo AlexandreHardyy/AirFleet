@@ -15,6 +15,7 @@ func Migrate() {
 		&models.Rating{},
 		&models.MonitoringLog{},
 		&models.Module{},
+		&models.Payment{},
 	)
 	if err != nil {
 		return

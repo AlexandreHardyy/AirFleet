@@ -47,7 +47,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   FormBuilderValidators.email(),
                 ]),
               ),
-              const SizedBox(height: 32),
+              const SizedBox(height: 24),
               FormBuilderTextField(
                 name: 'password',
                 decoration: getInputDecoration(hintText: 'Password'),

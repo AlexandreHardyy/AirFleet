@@ -15,4 +15,5 @@ func InitRoutes(router *gin.Engine) {
 	InitProposalRoutes(api)
 	initMonitoringLogRoutes(api)
 	InitModuleRoutes(api)
+	initPaymentRoutes(api)
 }

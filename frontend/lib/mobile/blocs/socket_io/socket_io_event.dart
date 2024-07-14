@@ -34,6 +34,12 @@ final class SocketIoMakePriceProposal extends SocketIoEvent {
   SocketIoMakePriceProposal({required this.flightId, required this.price});
 }
 
+final class SocketIoAcceptProposal extends SocketIoEvent {
+  final int flightId;
+
+  SocketIoAcceptProposal({required this.flightId});
+}
+
 final class SocketIoCancelFlight extends SocketIoEvent {
   final int flightId;
 
@@ -58,7 +64,6 @@ final class SocketIoFlightLanding extends SocketIoEvent {
   SocketIoFlightLanding({required this.flightId});
 }
 
-// TODO: improve to use an event array
 final class SocketIoListenEvent extends SocketIoEvent {
   final String eventId;
   final String event;

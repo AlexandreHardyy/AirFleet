@@ -10,6 +10,8 @@ import 'package:frontend/layouts/mobile_layout.dart';
 import 'package:frontend/layouts/web_layout.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
+
 
 import 'local_notification_setup.dart';
 
@@ -18,6 +20,8 @@ Future<void> main() async {
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
   await dotenv.load(fileName: ".env");
+
+  Stripe.publishableKey = dotenv.get("PUBLIC_API_KEY_STRIPE");
 
   final String mapboxAccessToken =
       const String.fromEnvironment("PUBLIC_ACCESS_TOKEN") != ""

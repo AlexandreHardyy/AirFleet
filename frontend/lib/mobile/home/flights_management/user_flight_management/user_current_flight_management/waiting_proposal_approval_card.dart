@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 import 'package:frontend/mobile/blocs/socket_io/socket_io_bloc.dart';
 import 'package:frontend/models/flight.dart';
+import 'package:frontend/routes.dart';
 import 'package:frontend/widgets/button.dart';
 import 'package:frontend/widgets/title.dart';
 
@@ -107,12 +108,7 @@ class _WaitingProposalApprovalCardState
             Expanded(
               child: ElevatedButton(
                 onPressed: () {
-                  // SocketProvider.of(context)!.socket.emit("flightProposalChoice", jsonEncode({"flightId": flight!.id, "choice": "accepted"}));
-                  _socketIoBloc.state.socket!.emit(
-                    "flightProposalChoice",
-                    jsonEncode(
-                        {"flightId": widget.flight.id, "choice": "accepted"}),
-                  );
+                  Navigator.of(context).push(Routes.paymentScreen(context, flight: widget.flight));
                 },
                 child: Text(translate('common.input.accept_offer')),
               ),
