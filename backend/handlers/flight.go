@@ -341,7 +341,7 @@ func (h *FlightSocketHandler) ManageUserJoiningFlight(s socketio.Conn, msg strin
 		return err
 	}
 
-	h.socketIoServer.BroadcastToRoom("/flights", strconv.Itoa(request.FlightId), "userJoinedFlight")
+	h.socketIoServer.BroadcastToRoom("/flights", strconv.Itoa(request.FlightId), "flightUpdated")
 	return nil
 }
 

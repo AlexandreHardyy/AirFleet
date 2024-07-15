@@ -39,7 +39,6 @@ class SocketIoBloc extends Bloc<SocketIoEvent, SocketIoState> {
     on<SocketIoLoading>(_onSocketIoLoading);
     on<SocketIoError>(_onSocketIoError);
     on<SocketIoCreateSession>(_onSocketCreateSession);
-    on<SocketIoManageUserJoiningFlight>(_onSocketManageUserJoiningFlight);
     on<SocketIoMakePriceProposal>(_onSocketMakePriceProposal);
     on<SocketIoCancelFlight>(_onSocketCancelFlight);
     on<SocketIoFlightTakeoff>(_onSocketFlightTakeoff);
@@ -128,20 +127,6 @@ class SocketIoBloc extends Bloc<SocketIoEvent, SocketIoState> {
                 flightId: event.flightId,
               )));
     }
-  }
-
-  void _onSocketManageUserJoiningFlight(
-      SocketIoManageUserJoiningFlight event, Emitter<SocketIoState> emit) {
-    state.socket!.connect();
-
-    final message = {'flightId': event.flightId, 'userId': event.userId};
-
-    state.socket!
-        .emit("manageUserJoiningFlight", const JsonEncoder().convert(message));
-
-    emit(state.copyWith(
-      status: SocketIoStatus.connected,
-    ));
   }
 
   void _onSocketMakePriceProposal(

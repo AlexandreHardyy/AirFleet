@@ -28,14 +28,30 @@ class _WaitingPilotAcceptJoinCardState
   }
 
   void onAccept() {
-    final currentFlightState = context.read<CurrentFlightBloc>().state;
-    _socketIoBloc.add(SocketIoManageUserJoiningFlight(
-        flightId: currentFlightState.flight!.id, userId: widget.userId));
+    // final currentFlightState = context.read<CurrentFlightBloc>().state;
+    // _socketIoBloc.add(SocketIoManageUserJoiningFlight(
+    //     flightId: currentFlightState.flight!.id, userId: widget.userId, choice: "accepted"));
+
+    _socketIoBloc.state.socket!.emit("manageUserJoiningFlight", jsonEncode({
+      "flightId": _currentFlightBloc.state.flight!.id,
+      "userId": widget.userId,
+      "choice": "accepted",
+    }));
 
     Navigator.of(context).pop();
   }
 
   void onRefuse() {
+    // final currentFlightState = context.read<CurrentFlightBloc>().state;
+    // _socketIoBloc.add(SocketIoManageUserJoiningFlight(
+    //     flightId: currentFlightState.flight!.id, userId: widget.userId, choice: "refused"));
+
+    _socketIoBloc.state.socket!.emit("manageUserJoiningFlight", jsonEncode({
+      "flightId": _currentFlightBloc.state.flight!.id,
+      "userId": widget.userId,
+      "choice": "refused",
+    }));
+
     Navigator.of(context).pop();
   }
 

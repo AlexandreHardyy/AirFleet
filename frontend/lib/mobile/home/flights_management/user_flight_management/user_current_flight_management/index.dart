@@ -7,9 +7,11 @@ import 'package:frontend/mobile/blocs/message/message_bloc.dart';
 import 'package:frontend/mobile/blocs/socket_io/socket_io_bloc.dart';
 import 'package:frontend/mobile/home/flights_management/pilot_flight_management/pilot_current_flight_management/waiting_pilot_accept_join_card.dart';
 import 'package:frontend/mobile/home/flights_management/user_flight_management/user_current_flight_management/waiting_pilot_card.dart';
+import 'package:frontend/mobile/home/flights_management/user_flight_management/user_current_flight_management/waiting_pilot_to_join.dart';
 import 'package:frontend/mobile/home/flights_management/user_flight_management/user_current_flight_management/waiting_proposal_approval_card.dart';
 import 'package:frontend/mobile/home/flights_management/user_flight_management/user_current_flight_management/waiting_takeoff.dart';
 import 'package:frontend/models/message.dart';
+import 'package:frontend/storage/user.dart';
 
 import 'in_progress.dart';
 
@@ -39,6 +41,7 @@ class _CurrentFlightManagementState extends State<CurrentFlightManagement> {
         eventId: "flightUpdated",
         event: "flightUpdated",
         callback: (_) {
+          print("Flight updated");
           context.read<CurrentFlightBloc>().add(CurrentFlightUpdated());
         },
       ));
@@ -80,6 +83,10 @@ class _CurrentFlightManagementState extends State<CurrentFlightManagement> {
 
         if (state.flight!.status == 'waiting_proposal_approval') {
           return WaitingProposalApprovalCard(flight: state.flight!);
+        }
+
+        if (state.flight!.status == 'waiting_takeoff' && !state.flight!.users!.any((user) => user.id == UserStore.user?.id)) {
+          return WaitingPilotToJoin(flight: state.flight!);
         }
 
         if (state.flight!.status == 'waiting_takeoff') {

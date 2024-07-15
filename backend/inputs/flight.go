@@ -41,6 +41,7 @@ type InputPilotPositionUpdate struct {
 }
 
 type UserFlightJoinRequest struct {
-	FlightId int `json:"flightId"`
-	UserId   int `json:"userId"`
+	FlightId int    `json:"flightId"`
+	UserId   int    `json:"userId"`
+	Choice   string `json:"choice"`
 }
