@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -112,11 +114,12 @@ class FlightRequestDetail extends StatelessWidget {
 
                             if (state.saveAndValidate()) {
                               final formValues = state.value;
-                              context.read<SocketIoBloc>().add(
-                                  SocketIoMakePriceProposal(
-                                      flightId: flight.id,
-                                      price:
-                                          double.parse(formValues['price'])));
+                              context.read<SocketIoBloc>().state.socket!.emit(
+                                  "makeFlightProposal",
+                                  const JsonEncoder().convert({
+                                    'flightId': flight.id,
+                                    'price': formValues['price']
+                                  }));
 
                               context
                                   .read<SocketIoBloc>()

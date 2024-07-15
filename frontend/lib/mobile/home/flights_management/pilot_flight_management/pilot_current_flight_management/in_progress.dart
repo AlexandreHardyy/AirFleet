@@ -28,7 +28,8 @@ const FlightInProgress({ super.key, required this.flight });
             ),
             ElevatedButton(
               onPressed: () {
-                context.read<SocketIoBloc>().add(SocketIoFlightLanding(flightId: flight.id));
+                context.read<SocketIoBloc>().tickerSubscription?.cancel();
+                context.read<SocketIoBloc>().state.socket!.emit("flightLanding", "${flight.id}");
                 context.read<CurrentFlightBloc>().add(CurrentFlightUpdated());
               },
               child: const Text('Finish the flight'),

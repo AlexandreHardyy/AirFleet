@@ -22,11 +22,11 @@ final String? socketIoUrl = kIsWeb
 
 class SocketIoBloc extends Bloc<SocketIoEvent, SocketIoState> {
   final Ticker _ticker = const Ticker();
-  StreamSubscription<int>? _tickerSubscription;
+  StreamSubscription<int>? tickerSubscription;
 
   @override
   Future<void> close() {
-    _tickerSubscription?.cancel();
+    tickerSubscription?.cancel();
     return super.close();
   }
 
@@ -39,12 +39,6 @@ class SocketIoBloc extends Bloc<SocketIoEvent, SocketIoState> {
     on<SocketIoLoading>(_onSocketIoLoading);
     on<SocketIoError>(_onSocketIoError);
     on<SocketIoCreateSession>(_onSocketCreateSession);
-    on<SocketIoMakePriceProposal>(_onSocketMakePriceProposal);
-    on<SocketIoAcceptProposal>(_onSocketAcceptProposal);
-    on<SocketIoCancelFlight>(_onSocketCancelFlight);
-    on<SocketIoFlightTakeoff>(_onSocketFlightTakeoff);
-    on<SocketIoUpdatePilotPosition>(_onSocketUpdatePilotPosition);
-    on<SocketIoFlightLanding>(_onSocketFlightLanding);
     on<SocketIoListenEvent>(_onSocketListenEvent);
     on<SocketIoStopListeningEvent>(_onSocketStopListeningEvent);
   }
@@ -121,104 +115,37 @@ class SocketIoBloc extends Bloc<SocketIoEvent, SocketIoState> {
       status: SocketIoStatus.connected,
     ));
 
-    _tickerSubscription?.cancel();
+    tickerSubscription?.cancel();
     if (UserStore.user?.role == Roles.pilot) {
-      _tickerSubscription = _ticker
+      tickerSubscription = _ticker
           .tick(interval: 4)
-          .listen((duration) => add(SocketIoUpdatePilotPosition(
-                flightId: event.flightId,
-              )));
+          .listen((duration) => updatePilotPosition(event.flightId));
     }
   }
 
-  void _onSocketMakePriceProposal(
-      SocketIoMakePriceProposal event, Emitter<SocketIoState> emit) {
-    state.socket!.connect();
-
-    final message = {'flightId': event.flightId, 'price': event.price};
-
-    state.socket!
-        .emit("makeFlightProposal", const JsonEncoder().convert(message));
-
-    emit(state.copyWith(
-      status: SocketIoStatus.connected,
-    ));
-  }
-
-  void _onSocketAcceptProposal(
-      SocketIoAcceptProposal event, Emitter<SocketIoState> emit) {
-    state.socket!.connect();
-
-    final message = {"flightId": event.flightId, "choice": "accepted"};
-
-    state.socket!
-        .emit("flightProposalChoice", const JsonEncoder().convert(message));
-
-    emit(state.copyWith(
-      status: SocketIoStatus.connected,
-    ));
-  }
-
-  void _onSocketUpdatePilotPosition(
-      SocketIoUpdatePilotPosition event, Emitter<SocketIoState> emit) async {
+  void updatePilotPosition(int flightId) async {
+    print('update !!!!');
     final currentPosition = await determinePosition();
     state.socket!.connect();
 
     final message = {
-      'flightId': event.flightId,
+      'flightId': flightId,
       'latitude': currentPosition.latitude,
       'longitude': currentPosition.longitude,
     };
 
     state.socket!
         .emit("pilotPositionUpdate", const JsonEncoder().convert(message));
-
-    emit(state.copyWith(
-      status: SocketIoStatus.connected,
-    ));
   }
 
-  void _onSocketCancelFlight(
-      SocketIoCancelFlight event, Emitter<SocketIoState> emit) {
-    state.socket!.connect();
+  void startFlightTakeoff(int flightId) {
+    print("startFlightTakeoff");
+    state.socket!.emit("flightTakeoff", "${flightId}");
 
-    state.socket!.emit("cancelFlight", "${event.flightId}");
-
-    _tickerSubscription?.cancel();
-
-    emit(state.copyWith(
-      status: SocketIoStatus.connected,
-    ));
-  }
-
-  void _onSocketFlightTakeoff(
-      SocketIoFlightTakeoff event, Emitter<SocketIoState> emit) {
-    state.socket!.connect();
-
-    state.socket!.emit("flightTakeoff", "${event.flightId}");
-
-    _tickerSubscription?.cancel();
-    _tickerSubscription = _ticker
+    tickerSubscription?.cancel();
+    tickerSubscription = _ticker
         .tick(interval: 4)
-        .listen((duration) => add(SocketIoUpdatePilotPosition(
-              flightId: event.flightId,
-            )));
-
-    emit(state.copyWith(
-      status: SocketIoStatus.connected,
-    ));
-  }
-
-  void _onSocketFlightLanding(
-      SocketIoFlightLanding event, Emitter<SocketIoState> emit) {
-    state.socket!.connect();
-
-    _tickerSubscription?.cancel();
-    state.socket!.emit("flightLanding", "${event.flightId}");
-
-    emit(state.copyWith(
-      status: SocketIoStatus.connected,
-    ));
+        .listen((duration) => updatePilotPosition(flightId));
   }
 
   void _onSocketListenEvent(

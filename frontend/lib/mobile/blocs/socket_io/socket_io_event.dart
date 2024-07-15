@@ -27,43 +27,6 @@ final class SocketIoCreateSession extends SocketIoEvent {
   SocketIoCreateSession({required this.flightId});
 }
 
-final class SocketIoMakePriceProposal extends SocketIoEvent {
-  final int flightId;
-  final double price;
-
-  SocketIoMakePriceProposal({required this.flightId, required this.price});
-}
-
-final class SocketIoAcceptProposal extends SocketIoEvent {
-  final int flightId;
-
-  SocketIoAcceptProposal({required this.flightId});
-}
-
-final class SocketIoCancelFlight extends SocketIoEvent {
-  final int flightId;
-
-  SocketIoCancelFlight({required this.flightId});
-}
-
-final class SocketIoFlightTakeoff extends SocketIoEvent {
-  final int flightId;
-
-  SocketIoFlightTakeoff({required this.flightId});
-}
-
-final class SocketIoUpdatePilotPosition extends SocketIoEvent {
-  final int flightId;
-
-  SocketIoUpdatePilotPosition({required this.flightId});
-}
-
-final class SocketIoFlightLanding extends SocketIoEvent {
-  final int flightId;
-
-  SocketIoFlightLanding({required this.flightId});
-}
-
 final class SocketIoListenEvent extends SocketIoEvent {
   final String eventId;
   final String event;

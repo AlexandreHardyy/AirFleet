@@ -28,7 +28,7 @@ const WaitingForTakeoff({ super.key, required this.flight });
             ),
             ElevatedButton(
               onPressed: () {
-                context.read<SocketIoBloc>().add(SocketIoFlightTakeoff(flightId: flight.id));
+                context.read<SocketIoBloc>().startFlightTakeoff(flight.id);
               },
               child: const Text('Start takeoff'),
             ),
@@ -38,7 +38,9 @@ const WaitingForTakeoff({ super.key, required this.flight });
             ElevatedButton(
               style: dangerButtonStyle,
               onPressed: () {
-                context.read<SocketIoBloc>().add(SocketIoCancelFlight(flightId: flight.id));
+                final socketBloc = context.read<SocketIoBloc>();
+                socketBloc.tickerSubscription?.cancel();
+                socketBloc.state.socket!.emit("cancelFlight", "${flight.id}");
               },
               child: const Text('Cancel Flight'),
             ),

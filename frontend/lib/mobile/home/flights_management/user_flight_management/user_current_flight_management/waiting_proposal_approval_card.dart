@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 import 'package:frontend/mobile/blocs/socket_io/socket_io_bloc.dart';
+import 'package:frontend/mobile/payment_screen.dart';
 import 'package:frontend/models/flight.dart';
-import 'package:frontend/routes.dart';
 import 'package:frontend/widgets/button.dart';
 import 'package:frontend/widgets/title.dart';
 
@@ -108,7 +108,7 @@ class _WaitingProposalApprovalCardState
             Expanded(
               child: ElevatedButton(
                 onPressed: () {
-                  Navigator.of(context).push(Routes.paymentScreen(context, flight: widget.flight));
+                  PaymentScreen.navigateTo(context, flightId: widget.flight.id);
                 },
                 child: Text(translate('common.input.accept_offer')),
               ),

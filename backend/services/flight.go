@@ -9,8 +9,9 @@ import (
 	"backend/responses"
 	"backend/utils"
 	"errors"
-	"gorm.io/gorm"
 	"math"
+
+	"gorm.io/gorm"
 )
 
 type FlightServiceInterface interface {
@@ -263,6 +264,13 @@ func (s *FlightService) FlightProposalChoice(input inputs.InputFlightProposalCho
 	flight, err := s.repository.GetFlightByID(input.FlightId)
 	if err != nil {
 		return err
+	}
+
+	if input.Choice == "accepted" {
+		payment, err := repositories.NewPaymentRepository(database.DB).GetById(userID, input.FlightId)
+		if err != nil || payment.ID == 0 {
+			return err
+		}
 	}
 
 	if flight.Status != flightStatus.WAITING_PROPOSAL_APPROVAL || (utils.NotContainsUser(flight.Users, userID) && (flight.PilotID == nil || *flight.PilotID != userID)) {
