@@ -1,6 +1,12 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:flutter_translate/flutter_translate.dart';
+import 'package:frontend/mobile/home/flights_management/user_flight_management/create_flight.dart';
+import 'package:frontend/mobile/map/mapbox_endpoint/suggest.dart';
+import 'package:frontend/models/flight.dart';
 import 'package:frontend/models/vehicle.dart';
+import 'package:frontend/services/dio.dart';
 import 'package:frontend/services/vehicle.dart';
 import 'package:frontend/widgets/input.dart';
 
@@ -13,21 +19,23 @@ class CreateProposalView extends StatefulWidget {
 
 class _CreateProposalViewState extends State<CreateProposalView> {
   final _formKey = GlobalKey<FormState>();
+  String mapboxSessionToken = uuid.v4();
   List<DropdownMenuItem<Vehicle>> _vehicleDropdownItems = [];
-
   int availableSeats = 0;
-  String arrivalAddress = '';
-  double arrivalLatitude = 0;
-  double arrivalLongitude = 0;
-  String arrivalName = '';
-  String departureAddress = '';
-  double departureLatitude = 0;
-  double departureLongitude = 0;
-  String departureName = '';
   String departureTime = '';
   String description = '';
   double price = 0;
   int vehicleId = 0;
+  Airport? selectedDepartureAirport;
+  Airport? selectedArrivalAirport;
+
+  List<Suggestion> _suggestions = [];
+
+  FocusNode departureTextFieldFocusNode = FocusNode();
+  FocusNode arrivalTextFieldFocusNode = FocusNode();
+
+  final TextEditingController _departureController = TextEditingController();
+  final TextEditingController _arrivalController = TextEditingController();
 
   @override
   void initState() {
@@ -39,23 +47,49 @@ class _CreateProposalViewState extends State<CreateProposalView> {
     try {
       List<Vehicle> vehicles = await VehicleService.getVehiclesForMe();
       setState(() {
-        _vehicleDropdownItems = vehicles.map((vehicle) => DropdownMenuItem<Vehicle>(
-          value: vehicle,
-          child: Text(vehicle.modelName),
-        )).toList();
+        _vehicleDropdownItems = vehicles
+            .map((vehicle) =>
+            DropdownMenuItem<Vehicle>(
+              value: vehicle,
+              child: Text(vehicle.modelName),
+            ))
+            .toList();
       });
     } catch (e) {
       // Handle error
     }
   }
 
+  Future<List<Suggestion>> _retrieveAirport(String searchValue) async {
+    Response response;
+    try {
+      response = await dioMapbox.get(
+        "search/searchbox/v1/suggest",
+        queryParameters: {
+          'q': searchValue,
+          'language': 'en',
+          'poi_category': 'airport',
+          'types': "poi",
+          'access_token': const String.fromEnvironment("PUBLIC_ACCESS_TOKEN"),
+          'session_token': mapboxSessionToken,
+        },
+      );
+      return SuggestionResponse
+          .fromJson(response.data)
+          .suggestions;
+    } on DioException catch (e) {
+      throw Exception('Something went wrong: ${e.response}');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: ListView(
+      padding: const EdgeInsets.all(16.0),
+      child: Form(
+        key: _formKey,
+        child: SingleChildScrollView(
+          child: Column(
             children: [
               TextFormField(
                 decoration: const InputDecoration(labelText: 'Available Seats'),
@@ -69,89 +103,54 @@ class _CreateProposalViewState extends State<CreateProposalView> {
                 },
               ),
               TextFormField(
-                decoration: const InputDecoration(labelText: 'Arrival Address'),
-                onSaved: (value) => arrivalAddress = value!,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter arrival address';
-                  }
-                  return null;
+                controller: _departureController,
+                onChanged: (value) async {
+                  final suggestions = await _retrieveAirport(value);
+                  setState(() {
+                    _suggestions = suggestions;
+                  });
                 },
+                decoration: InputDecoration(
+                  labelText: 'Search Airport',
+                  suffixIcon: _departureController.text.isNotEmpty
+                      ? IconButton(
+                    icon: const Icon(Icons.clear),
+                    onPressed: () {
+                      _departureController.clear();
+                      setState(() {
+                        _suggestions = [];
+                      });
+                    },
+                  )
+                      : null,
+                ),
               ),
-              TextFormField(
-                decoration: const InputDecoration(labelText: 'Arrival Latitude'),
-                keyboardType: TextInputType.number,
-                onSaved: (value) => arrivalLatitude = double.parse(value!),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter arrival latitude';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                decoration: const InputDecoration(labelText: 'Arrival Longitude'),
-                keyboardType: TextInputType.number,
-                onSaved: (value) => arrivalLongitude = double.parse(value!),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter arrival longitude';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                decoration: const InputDecoration(labelText: 'Arrival Name'),
-                onSaved: (value) => arrivalName = value!,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter arrival name';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                decoration: const InputDecoration(labelText: 'Departure Address'),
-                onSaved: (value) => departureAddress = value!,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter departure address';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                decoration: const InputDecoration(labelText: 'Departure Latitude'),
-                keyboardType: TextInputType.number,
-                onSaved: (value) => departureLatitude = double.parse(value!),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter departure latitude';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                decoration: const InputDecoration(labelText: 'Departure Longitude'),
-                keyboardType: TextInputType.number,
-                onSaved: (value) => departureLongitude = double.parse(value!),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter departure longitude';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                decoration: const InputDecoration(labelText: 'Departure Name'),
-                onSaved: (value) => departureName = value!,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter departure name';
-                  }
-                  return null;
-                },
-              ),
+              if (_suggestions.isNotEmpty)
+                SizedBox(
+                  height: 200, // Fixed height for the suggestions list
+                  child: ListView.builder(
+                    itemCount: _suggestions.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      final airportSuggestion = _suggestions[index];
+                      return GestureDetector(
+                        onTap: () {
+                          // Implement onTap functionality
+                        },
+                        child: Container(
+                          decoration: const BoxDecoration(
+                            border: Border(
+                              top: BorderSide(width: 1.0, color: Colors.grey),
+                            ),
+                          ),
+                          child: ListTile(
+                            title: Text(airportSuggestion.name),
+                            subtitle: Text(airportSuggestion.fullAddress ?? ""),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
               TextFormField(
                 decoration: const InputDecoration(labelText: 'Departure Time'),
                 onSaved: (value) => departureTime = value!,
@@ -196,20 +195,6 @@ class _CreateProposalViewState extends State<CreateProposalView> {
                     // Envoyer les données à l'API via le service Dart
                     print({
                       "availableSeats": availableSeats,
-                      "createFlight": {
-                        "arrival": {
-                          "address": arrivalAddress,
-                          "latitude": arrivalLatitude,
-                          "longitude": arrivalLongitude,
-                          "name": arrivalName,
-                        },
-                        "departure": {
-                          "address": departureAddress,
-                          "latitude": departureLatitude,
-                          "longitude": departureLongitude,
-                          "name": departureName,
-                        }
-                      },
                       "departureTime": departureTime,
                       "description": description,
                       "price": price,
@@ -217,11 +202,12 @@ class _CreateProposalViewState extends State<CreateProposalView> {
                     });
                   }
                 },
-                child: Text('Submit'),
+                child: const Text('Submit'),
               ),
             ],
           ),
         ),
-      );
+      ),
+    );
   }
 }
