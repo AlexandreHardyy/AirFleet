@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/mobile/blocs/pilot_status/pilot_status_bloc.dart';
+import 'package:frontend/mobile/pilot_flight_request_detail.dart';
 import 'package:frontend/models/flight.dart';
-import 'package:frontend/routes.dart';
 
 class PilotFlightRequests extends StatelessWidget {
   final CurrentPilotStatus status;
@@ -24,8 +24,7 @@ class PilotFlightRequests extends StatelessWidget {
                     Text("${flight.departure.name} -> ${flight.arrival.name}"),
                 leading: const Icon(Icons.flight, color: Color(0xFFDCA200)),
                 onTap: () {
-                  Navigator.of(context).push(
-                      Routes.flightRequestDetail(context, flight: flight));
+                  FlightRequestDetail.navigateTo(context, flight: flight);
                 }),
           );
         },

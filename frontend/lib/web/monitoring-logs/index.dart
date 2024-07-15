@@ -6,6 +6,12 @@ import 'package:frontend/web/monitoring-logs/list_logs.dart';
 import 'package:frontend/widgets/title.dart';
 
 class MonitoringLogScreen extends StatelessWidget {
+  static const String routeName = '/monitoring-logs';
+
+  static Future<void> navigate(BuildContext context) async {
+    await Navigator.of(context).pushNamed(MonitoringLogScreen.routeName);
+  }
+
   const MonitoringLogScreen({super.key});
 
   @override

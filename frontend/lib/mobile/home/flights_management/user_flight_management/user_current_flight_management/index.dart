@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:socket_io_client/socket_io_client.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -32,7 +33,12 @@ class _CurrentFlightManagementState extends State<CurrentFlightManagement> {
     if (_socketIoBloc.state.status == SocketIoStatus.disconnected) {
       final currentFlightState = context.read<CurrentFlightBloc>().state;
 
+      _socketIoBloc.state.socket!.connect();
       _socketIoBloc.add(SocketIoCreateSession(flightId: currentFlightState.flight!.id));
+      _socketIoBloc.state.socket!.onReconnect((data) => {
+        print("Reconnected to socket.io server"),
+        _socketIoBloc.add(SocketIoCreateSession(flightId: currentFlightState.flight!.id))
+      });
 
       _socketIoBloc.add(SocketIoListenEvent(
         eventId: "flightUpdated",

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend/local_notification_setup.dart';
@@ -68,7 +70,12 @@ class CurrentFlightBloc extends Bloc<CurrentFlightEvent, CurrentFlightState> {
     }
 
     if (flight.status == "waiting_proposal_approval" && state.flight?.status == "waiting_pilot") {
-      LocalNotificationService().showNotification('An offer has been made !', 'A pilot has made an offer for your flight. Check it out !');
+      Map<String, dynamic> payload = {
+        'routeName': '/home',
+        'arguments': null,
+      };
+
+      LocalNotificationService().showNotification('An offer has been made !', 'A pilot has made an offer for your flight. Check it out !', jsonEncode(payload));
     }
 
     emit(state.copyWith(

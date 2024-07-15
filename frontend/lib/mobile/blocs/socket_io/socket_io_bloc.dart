@@ -61,7 +61,9 @@ class SocketIoBloc extends Bloc<SocketIoEvent, SocketIoState> {
               .disableAutoConnect()
               .disableAutoConnect()
               .setExtraHeaders({'Bearer': bearerToken})
-              .build());
+              .build(),
+      );
+
       socket.onConnect((_) {
         print('Connection established');
       });
@@ -112,7 +114,6 @@ class SocketIoBloc extends Bloc<SocketIoEvent, SocketIoState> {
 
   void _onSocketCreateSession(
       SocketIoCreateSession event, Emitter<SocketIoState> emit) {
-    state.socket!.connect();
     state.socket!.emit("createSession", "${event.flightId}");
 
     emit(state.copyWith(

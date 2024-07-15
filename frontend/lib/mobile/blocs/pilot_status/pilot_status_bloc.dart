@@ -108,7 +108,7 @@ class PilotStatusBloc extends Bloc<PilotStatusEvent, PilotStatusState> {
     if (flightRequests?.isNotEmpty == true &&
         flightRequests?.length != state.flights?.length) {
       LocalNotificationService().showNotification(
-          'New flight request !', 'A new fight requests was made by a client');
+          'New flight request !', 'A new fight requests was made by a client', null);
     }
 
     emit(

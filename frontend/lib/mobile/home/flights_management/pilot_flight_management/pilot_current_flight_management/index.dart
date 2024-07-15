@@ -5,6 +5,8 @@ import 'package:frontend/mobile/blocs/socket_io/socket_io_bloc.dart';
 import 'package:frontend/mobile/home/flights_management/pilot_flight_management/pilot_current_flight_management/in_progress.dart';
 import 'package:frontend/mobile/home/flights_management/pilot_flight_management/pilot_current_flight_management/waiting_for_takeoff.dart';
 import 'package:frontend/mobile/home/flights_management/pilot_flight_management/pilot_current_flight_management/waiting_proposal_approval_card.dart';
+import 'package:socket_io_client/socket_io_client.dart';
+
 
 class CurrentPilotFlightManagement extends StatefulWidget {
   const CurrentPilotFlightManagement({super.key});
@@ -22,9 +24,16 @@ class _CurrentPilotFlightManagementState
         SocketIoStatus.disconnected) {
       final currentFlightState = context.read<CurrentFlightBloc>().state;
 
+      context.read<SocketIoBloc>().state.socket!.connect();
       context
           .read<SocketIoBloc>()
           .add(SocketIoCreateSession(flightId: currentFlightState.flight!.id));
+      context.read<SocketIoBloc>().state.socket!.onReconnect((data) => {
+            print("Reconnected to socket.io server"),
+            context
+                .read<SocketIoBloc>()
+                .add(SocketIoCreateSession(flightId: currentFlightState.flight!.id))
+          });
 
       context.read<SocketIoBloc>().add(SocketIoListenEvent(
             eventId: "flightUpdated",

@@ -10,6 +10,12 @@ import 'blocs/message/message_bloc.dart';
 import 'blocs/socket_io/socket_io_bloc.dart';
 
 class FlightChat extends StatefulWidget {
+  static const routeName = '/flight-chat';
+
+  static Future<void> navigateTo(BuildContext context, {required int flightId}) {
+    return Navigator.of(context).pushNamed(routeName, arguments: flightId);
+  }
+
   final int flightId;
 
   const FlightChat({super.key, required this.flightId});

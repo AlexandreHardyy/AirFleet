@@ -6,6 +6,12 @@ import 'package:frontend/models/vehicle.dart';
 import 'package:frontend/services/vehicle.dart';
 
 class VehicleDetailsPage extends StatefulWidget {
+  static const routeName = '/vehicle-detail';
+
+  static Future<void> navigateTo(BuildContext context, {int? vehicleId}) {
+    return Navigator.of(context).pushNamed(routeName, arguments: vehicleId);
+  }
+
   final int? vehicleId;
 
   const VehicleDetailsPage({super.key, this.vehicleId});

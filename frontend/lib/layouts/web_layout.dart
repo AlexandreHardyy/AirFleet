@@ -5,6 +5,10 @@ import 'package:frontend/blocs/auth/auth_bloc.dart';
 import 'package:frontend/web/auth_screen/login_screen.dart';
 import 'package:frontend/web/home_web.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:frontend/web/module/module.dart';
+import 'package:frontend/web/monitoring-logs/index.dart';
+import 'package:frontend/web/user/user.dart';
+import 'package:frontend/web/vehicle/vehicle.dart';
 
 class WebLayout extends StatelessWidget {
   const WebLayout({super.key});
@@ -16,6 +20,13 @@ class WebLayout extends StatelessWidget {
     return LocalizationProvider(
       state: LocalizationProvider.of(context).state,
       child: MaterialApp(
+        routes: {
+          '/home-web': (context) => const HomeWeb(),
+          '/user': (context) => const UserScreen(),
+          '/vehicle': (context) => const VehicleScreen(),
+          '/module': (context) => const ModuleScreen(),
+          '/monitoring-logs': (context) => const MonitoringLogScreen(),
+        },
         localizationsDelegates: [
           GlobalMaterialLocalizations.delegate,
           GlobalCupertinoLocalizations.delegate,
