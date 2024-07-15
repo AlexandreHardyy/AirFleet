@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
-import 'package:frontend/routes.dart';
+import 'package:frontend/mobile/auth_screen/login_screen.dart';
+import 'package:frontend/mobile/auth_screen/register_screen.dart';
 import 'package:frontend/services/user.dart';
 import 'package:form_builder_file_picker/form_builder_file_picker.dart';
 import 'package:frontend/utils/file-permission.dart';
@@ -9,6 +10,12 @@ import 'package:frontend/widgets/input.dart';
 import 'package:frontend/widgets/title.dart';
 
 class RegisterPilotScreen extends StatefulWidget {
+  static const routeName = '/register-pilot';
+
+  static Future<void> navigateTo(BuildContext context) {
+    return Navigator.of(context).pushNamed(routeName);
+  }
+
   const RegisterPilotScreen({super.key});
   @override
   State<RegisterPilotScreen> createState() => _RegisterPilotScreenState();
@@ -19,6 +26,7 @@ class _RegisterPilotScreenState extends State<RegisterPilotScreen> {
   final _emailFieldKey = GlobalKey<FormBuilderState>();
   var _apiMessage = "";
 
+  @override
   void initState() {
     super.initState();
     WidgetsBinding.instance
@@ -164,7 +172,7 @@ class _RegisterPilotScreenState extends State<RegisterPilotScreen> {
                   setState(() {
                     if (result['message'] == null) {
                       _apiMessage = 'Register success !';
-                      Navigator.of(context).push(Routes.login(context));
+                      LoginScreen.navigateTo(context);
                     } else if (result['message'] != null) {
                       _apiMessage = result['message'];
                     } else {
@@ -177,12 +185,12 @@ class _RegisterPilotScreenState extends State<RegisterPilotScreen> {
               Text(_apiMessage),
               MaterialButton(
                   onPressed: () {
-                    Navigator.of(context).push(Routes.login(context));
+                    LoginScreen.navigateTo(context);
                   },
                   child: const Text("already registered ? login here")),
               MaterialButton(
                   onPressed: () {
-                    Navigator.of(context).push(Routes.register(context));
+                    RegisterScreen.navigateTo(context);
                   },
                   child: const Text("normal register here"))
             ],

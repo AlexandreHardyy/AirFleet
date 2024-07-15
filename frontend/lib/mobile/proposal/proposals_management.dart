@@ -7,6 +7,12 @@ import 'package:frontend/models/vehicle.dart';
 import 'package:frontend/storage/user.dart';
 
 class ProposalsManagementScreen extends StatefulWidget {
+  static const routeName = '/proposals-management';
+
+  static Future<void> navigateTo(BuildContext context) {
+    return Navigator.of(context).pushNamed(routeName);
+  }
+
   const ProposalsManagementScreen({super.key});
 
   @override

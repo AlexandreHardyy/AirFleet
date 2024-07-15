@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/mobile/flight_details.dart';
+import 'package:frontend/mobile/profile/user_vehicles.dart';
 import 'package:frontend/models/rating.dart';
 import 'package:frontend/models/user.dart';
 import 'package:frontend/models/flight.dart';
 import 'package:frontend/models/vehicle.dart';
-import 'package:frontend/routes.dart';
 import 'package:frontend/services/flight.dart';
 import 'package:frontend/services/rating.dart';
 import 'package:frontend/services/vehicle.dart';
@@ -11,6 +12,12 @@ import 'package:frontend/services/user.dart';
 import 'package:frontend/storage/user.dart';
 
 class UserProfileScreen extends StatefulWidget {
+  static const route = '/profile';
+
+  static Future<void> navigateTo(BuildContext context) {
+    return Navigator.of(context).pushNamed(route);
+  }
+
   const UserProfileScreen({super.key});
 
   @override
@@ -70,9 +77,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                         } else if (snapshot.data != null) {
                           return InkWell(
                             onTap: () {
-                              Navigator.of(context).push(Routes.userVehicles(
-                                  context,
-                                  vehicles: snapshot.data!));
+                              UserVehiclesScreen.navigateTo(context, vehicles: snapshot.data!);
                             },
                             child: Card(
                               child: ListTile(
@@ -260,9 +265,7 @@ class _ExpandableFlightListState extends State<ExpandableFlightList> {
                   '${flightsToShow[index].departure.name} - ${flightsToShow[index].arrival.name}'),
               subtitle: Text(flightsToShow[index].status),
               onTap: () {
-                Navigator.of(context).push(
-                    Routes.flightDetails(context, flightId: flightsToShow[index].id)
-                );
+                FlightDetails.navigateTo(context, flightId: flightsToShow[index].id);
               },
             );
           },

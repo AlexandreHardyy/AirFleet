@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/mobile/vehicle_detail.dart';
 import 'package:frontend/services/vehicle.dart';
 import 'package:frontend/models/vehicle.dart';
-import 'package:frontend/routes.dart';
 
 class VehiclesManagementScreen extends StatefulWidget {
+  static const routeName = '/vehicles-management';
+
+  static Future<void> navigateTo(BuildContext context) async {
+    await Navigator.of(context).pushNamed(routeName);
+  }
+
   const VehiclesManagementScreen({super.key});
 
   @override
@@ -33,7 +39,7 @@ class _VehiclesManagementScreenState extends State<VehiclesManagementScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          await Navigator.of(context).push(Routes.vehicleDetail(context));
+          VehicleDetailsPage.navigateTo(context);
           refreshVehicles();
         },
         foregroundColor: Theme.of(context).textTheme.displayLarge?.color,
@@ -63,8 +69,7 @@ class _VehiclesManagementScreenState extends State<VehiclesManagementScreen> {
                         ? const Icon(Icons.check_circle, color: Colors.green)
                         : const Icon(Icons.cancel, color: Colors.red),
                     onTap: () async {
-                      await Navigator.of(context).push(Routes.vehicleDetail(
-                          context, vehicleId: vehicle.id));
+                      VehicleDetailsPage.navigateTo(context, vehicleId: vehicle.id);
                       refreshVehicles();
                     },
                   ),

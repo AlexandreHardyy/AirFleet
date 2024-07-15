@@ -4,8 +4,8 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:frontend/mobile/blocs/pilot_status/pilot_status_bloc.dart';
 import 'package:frontend/mobile/home/flights_management/pilot_flight_management/pilot_flight_requests.dart';
+import 'package:frontend/mobile/vehicles_management.dart';
 import 'package:frontend/models/vehicle.dart';
-import 'package:frontend/routes.dart';
 import 'package:frontend/widgets/input.dart';
 import 'package:frontend/widgets/title.dart';
 
@@ -37,8 +37,7 @@ class SearchFlights extends StatelessWidget {
               ),
               ElevatedButton(
                   onPressed: () {
-                    Navigator.of(context)
-                        .push(Routes.vehiclesManagement(context));
+                    VehiclesManagementScreen.navigateTo(context);
                   },
                   child: const Text('Add new vehicle'))
             ],

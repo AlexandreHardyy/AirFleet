@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:frontend/models/user.dart';
 import 'package:frontend/models/vehicle.dart';
-import 'package:frontend/routes.dart';
 import 'package:frontend/services/user.dart';
 import 'package:frontend/services/vehicle.dart';
 import 'package:frontend/web/charts/bar_chart.dart';
 import 'package:frontend/web/charts/pie_chart.dart';
+import 'package:frontend/web/module/module.dart';
 import 'package:frontend/web/monitoring-logs/index.dart';
 import 'package:frontend/web/user/user.dart';
 import 'package:frontend/web/vehicle/vehicle.dart';
@@ -109,7 +109,7 @@ class _HomeWebState extends State<HomeWeb> {
                       title: const Text('Users',
                           style: TextStyle(color: Colors.white)),
                       onTap: () {
-                        Navigator.push(context, Routes.userScreen(context));
+                        UserScreen.navigateTo(context);
                       },
                     ),
                     ListTile(
@@ -118,7 +118,7 @@ class _HomeWebState extends State<HomeWeb> {
                       title: const Text('Vehicles',
                           style: TextStyle(color: Colors.white)),
                       onTap: () {
-                        Navigator.push(context, Routes.vehicleScreen(context));
+                        VehicleScreen.navigateTo(context);
                       },
                     ),
                     ListTile(
@@ -127,12 +127,7 @@ class _HomeWebState extends State<HomeWeb> {
                       title: const Text('Monitoring logs',
                           style: TextStyle(color: Colors.white)),
                       onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                  const MonitoringLogScreen()),
-                        );
+                        MonitoringLogScreen.navigate(context);
                       },
                     ),
                     ListTile(
@@ -141,7 +136,7 @@ class _HomeWebState extends State<HomeWeb> {
                       title: const Text('Modules',
                           style: TextStyle(color: Colors.white)),
                       onTap: () {
-                        Navigator.push(context, Routes.moduleScreen(context));
+                        ModuleScreen.navigateTo(context);
                       },
                     )
                   ],

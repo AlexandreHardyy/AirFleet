@@ -3,13 +3,19 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:frontend/blocs/auth/auth_bloc.dart';
-import 'package:frontend/routes.dart';
+import 'package:frontend/mobile/auth_screen/register_screen.dart';
 import 'package:frontend/services/user.dart';
 import 'package:frontend/storage/user.dart';
 import 'package:frontend/widgets/input.dart';
 import 'package:frontend/widgets/title.dart';
 
 class LoginScreen extends StatefulWidget {
+  static const routeName = '/login';
+
+  static Future<void> navigateTo(BuildContext context) {
+    return Navigator.of(context).pushNamed(routeName);
+  }
+
   const LoginScreen({super.key});
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -89,7 +95,7 @@ class _LoginScreenState extends State<LoginScreen> {
               Text(_apiMessage),
               MaterialButton(
                   onPressed: () {
-                    Navigator.of(context).push(Routes.register(context));
+                    RegisterScreen.navigateTo(context);
                   },
                   child: const Text("no account yet ? register"))
             ],

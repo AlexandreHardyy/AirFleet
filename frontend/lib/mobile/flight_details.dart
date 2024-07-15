@@ -6,6 +6,12 @@ import 'package:frontend/services/rating.dart';
 import 'package:frontend/storage/user.dart';
 
 class FlightDetails extends StatefulWidget {
+  static const routeName = '/flight-details';
+
+  static Future<void> navigateTo(BuildContext context, {required int flightId}) {
+    return Navigator.of(context).pushNamed(routeName, arguments: flightId);
+  }
+
   final int flightId;
 
   const FlightDetails({super.key, required this.flightId});

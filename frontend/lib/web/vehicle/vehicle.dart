@@ -5,6 +5,12 @@ import 'package:frontend/web/vehicle/update_vehicle_form.dart';
 import 'package:frontend/web/vehicle/create_vehicle_form.dart';
 
 class VehicleScreen extends StatefulWidget {
+  static const routeName = '/vehicle';
+
+  static Future<void> navigateTo(BuildContext context) {
+    return Navigator.of(context).pushNamed(routeName);
+  }
+
   const VehicleScreen({super.key});
 
   @override

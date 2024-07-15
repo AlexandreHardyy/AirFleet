@@ -3,6 +3,12 @@ import 'package:frontend/models/module.dart';
 import 'package:frontend/services/module.dart';
 
 class ModuleScreen extends StatefulWidget {
+  static const routeName = '/module';
+
+  static Future<void> navigateTo(BuildContext context) {
+    return Navigator.of(context).pushNamed(routeName);
+  }
+
   const ModuleScreen({super.key});
 
   @override

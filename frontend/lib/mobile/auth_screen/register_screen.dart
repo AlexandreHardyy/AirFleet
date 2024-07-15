@@ -1,12 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
-import 'package:frontend/routes.dart';
+import 'package:frontend/mobile/auth_screen/login_screen.dart';
+import 'package:frontend/mobile/auth_screen/register_pilot_screen.dart';
 import 'package:frontend/services/user.dart';
 import 'package:frontend/widgets/input.dart';
 import 'package:frontend/widgets/title.dart';
 
 class RegisterScreen extends StatefulWidget {
+  static String routeName = '/register';
+
+  static Future<void> navigateTo(BuildContext context) {
+    return Navigator.of(context).pushNamed(routeName);
+  }
+
   const RegisterScreen({super.key});
   @override
   State<RegisterScreen> createState() => _RegisterScreenState();
@@ -100,7 +107,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 setState(() {
                   if (result['message'] == null) {
                     _apiMessage = 'Register success !';
-                    Navigator.of(context).push(Routes.login(context));
+                    LoginScreen.navigateTo(context);
                   } else if (result['message'] != null) {
                     _apiMessage = result['message'];
                   } else {
@@ -113,12 +120,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
             Text(_apiMessage),
             MaterialButton(
                 onPressed: () {
-                  Navigator.of(context).push(Routes.login(context));
+                  LoginScreen.navigateTo(context);
                 },
                 child: const Text("already registered ? login here")),
             MaterialButton(
                 onPressed: () {
-                  Navigator.of(context).push(Routes.registerPilot(context));
+                  RegisterPilotScreen.navigateTo(context);
                 },
                 child: const Text("register as a pilot here"))
           ],

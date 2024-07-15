@@ -3,9 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 import 'package:frontend/mobile/blocs/current_flight/current_flight_bloc.dart';
 import 'package:frontend/mobile/blocs/socket_io/socket_io_bloc.dart';
+import 'package:frontend/mobile/flight_chat.dart';
 import 'package:frontend/widgets/departure_to_arrival.dart';
 import 'package:frontend/models/flight.dart';
-import 'package:frontend/routes.dart';
 import 'package:frontend/widgets/button.dart';
 import 'package:frontend/widgets/title.dart';
 
@@ -82,8 +82,7 @@ class _WaitingTakeoffState extends State<WaitingTakeoff> {
             Expanded(
               child: ElevatedButton(
                 onPressed: () {
-                  Navigator.of(context)
-                      .push(Routes.flightChat(context, flightId: widget.flight.id));
+                  FlightChat.navigateTo(context, flightId: widget.flight.id);
                 },
                 child: const Icon(Icons.chat),
               ),

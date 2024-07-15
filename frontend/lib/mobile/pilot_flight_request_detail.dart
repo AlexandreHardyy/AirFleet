@@ -9,6 +9,12 @@ import 'package:frontend/models/flight.dart';
 import 'package:frontend/widgets/input.dart';
 
 class FlightRequestDetail extends StatelessWidget {
+  static const routeName = '/flight-request-detail';
+
+  static Future<void> navigateTo(BuildContext context, {required Flight flight}) async {
+    await Navigator.of(context).pushNamed(routeName, arguments: flight);
+  }
+
   final Flight flight;
   final _formKey = GlobalKey<FormBuilderState>();
 

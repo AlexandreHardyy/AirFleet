@@ -5,6 +5,12 @@ import 'package:frontend/web/user/create_user_form.dart';
 import 'package:frontend/web/user/update_user_form.dart';
 
 class UserScreen extends StatefulWidget {
+  static const routeName = '/user';
+
+  static Future<void> navigateTo(BuildContext context) {
+    return Navigator.of(context).pushNamed(routeName);
+  }
+
   const UserScreen({super.key});
 
   @override

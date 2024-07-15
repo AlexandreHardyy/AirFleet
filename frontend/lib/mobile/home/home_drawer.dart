@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:frontend/routes.dart';
+import 'package:frontend/mobile/profile/user_profile.dart';
+import 'package:frontend/mobile/proposal/proposals_management.dart';
+import 'package:frontend/mobile/vehicles_management.dart';
 import 'package:frontend/services/user.dart';
 import 'package:frontend/storage/user.dart';
 
@@ -22,7 +24,7 @@ class HomeDrawer extends StatelessWidget {
             leading: const Icon(Icons.person),
             title: const Text('Profile'),
             onTap: () {
-              Navigator.of(context).push(Routes.userProfile(context));
+              UserProfileScreen.navigateTo(context);
             },
           ),
           UserStore.user?.role == Roles.pilot
@@ -30,8 +32,7 @@ class HomeDrawer extends StatelessWidget {
                   leading: const Icon(FontAwesomeIcons.plane),
                   title: const Text("Vehicle"),
                   onTap: () async {
-                    Navigator.of(context)
-                        .push(Routes.vehiclesManagement(context));
+                    VehiclesManagementScreen.navigateTo(context);
                   },
                 )
               : const SizedBox.shrink(),
@@ -39,8 +40,7 @@ class HomeDrawer extends StatelessWidget {
             leading: const Icon(FontAwesomeIcons.planeDeparture),
             title: const Text("Offer flight"),
             onTap: () async {
-              Navigator.of(context)
-                  .push(Routes.proposalsManagement(context));
+              ProposalsManagementScreen.navigateTo(context);
             },
           ),
           ListTile(

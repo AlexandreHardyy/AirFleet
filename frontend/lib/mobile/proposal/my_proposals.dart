@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/mobile/proposal/proposal_detail.dart';
 import 'package:frontend/models/proposal.dart';
-import 'package:frontend/routes.dart';
 import 'package:frontend/services/proposal.dart';
 import 'package:intl/intl.dart';
 
@@ -70,7 +70,7 @@ class _MyProposalViewState extends State<MyProposalView> {
                       ],
                     ),
                     onTap: () async {
-                      await Navigator.of(context).push(Routes.proposalDetail(context, proposalId: proposal.id));
+                      await ProposalDetail.navigateTo(context, proposalId: proposal.id);
                       refreshProposals();
                     },
                   ),

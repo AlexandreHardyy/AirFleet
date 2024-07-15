@@ -6,6 +6,12 @@ import 'package:frontend/storage/user.dart';
 import 'package:intl/intl.dart';
 
 class ProposalDetail extends StatefulWidget {
+  static const routeName = '/proposal-detail';
+
+  static Future<void> navigateTo(BuildContext context, {required int proposalId}) {
+    return Navigator.of(context).pushNamed(routeName, arguments: proposalId);
+  }
+
   final int proposalId;
 
   const ProposalDetail({super.key, required this.proposalId});

@@ -3,6 +3,12 @@ import 'package:frontend/models/vehicle.dart';
 import 'package:intl/intl.dart';
 
 class UserVehiclesScreen extends StatelessWidget {
+  static const routeName = '/vehicles';
+
+  static Future<void> navigateTo(BuildContext context, {required List<Vehicle> vehicles}) {
+    return Navigator.of(context).pushNamed(routeName, arguments: vehicles);
+  }
+
   final List<Vehicle> vehicles;
 
   const UserVehiclesScreen({super.key, required this.vehicles});

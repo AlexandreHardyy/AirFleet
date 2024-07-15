@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend/local_notification_setup.dart';
@@ -50,7 +52,7 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
     final messages = List<Message>.from(state.messages)..add(event.message);
 
     if (event.message.user.id != UserStore.user?.id) {
-      LocalNotificationService().showNotification('New message !', 'You have received a new message !');
+      LocalNotificationService().showNotification('New message !', 'You have received a new message !', null);
     }
 
     emit(state.copyWith(
