@@ -8,9 +8,32 @@
       "cancel_flight": "Cancel flight",
       "accept_offer": "Accept offer",
       "reject_offer": "Reject offer",
+      "join_proposal": "Join proposal",
+      "leave_proposal": "Leave proposal",
+      "delete": "Delete",
+      "search": "Search",
+      "price": "Price",
       "submit": "Submit",
       "ignore": "Ignore"
-    }
+    },
+    "plane": "Plane",
+    "helicopter": "Helicopter"
+  },
+  "proposal": {
+    "proposal_management": "Proposal management",
+    "create_proposal": "Create proposal",
+    "my_proposals": "My proposals",
+    "seats_available": "Seats available",
+    "proposed_by": "Proposed by",
+    "people_in_flight": "People already in flight",
+    "porposal_details": "Proposal details"
+  },
+  "vehicle": {
+    "create_vehicle": "Create vehicle",
+    "my_vehicles": "My vehicles",
+    "edit_vehicle": "Edit vehicle",
+    "delete_vehicle": "Delete vehicle",
+    "update_vehicle": "Update vehicle"
   },
   "home": {
     "flight_management": {

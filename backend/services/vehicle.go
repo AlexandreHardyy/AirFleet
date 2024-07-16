@@ -8,12 +8,12 @@ import (
 )
 
 type IVehicleService interface {
-	Create(vehicle inputs.CreateVehicle, userID int) (responses.Vehicle, error)
-	GetAll() ([]responses.Vehicle, error)
-	GetAllMe(userID int) ([]responses.Vehicle, error)
-	GetById(id int) (models.Vehicle, error)
+	Create(vehicle inputs.CreateVehicle, userID int) (responses.ResponseVehicle, error)
+	GetAll() ([]responses.ResponseVehicle, error)
+	GetAllMe(userID int) ([]responses.ResponseVehicle, error)
+	GetById(id int, userID int) (responses.ResponseVehicle, error)
 	Delete(id int) error
-	Update(id int, vehicle inputs.UpdateVehicle) (models.Vehicle, error)
+	Update(id int, vehicle inputs.UpdateVehicle) (responses.ResponseVehicle, error)
 }
 
 type VehicleService struct {
@@ -24,7 +24,7 @@ func NewVehicleService(r repositories.VehicleRepository) *VehicleService {
 	return &VehicleService{r}
 }
 
-func (s *VehicleService) Create(input inputs.CreateVehicle, userID int) (responses.Vehicle, error) {
+func (s *VehicleService) Create(input inputs.CreateVehicle, userID int) (responses.ResponseVehicle, error) {
 	var vehicle = models.Vehicle{
 		ModelName:      input.ModelName,
 		Matriculation:  input.Matriculation,
@@ -37,7 +37,7 @@ func (s *VehicleService) Create(input inputs.CreateVehicle, userID int) (respons
 	}
 
 	vehicle, err := s.repository.Create(vehicle)
-	formattedVehicle := responses.Vehicle{
+	formattedVehicle := responses.ResponseVehicle{
 		ID:             vehicle.ID,
 		ModelName:      vehicle.ModelName,
 		Matriculation:  vehicle.Matriculation,
@@ -56,7 +56,7 @@ func (s *VehicleService) Create(input inputs.CreateVehicle, userID int) (respons
 	return formattedVehicle, nil
 }
 
-func (s *VehicleService) GetAll() ([]responses.Vehicle, error) {
+func (s *VehicleService) GetAll() ([]responses.ResponseVehicle, error) {
 	vehicle, err := s.repository.FindAll()
 	if err != nil {
 		return vehicle, err
@@ -64,7 +64,7 @@ func (s *VehicleService) GetAll() ([]responses.Vehicle, error) {
 	return vehicle, nil
 }
 
-func (s *VehicleService) GetAllMe(userID int) ([]responses.Vehicle, error) {
+func (s *VehicleService) GetAllMe(userID int) ([]responses.ResponseVehicle, error) {
 	vehicle, err := s.repository.FindAllMe(userID)
 	if err != nil {
 		return vehicle, err
@@ -73,12 +73,13 @@ func (s *VehicleService) GetAllMe(userID int) ([]responses.Vehicle, error) {
 
 }
 
-func (s *VehicleService) GetById(id int) (models.Vehicle, error) {
+func (s *VehicleService) GetById(id int, userID int) (responses.ResponseVehicle, error) {
 	vehicle, err := s.repository.GetById(id)
 	if err != nil {
-		return vehicle, err
+		return responses.ResponseVehicle{}, err
 	}
-	return vehicle, nil
+
+	return formatVehicle(vehicle), nil
 }
 
 func (s *VehicleService) Delete(id int) error {
@@ -89,7 +90,7 @@ func (s *VehicleService) Delete(id int) error {
 	return nil
 }
 
-func (s *VehicleService) Update(id int, input inputs.UpdateVehicle) (models.Vehicle, error) {
+func (s *VehicleService) Update(id int, input inputs.UpdateVehicle) (responses.ResponseVehicle, error) {
 	var vehicle = models.Vehicle{
 		ModelName:      input.ModelName,
 		Matriculation:  input.Matriculation,
@@ -103,7 +104,30 @@ func (s *VehicleService) Update(id int, input inputs.UpdateVehicle) (models.Vehi
 
 	vehicle, err := s.repository.Update(id, vehicle)
 	if err != nil {
-		return vehicle, err
+		return formatVehicle(vehicle), err
 	}
-	return vehicle, nil
+	return formatVehicle(vehicle), nil
+}
+
+func formatVehicle(vehicle models.Vehicle) responses.ResponseVehicle {
+	return responses.ResponseVehicle{
+		ID:             vehicle.ID,
+		ModelName:      vehicle.ModelName,
+		Matriculation:  vehicle.Matriculation,
+		Seat:           vehicle.Seat,
+		Type:           vehicle.Type,
+		CruiseSpeed:    vehicle.CruiseSpeed,
+		CruiseAltitude: vehicle.CruiseAltitude,
+		IsVerified:     vehicle.IsVerified,
+		CreatedAt:      vehicle.CreatedAt,
+		UpdatedAt:      vehicle.UpdatedAt,
+	}
+}
+
+func formatVehicles(vehicles []models.Vehicle) []responses.ResponseVehicle {
+	var responseVehicles []responses.ResponseVehicle
+	for _, vehicle := range vehicles {
+		responseVehicles = append(responseVehicles, formatVehicle(vehicle))
+	}
+	return responseVehicles
 }

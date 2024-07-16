@@ -249,7 +249,7 @@ func formatProposal(proposal models.Proposal) responses.ResponseProposal {
 			CreatedAt: proposal.Flight.Pilot.CreatedAt,
 			UpdatedAt: proposal.Flight.Pilot.UpdatedAt,
 		},
-		Vehicle: &responses.Vehicle{
+		Vehicle: &responses.ResponseVehicle{
 			ID:             proposal.Flight.Vehicle.ID,
 			ModelName:      proposal.Flight.Vehicle.ModelName,
 			Matriculation:  proposal.Flight.Vehicle.Matriculation,

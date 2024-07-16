@@ -161,6 +161,7 @@ class _VehicleDetailsPageState extends State<VehicleDetailsPage> {
                         onSaved: (value) =>
                             _vehicle.cruiseAltitude = num.parse(value!),
                       ),
+                      const SizedBox(height: 20),
                       Row(
                         children: [
                           Expanded(

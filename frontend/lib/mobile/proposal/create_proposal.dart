@@ -133,7 +133,7 @@ class _CreateProposalViewState extends State<CreateProposalView> {
           child: Column(
             children: [
               TextFormField(
-                decoration: const InputDecoration(labelText: 'Available Seats'),
+                decoration: InputDecoration(labelText: translate('proposal.seats_available')),
                 keyboardType: TextInputType.number,
                 onSaved: (value) => availableSeats = int.parse(value!),
                 validator: (value) {

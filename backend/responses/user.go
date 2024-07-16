@@ -10,14 +10,14 @@ type Login struct {
 }
 
 type User struct {
-	ID        int       `json:"id"`
-	FirstName string    `json:"first_name"`
-	LastName  string    `json:"last_name"`
-	Email     string    `json:"email"`
-	Role      string    `json:"role"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
-	Vehicles  []Vehicle `json:"vehicles"`
+	ID        int               `json:"id"`
+	FirstName string            `json:"first_name"`
+	LastName  string            `json:"last_name"`
+	Email     string            `json:"email"`
+	Role      string            `json:"role"`
+	CreatedAt time.Time         `json:"created_at"`
+	UpdatedAt time.Time         `json:"updated_at"`
+	Vehicles  []ResponseVehicle `json:"vehicles"`
 }
 
 type ListUser struct {

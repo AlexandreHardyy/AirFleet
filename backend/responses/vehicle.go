@@ -4,7 +4,7 @@ import (
 	"time"
 )
 
-type Vehicle struct {
+type ResponseVehicle struct {
 	ID             int       `json:"id"`
 	ModelName      string    `json:"model_name"`
 	Matriculation  string    `json:"matriculation"`

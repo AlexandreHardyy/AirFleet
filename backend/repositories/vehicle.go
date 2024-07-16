@@ -10,8 +10,8 @@ import (
 
 type VehicleRepository interface {
 	Create(vehicle models.Vehicle) (models.Vehicle, error)
-	FindAll() ([]responses.Vehicle, error)
-	FindAllMe(userID int) ([]responses.Vehicle, error)
+	FindAll() ([]responses.ResponseVehicle, error)
+	FindAllMe(userID int) ([]responses.ResponseVehicle, error)
 	GetById(id int) (models.Vehicle, error)
 	Delete(id int) error
 	Update(id int, vehicle models.Vehicle) (models.Vehicle, error)
@@ -38,8 +38,8 @@ func (r *vehicleRepository) Create(vehicle models.Vehicle) (models.Vehicle, erro
 	return vehicle, nil
 }
 
-func (r *vehicleRepository) FindAll() ([]responses.Vehicle, error) {
-	vehicles := []responses.Vehicle{}
+func (r *vehicleRepository) FindAll() ([]responses.ResponseVehicle, error) {
+	vehicles := []responses.ResponseVehicle{}
 	err := r.db.Model(&models.Vehicle{}).Find(&vehicles).Error
 	if err != nil {
 		return vehicles, err
@@ -48,8 +48,8 @@ func (r *vehicleRepository) FindAll() ([]responses.Vehicle, error) {
 	return vehicles, nil
 }
 
-func (r *vehicleRepository) FindAllMe(userID int) ([]responses.Vehicle, error) {
-	vehicles := []responses.Vehicle{}
+func (r *vehicleRepository) FindAllMe(userID int) ([]responses.ResponseVehicle, error) {
+	vehicles := []responses.ResponseVehicle{}
 	err := r.db.Model(&models.Vehicle{}).Where(&models.Vehicle{UserID: userID}).Find(&vehicles).Error
 	if err != nil {
 		return vehicles, err
