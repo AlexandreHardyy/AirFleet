@@ -28,22 +28,22 @@ func NewVehicleHandler(vehicleService services.IVehicleService) *VehicleHandler 
 	return &VehicleHandler{vehicleService}
 }
 
-// CreateVehicle Register godoc
+// CreateVehicle godoc
 //
-//	@Summary	Create vehicle
-//	@Schemes
-//	@Description	create a new vehicle for a pilot
-//	@Tags			vehicle
-//	@Accept			json
-//	@Produce		json
+// @Summary Create vehicle
+// @Schemes
+// @Description Create vehicle
+// @Tags vehicle
+// @Accept json
+// @Produce json
+// @Param vehicleInput body inputs.CreateVehicle true "Message body"
 //
-//	@Param			vehicleInput	body		inputs.CreateVehicle	true	"Message body"
-//	@Success		201				{object}	responses.Vehicle
-//	@Failure		400				{object}	Response
+//	@Success	201	{object}	responses.Vehicle
+//	@Failure	400	{object}	Response
 //
-//	@Router			/vehicles [post]
+// @Router /vehicles [post]
 //
-//	@Security	BearerAuth
+// @Security BearerAuth
 func (th *VehicleHandler) CreateVehicle(c *gin.Context) {
 	var input inputs.CreateVehicle
 	err := c.ShouldBindJSON(&input)
@@ -104,11 +104,11 @@ func (th *VehicleHandler) GetAll(c *gin.Context) {
 	c.JSON(http.StatusOK, vehicles)
 }
 
-// GetAllMe Get allMe godoc
+// GetAllMe Get all godoc
 //
-//	@Summary	Get all vehicles for current user
+//	@Summary	Get all vehicles
 //	@Schemes
-//	@Description	get all vehicles for current user
+//	@Description	get all vehicles
 //	@Tags			vehicle
 //	@Accept			json
 //	@Produce		json
@@ -139,7 +139,7 @@ func (th *VehicleHandler) GetAllMe(c *gin.Context) {
 	c.JSON(http.StatusOK, vehicles)
 }
 
-// VehicleById vehicle godoc
+// VehicleById Get vehicle godoc
 //
 // @Summary get vehicle by id
 // @Schemes
@@ -200,6 +200,8 @@ func (th *VehicleHandler) VehicleById(c *gin.Context) {
 //	@Failure	404			{object}	Response
 //
 // @Router /vehicles/{id} [delete]
+//
+// @Security BearerAuth
 func (th *VehicleHandler) DeleteVehicle(c *gin.Context) {
 	idStr := c.Param("id")
 	id, err := strconv.Atoi(idStr)
@@ -237,7 +239,9 @@ func (th *VehicleHandler) DeleteVehicle(c *gin.Context) {
 //	@Success	200			{object}	responses.Vehicle
 //	@Failure	404			{object}	Response
 //
-// @Router /vehicles/{id} [patch]
+// @Router /vehicles/{id} [put]
+//
+// @Security BearerAuth
 func (th *VehicleHandler) UpdateVehicle(c *gin.Context) {
 	idStr := c.Param("id")
 	id, err := strconv.Atoi(idStr)

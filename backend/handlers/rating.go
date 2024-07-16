@@ -70,14 +70,65 @@ func (h *RatingHandler) Update(c *gin.Context) {
 
 	response, err := h.ratingService.UpdateRating(convertedRatingID, rating, userID)
 	if err != nil {
-		repositories.CreateMonitoringLog(models.MonitoringLog{
+		_, err := repositories.CreateMonitoringLog(models.MonitoringLog{
 			Type:    "error",
 			Content: "[UpdateRating]: " + err.Error(),
 		})
+		if err != nil {
+			return
+		}
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
 
+	c.JSON(200, response)
+}
+
+// GetRatingsByPilotID godoc
+//
+// @Summary Get rating by pilot ID
+// @Schemes
+// @Description Get rating by pilot ID
+// @Tags ratings
+// @Accept			json
+// @Produce		json
+//
+// @Param			id	path	int		true	"Pilot ID"
+//
+// @Success		200				{object}	[]responses.ResponseRating
+// @Failure		400				{object}	Response
+// @Failure		500				{object}	Response
+//
+// @Router			/ratings/pilot/{id} [get]
+//
+// @Security	BearerAuth
+func (h *RatingHandler) GetRatingsByPilotID(c *gin.Context) {
+	pilotID, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.JSON(400, gin.H{"error": "pilot id must be an integer"})
+		return
+	}
+
+	filters := make(map[string]interface{})
+	queryParams := c.Request.URL.Query()
+	for key, values := range queryParams {
+		if len(values) > 0 {
+			filters[key] = values[0]
+		}
+	}
+
+	response, err := h.ratingService.GetRatingsByPilotID(pilotID, filters)
+	if err != nil {
+		_, err := repositories.CreateMonitoringLog(models.MonitoringLog{
+			Type:    "error",
+			Content: "[GetRatingsByPilotID]: " + err.Error(),
+		})
+		if err != nil {
+			return
+		}
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
 	c.JSON(200, response)
 }
 
@@ -106,14 +157,6 @@ func (h *RatingHandler) GetAllRatings(c *gin.Context) {
 			filters[key] = values[0]
 		}
 	}
-
-	userID, err := token.ExtractTokenID(c)
-	if err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
-		return
-	}
-
-	filters["pilot_id"] = userID
 
 	response, err := h.ratingService.GetAllRatings(filters)
 	if err != nil {
@@ -153,10 +196,13 @@ func (h *RatingHandler) GetRatingByUserIDAndStatus(c *gin.Context) {
 
 	response, err := h.ratingService.GetRatingByUserIDAndStatus(userID, status)
 	if err != nil {
-		repositories.CreateMonitoringLog(models.MonitoringLog{
+		_, err := repositories.CreateMonitoringLog(models.MonitoringLog{
 			Type:    "error",
 			Content: "[GetRatingByUserIDAndStatus]: " + err.Error(),
 		})
+		if err != nil {
+			return
+		}
 		response := &Response{
 			Message: err.Error(),
 		}

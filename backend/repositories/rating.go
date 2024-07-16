@@ -9,6 +9,7 @@ type RatingRepositoryInterface interface {
 	CreateRating(rating models.Rating) (models.Rating, error)
 	UpdateRating(rating models.Rating) (models.Rating, error)
 	GetAllRatings(filters map[string]interface{}) ([]models.Rating, error)
+	GetRatingsByPilotID(pilotID int, filters map[string]interface{}) ([]models.Rating, error)
 	GetRatingByID(ratingID int) (models.Rating, error)
 	GetRatingByUserIDAndStatus(userID int, status string) (models.Rating, error)
 }
@@ -42,6 +43,22 @@ func (r *RatingRepository) UpdateRating(rating models.Rating) (models.Rating, er
 func (r *RatingRepository) GetAllRatings(filters map[string]interface{}) ([]models.Rating, error) {
 	var ratings []models.Rating
 	query := r.db
+
+	for key, value := range filters {
+		query = query.Where(key+" = ?", value)
+	}
+
+	err := query.Find(&ratings).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return ratings, nil
+}
+
+func (r *RatingRepository) GetRatingsByPilotID(pilotID int, filters map[string]interface{}) ([]models.Rating, error) {
+	var ratings []models.Rating
+	query := r.db.Preload("User").Where("pilot_id = ?", pilotID)
 
 	for key, value := range filters {
 		query = query.Where(key+" = ?", value)
