@@ -40,7 +40,7 @@ func SendEmailToVerify(email string, name string, token string) {
 		TemplateId: 4,
 		Params: map[string]interface{}{
 			"NAME": name,
-			"LINK": "http://localhost:3001/api/users/validate/" + token,
+			"LINK": os.Getenv("API_URL") + "/api/users/validate/" + token,
 		},
 	})
 }

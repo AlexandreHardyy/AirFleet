@@ -4,6 +4,7 @@ import 'package:flutter_translate/flutter_translate.dart';
 import 'package:frontend/blocs/auth/auth_bloc.dart';
 import 'package:frontend/global_key.dart';
 import 'package:frontend/mobile/auth_screen/login_screen.dart';
+import 'package:frontend/mobile/auth_screen/register_pilot_screen.dart';
 import 'package:frontend/mobile/auth_screen/register_screen.dart';
 import 'package:frontend/mobile/blocs/current_flight/current_flight_bloc.dart';
 import 'package:frontend/mobile/blocs/message/message_bloc.dart';
@@ -59,7 +60,7 @@ class MobileLayout extends StatelessWidget {
                 '/home': (context) => const Home(),
                 '/login': (context) => const LoginScreen(),
                 '/register': (context) => const RegisterScreen(),
-                '/register-pilot': (context) => const RegisterScreen(),
+                '/register-pilot': (context) => const RegisterPilotScreen(),
                 '/profile': (context) => const UserProfileScreen(),
                 '/vehicles-management': (context) =>
                     const VehiclesManagementScreen(),
