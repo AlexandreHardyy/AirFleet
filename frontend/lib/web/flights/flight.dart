@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:frontend/models/flight.dart';
 import 'package:frontend/services/flight.dart';
 import 'package:frontend/web/flights/flight_details.dart';
-import 'package:frontend/web/flights/simulation.dart';
 
 class FlightsWebScreen extends StatefulWidget {
   static const routeName = '/flight';
