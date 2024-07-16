@@ -65,6 +65,7 @@ class _CurrentFlightManagementState extends State<CurrentFlightManagement> {
   void dispose() {
     _socketIoBloc.add(SocketIoStopListeningEvent(eventId: 'flightUpdated'));
     _socketIoBloc.add(SocketIoStopListeningEvent(eventId: 'newMessageFront'));
+    _socketIoBloc.state.socket!.disconnect();
     super.dispose();
   }
 
