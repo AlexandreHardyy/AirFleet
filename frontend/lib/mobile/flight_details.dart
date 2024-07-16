@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_translate/flutter_translate.dart';
 import 'package:frontend/models/flight.dart';
 import 'package:frontend/models/rating.dart';
 import 'package:frontend/services/flight.dart';
@@ -8,7 +9,8 @@ import 'package:frontend/storage/user.dart';
 class FlightDetails extends StatefulWidget {
   static const routeName = '/flight-details';
 
-  static Future<void> navigateTo(BuildContext context, {required int flightId}) {
+  static Future<void> navigateTo(BuildContext context,
+      {required int flightId}) {
     return Navigator.of(context).pushNamed(routeName, arguments: flightId);
   }
 
@@ -41,7 +43,7 @@ class _FlightDetailsState extends State<FlightDetails> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Flight details"),
+        title: Text(translate("home.flight_management.flight_details.title")),
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -67,7 +69,9 @@ class _FlightDetailsState extends State<FlightDetails> {
                   } else if (snapshot.hasError) {
                     return Text('Error: ${snapshot.error}');
                   } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                    return const Center(child: Text('No ratings found.'));
+                    return Center(
+                        child: Text(translate(
+                            "home.flight_management.flight_details.no_rating")));
                   } else {
                     return Column(
                       children: snapshot.data!.map((rating) {
@@ -97,11 +101,13 @@ class FlightInfoCard extends StatelessWidget {
         children: [
           ListTile(
             title: Text(flight.departure.name),
-            subtitle: const Text('Departure airport'),
+            subtitle: Text(
+                translate("home.flight_management.flight_details.departure")),
           ),
           ListTile(
             title: Text(flight.arrival.name),
-            subtitle: const Text('Arrival airport'),
+            subtitle: Text(
+                translate("home.flight_management.flight_details.arrival")),
           ),
         ],
       ),

@@ -123,13 +123,6 @@ class SocketIoBloc extends Bloc<SocketIoEvent, SocketIoState> {
     emit(state.copyWith(
       status: SocketIoStatus.connected,
     ));
-
-    tickerSubscription?.cancel();
-    if (UserStore.user?.role == Roles.pilot) {
-      tickerSubscription = _ticker
-          .tick(interval: 4)
-          .listen((duration) => updatePilotPosition(event.flightId));
-    }
   }
 
   void updatePilotPosition(int flightId) async {

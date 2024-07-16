@@ -59,6 +59,34 @@
           "title": "Flight in progress"
         }
       },
+
+      "pilot_current_flight_management": {
+        "waiting_proposal_approval": {
+          "subtitle": "Waiting confirmation from client",
+          "cancel": "Cancel offer"
+        },
+        "waiting_for_takeoff": {
+          "subtitle": "Press start when the flight is ready for takeoff",
+          "cancel": "Cancel flight"
+        },
+        "in_progress": {
+          "button": "Finish the flight"
+        }
+      },
+
+      "search_flights": {
+        "no_vehicle": "No vehicle available",
+        "add_new_vehicle": "Add new vehicle",
+        "cancel": "Cancel search",
+        "select": "Select vehicle",
+        "ready": "I am ready"
+      },
+      "flight_details": {
+        "title": "Flight details",
+        "no_rating": "No ratings found.",
+        "departure": "Departure airport",
+        "arrival": "Arrival airport"
+      },
       "rating": {
         "title": "Rate your previous flight",
         "subtitle": "How was your experience with {pilotName}?",

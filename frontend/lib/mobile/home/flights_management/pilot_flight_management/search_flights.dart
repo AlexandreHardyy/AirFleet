@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:flutter_translate/flutter_translate.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:frontend/mobile/blocs/pilot_status/pilot_status_bloc.dart';
 import 'package:frontend/mobile/home/flights_management/pilot_flight_management/pilot_flight_requests.dart';
@@ -31,7 +32,8 @@ class SearchFlights extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const SecondaryTitle(content: 'No vehicles availables'),
+              SecondaryTitle(content: translate(
+                        "home.flight_management.search_flights.no_vehicle")),
               const SizedBox(
                 height: 24,
               ),
@@ -39,7 +41,8 @@ class SearchFlights extends StatelessWidget {
                   onPressed: () {
                     VehiclesManagementScreen.navigateTo(context);
                   },
-                  child: const Text('Add new vehicle'))
+                  child: Text(translate(
+                        "home.flight_management.search_flights.add_new_vehicle")))
             ],
           ),
         );
@@ -59,7 +62,8 @@ class SearchFlights extends StatelessWidget {
                           .read<PilotStatusBloc>()
                           .add(PilotStatusNotReady());
                     },
-                    child: const Text('Cancel search'),
+                    child: Text(translate(
+                        "home.flight_management.search_flights.cancel")),
                   ),
                   const SizedBox(
                     height: 10,
@@ -84,7 +88,8 @@ class SearchFlights extends StatelessWidget {
                     validator: FormBuilderValidators.compose([
                       FormBuilderValidators.required(),
                     ]),
-                    decoration: getInputDecoration(hintText: 'Select vehicle'),
+                    decoration: getInputDecoration(hintText: translate(
+                        "home.flight_management.search_flights.select")),
                     items: state.vehicles!
                         .map((vehicle) => DropdownMenuItem(
                               value: vehicle,
@@ -109,7 +114,8 @@ class SearchFlights extends StatelessWidget {
                           .read<PilotStatusBloc>()
                           .add(PilotStatusReady(vehicle: vehicle));
                     },
-                    child: const Text('I am ready'),
+                    child: Text(translate(
+                        "home.flight_management.search_flights.ready")),
                   ),
                 ],
               )));

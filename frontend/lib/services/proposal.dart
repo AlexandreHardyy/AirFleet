@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:dio/dio.dart';
 import 'package:frontend/models/proposal.dart';
 import 'package:frontend/services/dio.dart';

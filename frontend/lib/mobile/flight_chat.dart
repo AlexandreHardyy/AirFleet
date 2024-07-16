@@ -12,7 +12,8 @@ import 'blocs/socket_io/socket_io_bloc.dart';
 class FlightChat extends StatefulWidget {
   static const routeName = '/flight-chat';
 
-  static Future<void> navigateTo(BuildContext context, {required int flightId}) {
+  static Future<void> navigateTo(BuildContext context,
+      {required int flightId}) {
     return Navigator.of(context).pushNamed(routeName, arguments: flightId);
   }
 
@@ -33,7 +34,9 @@ class _FlightChatState extends State<FlightChat> {
 
     _socketIoBloc = context.read<SocketIoBloc>();
 
-    context.read<MessageBloc>().add(MessageInitialized(flightId: widget.flightId));
+    context
+        .read<MessageBloc>()
+        .add(MessageInitialized(flightId: widget.flightId));
   }
 
   final TextEditingController _controller = TextEditingController();
@@ -51,7 +54,6 @@ class _FlightChatState extends State<FlightChat> {
           }
 
           if (state.status == MessageStatus.loaded) {
-
             if (!state.isModuleEnabled) {
               return Center(child: Text(translate('chat.module_disabled')));
             }
@@ -62,12 +64,17 @@ class _FlightChatState extends State<FlightChat> {
                   child: ListView.builder(
                     itemCount: state.messages.length,
                     itemBuilder: (context, index) {
-                      final isCurrentUser = state.messages[index].user.id == UserStore.user?.id;
-                      final DateTime parsedDate = DateTime.parse(state.messages[index].createdAt);
-                      final String formattedDate = DateFormat('yyyy-MM-dd – kk:mm').format(parsedDate);
+                      final isCurrentUser =
+                          state.messages[index].user.id == UserStore.user?.id;
+                      final DateTime parsedDate =
+                          DateTime.parse(state.messages[index].createdAt);
+                      final String formattedDate =
+                          DateFormat('yyyy-MM-dd – kk:mm').format(parsedDate);
 
                       return Align(
-                        alignment: isCurrentUser ? Alignment.centerRight : Alignment.centerLeft,
+                        alignment: isCurrentUser
+                            ? Alignment.centerRight
+                            : Alignment.centerLeft,
                         child: Container(
                           margin: EdgeInsets.only(
                             top: 4.0,
@@ -75,17 +82,24 @@ class _FlightChatState extends State<FlightChat> {
                             left: isCurrentUser ? 50.0 : 8.0,
                             right: isCurrentUser ? 8.0 : 50.0,
                           ),
-                          padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 12.0, vertical: 8.0),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(12),
-                            color: isCurrentUser ? const Color(0xFFDCA200) : const Color(0xFF131141),
+                            color: isCurrentUser
+                                ? const Color(0xFFDCA200)
+                                : const Color(0xFF131141),
                           ),
                           child: Column(
-                            crossAxisAlignment: isCurrentUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+                            crossAxisAlignment: isCurrentUser
+                                ? CrossAxisAlignment.end
+                                : CrossAxisAlignment.start,
                             children: [
                               Text(
                                 state.messages[index].user.firstName,
-                                style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white),
                               ),
                               Text(
                                 state.messages[index].content,
@@ -93,7 +107,8 @@ class _FlightChatState extends State<FlightChat> {
                               ),
                               Text(
                                 formattedDate,
-                                style: const TextStyle(color: Colors.white70, fontSize: 12),
+                                style: const TextStyle(
+                                    color: Colors.white70, fontSize: 12),
                               ),
                             ],
                           ),
@@ -103,38 +118,42 @@ class _FlightChatState extends State<FlightChat> {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.all(24.0),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: TextField(
-                          controller: _controller,
-                          decoration: InputDecoration(
-                            hintText: translate('chat.text_field_label'),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
+                    padding: const EdgeInsets.all(12.0),
+                    child: SizedBox(
+                      height: 50,
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Expanded(
+                            flex: 8,
+                            child: TextField(
+                              controller: _controller,
+                              decoration: InputDecoration(
+                                hintText: translate('chat.text_field_label'),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              ),
                             ),
                           ),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      ElevatedButton(
-                        onPressed: () {
-                          _socketIoBloc.state.socket!.emit(
-                            "newMessageBack",
-                            jsonEncode({
-                              "flightId": widget.flightId,
-                              "content": _controller.text,
-                            }),
-                          );
+                          const SizedBox(width: 12),
+                          ElevatedButton(
+                            onPressed: () {
+                              _socketIoBloc.state.socket!.emit(
+                                "newMessageBack",
+                                jsonEncode({
+                                  "flightId": widget.flightId,
+                                  "content": _controller.text,
+                                }),
+                              );
 
-                          _controller.clear();
-                        },
-                        child: Text(translate('chat.send_button')),
+                              _controller.clear();
+                            },
+                            child: Icon(Icons.send),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                ),
+                    )),
               ],
             );
           }

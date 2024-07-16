@@ -59,6 +59,33 @@
           "title": "Vol en cours"
         }
       },
+      "pilot_current_flight_management": {
+        "waiting_proposal_approval": {
+          "subtitle": "En attente de confirmation du client",
+          "cancel": "Annuler l'offre"
+        },
+        "waiting_for_takeoff": {
+          "subtitle": "Appuyez sur démarrer lorsque le vol est prêt au décollage",
+          "cancel": "Annuler le vol"
+        },
+        "in_progress": {
+          "button": "Terminer le vol"
+        }
+      },
+
+      "search_flights": {
+        "no_vehicle": "Aucun véhicule disponible",
+        "add_new_vehicle": "Ajouter un nouveau véhicule",
+        "cancel": "Annuler la recherche",
+        "select": "Sélectionner le véhicule",
+        "ready": "Je suis prêt"
+      },
+      "flight_details": {
+        "title": "Détails du vol",
+        "no_rating": "Aucune évaluation trouvée.",
+        "departure": "Aéroport de départ",
+        "arrival": "Aéroport d'arrivée"
+      },
       "rating": {
         "title": "Évaluez votre vol précédent",
         "subtitle": "Comment était votre expérience avec {pilotName} ?",

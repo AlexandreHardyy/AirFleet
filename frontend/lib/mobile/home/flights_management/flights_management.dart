@@ -5,7 +5,6 @@ import 'package:flutter_translate/flutter_translate.dart';
 import 'package:frontend/mobile/blocs/current_flight/current_flight_bloc.dart';
 import 'package:frontend/mobile/home/flights_management/pilot_flight_management/pilot_current_flight_management/index.dart';
 import 'package:frontend/mobile/home/flights_management/pilot_flight_management/search_flights.dart';
-import 'package:frontend/models/flight.dart';
 import 'package:frontend/models/rating.dart';
 import 'package:frontend/models/user.dart';
 import 'package:frontend/services/rating.dart';
@@ -229,7 +228,7 @@ Future<void> _dialogBuilder(BuildContext context) async {
     }
   } else {
     await RatingService.updateRating(
-        ratingId!, UpdateRatingRequest(rating: null, comment: null));
+        ratingId, UpdateRatingRequest(rating: null, comment: null));
   }
 }
 

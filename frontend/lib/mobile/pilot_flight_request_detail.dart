@@ -6,14 +6,17 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:frontend/mobile/blocs/current_flight/current_flight_bloc.dart';
+import 'package:frontend/mobile/blocs/pilot_status/pilot_status_bloc.dart';
 import 'package:frontend/mobile/blocs/socket_io/socket_io_bloc.dart';
 import 'package:frontend/models/flight.dart';
 import 'package:frontend/widgets/input.dart';
+import 'package:frontend/widgets/title.dart';
 
 class FlightRequestDetail extends StatelessWidget {
   static const routeName = '/flight-request-detail';
 
-  static Future<void> navigateTo(BuildContext context, {required Flight flight}) async {
+  static Future<void> navigateTo(BuildContext context,
+      {required Flight flight}) async {
     await Navigator.of(context).pushNamed(routeName, arguments: flight);
   }
 
@@ -37,54 +40,33 @@ class FlightRequestDetail extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        flight.departure.name,
-                        style: const TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      const Icon(
-                        Icons.arrow_forward, // Icône de flèche
-                        size: 24,
-                        color: Colors.black,
-                      ),
-                      const SizedBox(width: 12),
-                      Text(
-                        flight.arrival.name,
-                        style: const TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
-                        ),
-                      ),
-                    ],
+                  const SecondaryTitle(content: "Departure"),
+                  const SizedBox(height: 10),
+                  Text(
+                    flight.departure.name,
+                    style: const TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                  const SizedBox(height: 12),
-                  const Text(
-                    "Departure:",
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-                  ),
+                  const SizedBox(height: 10),
                   Text(
                     flight.departure.address,
-                    style: const TextStyle(fontSize: 16),
-                  ),
-                  const SizedBox(height: 12),
-                  const Text(
-                    "Arrival:",
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-                  ),
-                  Text(
-                    flight.arrival.address,
-                    style: const TextStyle(fontSize: 16),
                   ),
                   const SizedBox(height: 24),
-                  const Divider(),
+                  const SecondaryTitle(content: "Arrival"),
+                  const SizedBox(height: 10),
+                  Text(
+                    flight.arrival.name,
+                    style: const TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    flight.arrival.address,
+                  ),
                   const SizedBox(height: 24),
                   FormBuilder(
                     key: _formKey,
@@ -141,6 +123,10 @@ class FlightRequestDetail extends StatelessWidget {
                               context
                                   .read<CurrentFlightBloc>()
                                   .add(CurrentFlightUpdated());
+                            
+                              context
+                                  .read<PilotStatusBloc>()
+                                  .add(PilotStatusNotReady());
                             }
                           },
                           child: const Text('Send your proposal'),

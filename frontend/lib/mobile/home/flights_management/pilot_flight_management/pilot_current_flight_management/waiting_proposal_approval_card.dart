@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_translate/flutter_translate.dart';
 import 'package:frontend/mobile/blocs/current_flight/current_flight_bloc.dart';
 import 'package:frontend/mobile/blocs/socket_io/socket_io_bloc.dart';
 import 'package:frontend/models/flight.dart';
 import 'package:frontend/widgets/button.dart';
-import 'package:frontend/widgets/title.dart';
+import 'package:frontend/widgets/departure_to_arrival.dart';
 
 class WaitingProposalApprovalCard extends StatefulWidget {
   final Flight flight;
@@ -52,13 +53,12 @@ class _WaitingProposalApprovalCardState
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            MainTitle(
-                content:
-                    '${widget.flight.departure.name} -> ${widget.flight.arrival.name}'),
+            DepartureToArrivalWidget(flight: widget.flight),
             const SizedBox(
               height: 24,
             ),
-            const Text('Waiting confirmation from client'),
+            Text(translate(
+                "home.flight_management.pilot_current_flight_management.waiting_proposal_approval.subtitle")),
             const SizedBox(
               height: 24,
             ),
@@ -75,7 +75,8 @@ class _WaitingProposalApprovalCardState
                 );
                 context.read<CurrentFlightBloc>().add(CurrentFlightUpdated());
               },
-              child: const Text('Cancel offer'),
+              child: Text(translate(
+                  "home.flight_management.pilot_current_flight_management.waiting_proposal_approval.cancel")),
             ),
           ],
         ));
