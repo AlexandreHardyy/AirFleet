@@ -126,7 +126,6 @@ func (h *ProposalHandler) CreateProposal(c *gin.Context) {
 	var input inputs.InputCreateProposal
 	err := c.ShouldBindJSON(&input)
 	if err != nil {
-		println(err.Error())
 		response := &Response{
 			Message: "Error: cannot extract JSON body",
 		}
