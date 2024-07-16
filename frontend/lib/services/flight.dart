@@ -39,7 +39,7 @@ class FlightService {
       final response = await dioApi.get("/flights/near-by?latitude=${position.latitude}&longitude=${position.longitude}&range=100");
 
       if (response.data == null) {
-        return null;
+        return [];
       }
 
       List<dynamic> data = response.data;
