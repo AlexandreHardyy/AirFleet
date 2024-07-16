@@ -21,8 +21,6 @@ Future<void> main() async {
 
   await dotenv.load(fileName: ".env");
 
-  Stripe.publishableKey = dotenv.get("PUBLIC_API_KEY_STRIPE");
-
   final String mapboxAccessToken =
       const String.fromEnvironment("PUBLIC_ACCESS_TOKEN") != ""
           ? const String.fromEnvironment("PUBLIC_ACCESS_TOKEN")
@@ -30,14 +28,13 @@ Future<void> main() async {
 
   MapboxOptions.setAccessToken(mapboxAccessToken);
 
-
-
   await Future.delayed(const Duration(seconds: 3));
 
   FlutterNativeSplash.remove();
 
   if (!kIsWeb) {
     await LocalNotificationService().init();
+    Stripe.publishableKey = dotenv.get("PUBLIC_API_KEY_STRIPE");
   }
 
   var delegate = await LocalizationDelegate.create(

@@ -13,6 +13,7 @@ class CurrentFlightState {
   final Flight? flight;
   final CreateFlightRequest? flightRequest;
   final Rating? pendingRating;
+  final bool isModuleEnabled;
   final String? errorMessage;
 
   CurrentFlightState({
@@ -20,6 +21,7 @@ class CurrentFlightState {
     this.flight,
     this.flightRequest,
     this.pendingRating,
+    this.isModuleEnabled = true,
     this.errorMessage,
   });
 
@@ -28,6 +30,7 @@ class CurrentFlightState {
     Flight? flight,
     CreateFlightRequest? flightRequest,
     Rating? pendingRating,
+    bool? isModuleEnabled,
     String? errorMessage,
   }) {
     return CurrentFlightState(
@@ -35,6 +38,7 @@ class CurrentFlightState {
       flight: flight ?? this.flight,
       flightRequest: flightRequest ?? this.flightRequest,
       pendingRating: pendingRating ?? this.pendingRating,
+      isModuleEnabled: isModuleEnabled ?? this.isModuleEnabled,
       errorMessage: errorMessage ?? this.errorMessage,
     );
   }

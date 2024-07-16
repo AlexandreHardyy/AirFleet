@@ -134,6 +134,12 @@ class _FlightsManagementState extends State<FlightsManagement> {
                         );
                       }
 
+                      if (state.status == CurrentFlightStatus.loaded && !state.isModuleEnabled) {
+                        return const Center(
+                          child: Text("Module flight is disabled"),
+                        );
+                      }
+
                       if (state.status == CurrentFlightStatus.loaded &&
                           state.flight != null) {
                         return UserStore.user?.role == Roles.pilot
