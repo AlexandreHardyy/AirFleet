@@ -10,14 +10,14 @@ class FlightDetailsScreen extends StatelessWidget {
 
   final Flight flight;
 
-  const FlightDetailsScreen({Key? key, required this.flight}) : super(key: key);
+  const FlightDetailsScreen({super.key, required this.flight});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Flight Details'),
-        backgroundColor: Color(0xFF131141),
+        title: const Text('Flight Details'),
+        backgroundColor: const Color(0xFF131141),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -25,34 +25,27 @@ class FlightDetailsScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
+              const Text(
                 'Flight Information',
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               Card(
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Departure: ${flight.departure.name}', style: TextStyle(fontSize: 18)),
-                      Text('Arrival: ${flight.arrival.name}', style: TextStyle(fontSize: 18)),
-                      Text('Price: ${flight.price.toString()} €', style: TextStyle(fontSize: 18)),
-                      Text('Status: ${flight.status}', style: TextStyle(fontSize: 18)),
-                      Text('Pilot: ${flight.pilot?.firstName} ${flight.pilot?.lastName}', style: TextStyle(fontSize: 18)),
-                      Text('Vehicle: ${flight.vehicle?.modelName ?? 'N/A'}', style: TextStyle(fontSize: 18)),
+                      Text('Departure: ${flight.departure.name}', style: const TextStyle(fontSize: 18)),
+                      Text('Arrival: ${flight.arrival.name}', style: const TextStyle(fontSize: 18)),
+                      Text('Price: ${flight.price.toString()} €', style: const TextStyle(fontSize: 18)),
+                      Text('Status: ${flight.status}', style: const TextStyle(fontSize: 18)),
+                      Text('Pilot: ${flight.pilot?.firstName} ${flight.pilot?.lastName}', style: const TextStyle(fontSize: 18)),
+                      Text('Vehicle: ${flight.vehicle?.modelName ?? 'N/A'}', style: const TextStyle(fontSize: 18)),
                     ],
                   ),
                 ),
               ),
-              if (flight.status == "waiting_takeoff")
-                ElevatedButton(
-                  onPressed: () {
-                    // Navigate to simulation screen
-                  },
-                  child: Text('Start Simulation'),
-                ),
             ],
           ),
         ),
