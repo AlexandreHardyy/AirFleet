@@ -32,6 +32,24 @@ func newMessageHandler(messageService services.MessageServiceInterface) *Message
 	return &MessageHandler{messageService}
 }
 
+// GetAll godoc
+//
+// @Summary Get all messages
+// @Schemes
+// @Description Get all messages
+// @Tags messages
+// @Accept			json
+// @Produce		json
+//
+// @Param			limit	query	int		false	"Limit"
+// @Param			offset	query	int		false	"Offset"
+//
+// @Success		200				{object}	[]responses.ResponseMessage
+// @Failure		400				{object}	Response
+//
+// @Router			/messages [get]
+//
+// @Security	BearerAuth
 func (h *MessageHandler) GetAll(c *gin.Context) {
 	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "100"))
 	offset, _ := strconv.Atoi(c.DefaultQuery("offset", "0"))
@@ -45,6 +63,25 @@ func (h *MessageHandler) GetAll(c *gin.Context) {
 	c.JSON(200, messages)
 }
 
+// GetAllByFlightID godoc
+//
+// @Summary Get all messages by flight ID
+// @Schemes
+// @Description Get all messages by flight ID
+// @Tags messages
+// @Accept			json
+// @Produce		json
+//
+// @Param			flightId	path	int		true	"Flight ID"
+// @Param			limit	query	int		false	"Limit"
+// @Param			offset	query	int		false	"Offset"
+//
+// @Success		200				{object}	[]responses.ResponseMessage
+// @Failure		400				{object}	Response
+//
+// @Router			/messages/flight/{flightId} [get]
+//
+// @Security	BearerAuth
 func (h *MessageHandler) GetAllByFlightID(c *gin.Context) {
 	flightID, _ := strconv.Atoi(c.Param("flightId"))
 	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "100"))

@@ -25,6 +25,25 @@ func newModuleHandler(moduleService services.ModuleServiceInterface) *ModuleHand
 	return &ModuleHandler{moduleService}
 }
 
+// Update godoc
+//
+// @Summary Update module
+// @Schemes
+// @Description Update module
+// @Tags modules
+// @Accept			json
+// @Produce		json
+//
+// @Param			id	path	int		true	"Module ID"
+// @Param			is_enabled	body	bool	true	"Is Enabled"
+//
+// @Success		200				{object}	Response
+// @Failure		400				{object}	Response
+// @Failure		500				{object}	Response
+//
+// @Router			/modules/{id} [put]
+//
+// @Security	BearerAuth
 func (h *ModuleHandler) Update(c *gin.Context) {
 	moduleID := c.Param("id")
 	convertedModuleID, err := strconv.Atoi(moduleID)
@@ -53,6 +72,24 @@ func (h *ModuleHandler) Update(c *gin.Context) {
 	c.JSON(200, response)
 }
 
+// GetAllModules godoc
+//
+// @Summary Get all modules
+// @Schemes
+// @Description Get all modules
+// @Tags modules
+// @Accept			json
+// @Produce		json
+//
+// @Param			limit	query	int		false	"Limit"
+// @Param			offset	query	int		false	"Offset"
+//
+// @Success		200				{object}	[]responses.ResponseModule
+// @Failure		400				{object}	Response
+//
+// @Router			/modules [get]
+//
+// @Security	BearerAuth
 func (h *ModuleHandler) GetAllModules(c *gin.Context) {
 	filters := make(map[string]interface{})
 	queryParams := c.Request.URL.Query()
@@ -76,6 +113,24 @@ func (h *ModuleHandler) GetAllModules(c *gin.Context) {
 	c.JSON(200, modules)
 }
 
+// GetModuleByName godoc
+//
+// @Summary Get module by name
+// @Schemes
+// @Description Get module by name
+// @Tags modules
+// @Accept			json
+// @Produce		json
+//
+// @Param			name	path	string	true	"Module Name"
+//
+// @Success		200				{object}	responses.ResponseModule
+// @Failure		404				{object}	Response
+// @Failure		500				{object}	Response
+//
+// @Router			/modules/{name} [get]
+//
+// @Security	BearerAuth
 func (h *ModuleHandler) GetModuleByName(c *gin.Context) {
 	moduleName := c.Param("name")
 	filters := map[string]interface{}{"name": moduleName}
@@ -84,6 +139,13 @@ func (h *ModuleHandler) GetModuleByName(c *gin.Context) {
 	if err != nil {
 		c.JSON(500, Response{
 			Message: err.Error(),
+		})
+		return
+	}
+
+	if module.ID == 0 {
+		c.JSON(404, Response{
+			Message: "Module not found",
 		})
 		return
 	}
