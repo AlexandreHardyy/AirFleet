@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -9,6 +10,8 @@ import 'package:frontend/storage/user.dart';
 import 'package:frontend/utils/ticker.dart';
 import 'package:socket_io_client/socket_io_client.dart';
 import 'dart:io' show Platform;
+
+import 'package:toastification/toastification.dart';
 
 part 'socket_io_event.dart';
 
@@ -65,6 +68,14 @@ class SocketIoBloc extends Bloc<SocketIoEvent, SocketIoState> {
       socket.onDisconnect((_) => print('Connection Disconnection'));
       socket.onConnectError((err) => print(err));
       socket.onError((err) => print(err));
+
+      socket.on('error', (data) {
+        toastification.show(
+          title: Text(data),
+          autoCloseDuration: const Duration(seconds: 5),
+          primaryColor: CupertinoColors.systemRed,
+        );
+      });
 
       emit(state.copyWith(
         // We set the status to disconnected because the socket is not connected yet
