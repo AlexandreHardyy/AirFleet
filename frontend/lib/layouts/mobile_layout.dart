@@ -12,6 +12,7 @@ import 'package:frontend/mobile/blocs/socket_io/socket_io_bloc.dart';
 import 'package:frontend/mobile/flight_chat.dart';
 import 'package:frontend/mobile/flight_details.dart';
 import 'package:frontend/mobile/home/home.dart';
+import 'package:frontend/mobile/payment_screen.dart';
 import 'package:frontend/mobile/pilot_flight_request_detail.dart';
 import 'package:frontend/mobile/profile/user_profile.dart';
 import 'package:frontend/mobile/profile/user_vehicles.dart';
@@ -98,6 +99,12 @@ class MobileLayout extends StatelessWidget {
                   return MaterialPageRoute(
                     builder: (context) {
                       return ProposalDetail(proposalId: args as int);
+                    },
+                  );
+                case PaymentScreen.routeName:
+                  return MaterialPageRoute(
+                    builder: (context) {
+                      return PaymentScreen(flight: args as Flight);
                     },
                   );
               }

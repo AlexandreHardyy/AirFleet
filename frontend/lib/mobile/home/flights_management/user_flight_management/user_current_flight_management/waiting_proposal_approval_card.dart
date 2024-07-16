@@ -108,7 +108,7 @@ class _WaitingProposalApprovalCardState
             Expanded(
               child: ElevatedButton(
                 onPressed: () {
-                  PaymentScreen.navigateTo(context, flightId: widget.flight.id);
+                  PaymentScreen.navigateTo(context, flight: widget.flight);
                 },
                 child: Text(translate('common.input.accept_offer')),
               ),
