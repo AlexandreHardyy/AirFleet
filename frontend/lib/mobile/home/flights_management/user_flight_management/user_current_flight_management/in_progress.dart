@@ -89,7 +89,7 @@ class _InProgressFlightCardState extends State<InProgressFlightCard> {
                 const SizedBox(width: 5),
                 Skeletonizer(
                   enabled: remainingDistance == null,
-                  child: Text(remainingDistance == null ? "Loading" : "$remainingDistance km"),
+                  child: Text(remainingDistance == null ? "Loading" : "$remainingDistance nm"),
                 )
               ],
             ),
