@@ -24,7 +24,7 @@ Future<void> main() async {
   if (!kIsWeb) {
     Stripe.publishableKey = dotenv.get("PUBLIC_API_KEY_STRIPE");
   }
-
+  
   final String mapboxAccessToken =
       const String.fromEnvironment("PUBLIC_ACCESS_TOKEN") != ""
           ? const String.fromEnvironment("PUBLIC_ACCESS_TOKEN")
@@ -38,6 +38,7 @@ Future<void> main() async {
 
   if (!kIsWeb) {
     await LocalNotificationService().init();
+    Stripe.publishableKey = dotenv.get("PUBLIC_API_KEY_STRIPE");
   }
 
   var delegate = await LocalizationDelegate.create(
