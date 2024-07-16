@@ -114,11 +114,17 @@ class FlightRequestDetail extends StatelessWidget {
 
                             if (state.saveAndValidate()) {
                               final formValues = state.value;
+                              Navigator.of(context).pop();
+                              context
+                                  .read<SocketIoBloc>()
+                                  .state
+                                  .socket!
+                                  .connect();
                               context.read<SocketIoBloc>().state.socket!.emit(
                                   "makeFlightProposal",
                                   const JsonEncoder().convert({
                                     'flightId': flight.id,
-                                    'price': formValues['price']
+                                    'price': double.parse(formValues['price']),
                                   }));
 
                               context
@@ -135,7 +141,6 @@ class FlightRequestDetail extends StatelessWidget {
                               context
                                   .read<CurrentFlightBloc>()
                                   .add(CurrentFlightUpdated());
-                              Navigator.of(context).pop();
                             }
                           },
                           child: const Text('Send your proposal'),
