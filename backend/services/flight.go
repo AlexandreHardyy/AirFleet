@@ -245,8 +245,20 @@ func (s *FlightService) MakeFlightPriceProposal(input inputs.InputCreateFlightPr
 		return errors.New("user has no vehicles")
 	}
 
-	// TODO: I need to pick the current selected vehicle
-	vehicleId := user.Vehicles[0].ID
+	var vehicleId int
+	var selectedVehicleID *int
+	for _, vehicle := range user.Vehicles {
+		if vehicle.IsSelected != nil && *vehicle.IsSelected {
+			selectedVehicleID = &vehicle.ID
+			break
+		}
+	}
+
+	if selectedVehicleID == nil {
+		return errors.New("user has no selected vehicle")
+	} else {
+		vehicleId = *selectedVehicleID
+	}
 
 	flight.Status = flightStatus.WAITING_PROPOSAL_APPROVAL
 	flight.Price = &input.Price
