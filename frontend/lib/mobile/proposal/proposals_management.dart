@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_translate/flutter_translate.dart';
 import 'package:frontend/mobile/proposal/create_proposal.dart';
 import 'package:frontend/mobile/proposal/my_proposals.dart';
 import 'package:frontend/mobile/proposal/search.dart';
@@ -41,24 +42,24 @@ class _ProposalsManagementScreenState extends State<ProposalsManagementScreen> {
 
     List<BottomNavigationBarItem> navBarItems = [
       if (!isPilot)
-        const BottomNavigationBarItem(
-          icon: Icon(Icons.search),
-          label: 'Search',
+        BottomNavigationBarItem(
+          icon: const Icon(Icons.search),
+          label: translate('common.input.search'),
         ),
       if (isPilot)
-        const BottomNavigationBarItem(
-          icon: Icon(Icons.local_offer),
-          label: 'Create a proposal',
+        BottomNavigationBarItem(
+          icon: const Icon(Icons.local_offer),
+          label: translate('proposal.create_proposal'),
         ),
-      const BottomNavigationBarItem(
-        icon: Icon(Icons.flight),
-        label: 'My Proposals',
+      BottomNavigationBarItem(
+        icon: const Icon(Icons.flight),
+        label: translate('proposal.my_proposals'),
       ),
     ];
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Proposals management"),
+        title: Text(translate('proposal.proposal_management')),
       ),
       body: _buildBody(),
       bottomNavigationBar: BottomNavigationBar(

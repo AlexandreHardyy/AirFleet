@@ -8,9 +8,32 @@
       "cancel_flight": "Annuler le vol",
       "accept_offer": "Accepter l'offre",
       "reject_offer": "Rejeter l'offre",
+      "join_proposal": "Rejoindre la proposition",
+      "leave_proposal": "Quitter la proposition",
+      "delete": "Supprimer",
+      "search": "Rechercher",
+      "price": "Prix",
       "submit": "Soumettre",
       "ignore": "Ignorer"
-    }
+    },
+    "plane": "Avion",
+    "helicopter": "Hélicoptère"
+  },
+  "proposal": {
+    "proposal_management": "Gestion des propositions",
+    "create_proposal": "Créer une proposition",
+    "my_proposals": "Mes propositions",
+    "seats_available": "Places disponibles",
+    "proposed_by": "Proposé par",
+    "people_in_flight": "Personnes déjà en vol",
+    "porposal_details": "Détails de la proposition"
+  },
+  "vehicle": {
+    "create_vehicle": "Créer un véhicule",
+    "my_vehicles": "Mes véhicules",
+    "edit_vehicle": "Modifier le véhicule",
+    "delete_vehicle": "Supprimer le véhicule",
+    "update_vehicle": "Mettre à jour le véhicule"
   },
   "home": {
     "flight_management": {

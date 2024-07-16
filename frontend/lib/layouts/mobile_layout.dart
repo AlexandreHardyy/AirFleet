@@ -61,8 +61,10 @@ class MobileLayout extends StatelessWidget {
                 '/register': (context) => const RegisterScreen(),
                 '/register-pilot': (context) => const RegisterScreen(),
                 '/profile': (context) => const UserProfileScreen(),
-                '/vehicles-management': (context) => const VehiclesManagementScreen(),
-                '/proposals-management': (context) => const ProposalsManagementScreen(),
+                '/vehicles-management': (context) =>
+                    const VehiclesManagementScreen(),
+                '/proposals-management': (context) =>
+                    const ProposalsManagementScreen(),
               },
               onGenerateRoute: (settings) {
                 final args = settings.arguments;
@@ -70,7 +72,8 @@ class MobileLayout extends StatelessWidget {
                   case UserVehiclesScreen.routeName:
                     return MaterialPageRoute(
                       builder: (context) {
-                        return UserVehiclesScreen(vehicles: args as List<Vehicle>);
+                        return UserVehiclesScreen(
+                            vehicles: args as List<Vehicle>);
                       },
                     );
                   case FlightRequestDetail.routeName:
@@ -82,7 +85,7 @@ class MobileLayout extends StatelessWidget {
                   case VehicleDetailsPage.routeName:
                     return MaterialPageRoute(
                       builder: (context) {
-                        return VehicleDetailsPage(vehicleId: args as int);
+                        return VehicleDetailsPage(vehicleId: args as int?);
                       },
                     );
                   case FlightChat.routeName:
@@ -121,7 +124,9 @@ class MobileLayout extends StatelessWidget {
                 localizationDelegate
               ],
               home: BlocBuilder<AuthBloc, AuthState>(builder: (context, state) {
-                return state.status == AuthStatus.connected ? const Home() : const LoginScreen();
+                return state.status == AuthStatus.connected
+                    ? const Home()
+                    : const LoginScreen();
               }),
               theme: ThemeData(
                 colorSchemeSeed: const Color(0xFF0D003B),

@@ -141,7 +141,7 @@ func (s *FlightService) GetFlightRequestNearBy(position utils.Position, kmRange 
 
 func formatFlight(flight models.Flight) responses.ResponseFlight {
 	var pilot *responses.ListUser
-	var vehicle *responses.Vehicle
+	var vehicle *responses.ResponseVehicle
 
 	if flight.PilotID != nil {
 		pilot = &responses.ListUser{
@@ -157,7 +157,7 @@ func formatFlight(flight models.Flight) responses.ResponseFlight {
 	}
 
 	if flight.VehicleID != nil {
-		vehicle = &responses.Vehicle{
+		vehicle = &responses.ResponseVehicle{
 			ID:             flight.Vehicle.ID,
 			ModelName:      flight.Vehicle.ModelName,
 			Matriculation:  flight.Vehicle.Matriculation,

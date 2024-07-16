@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_translate/flutter_translate.dart';
 import 'package:frontend/mobile/proposal/proposal_detail.dart';
 import 'package:frontend/models/proposal.dart';
 import 'package:frontend/services/proposal.dart';
@@ -65,7 +66,7 @@ class _MyProposalViewState extends State<MyProposalView> {
                         ),
                         Padding(
                           padding: const EdgeInsets.only(bottom: 8.0),
-                          child: Text('Departure: $formattedDepartureTime', style: const TextStyle(fontSize: 12)),
+                          child: Text('${translate('common.departure')}: $formattedDepartureTime', style: const TextStyle(fontSize: 12)),
                         ),
                       ],
                     ),

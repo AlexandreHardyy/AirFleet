@@ -120,7 +120,6 @@ func (th *VehicleHandler) GetAll(c *gin.Context) {
 //
 //	@Security	BearerAuth
 func (th *VehicleHandler) GetAllMe(c *gin.Context) {
-
 	userID, err := token.ExtractTokenID(c)
 	if err != nil {
 		response := &Response{
@@ -159,13 +158,21 @@ func (th *VehicleHandler) GetAllMe(c *gin.Context) {
 func (th *VehicleHandler) VehicleById(c *gin.Context) {
 	idStr := c.Param("id")
 	id, err := strconv.Atoi(idStr)
-
 	if err != nil {
 		c.String(http.StatusBadRequest, "Invalid ID format")
 		return
 	}
 
-	vehicles, err := th.vehicleService.GetById(id)
+	userID, err := token.ExtractTokenID(c)
+	if err != nil {
+		response := &Response{
+			Message: "Error: cannot extract user ID",
+		}
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	vehicles, err := th.vehicleService.GetById(id, userID)
 
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {

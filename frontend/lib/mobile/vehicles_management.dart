@@ -39,7 +39,7 @@ class _VehiclesManagementScreenState extends State<VehiclesManagementScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          VehicleDetailsPage.navigateTo(context);
+          VehicleDetailsPage.navigateTo(context, vehicleId: null);
           refreshVehicles();
         },
         foregroundColor: Theme.of(context).textTheme.displayLarge?.color,
