@@ -24,6 +24,7 @@ import 'package:frontend/models/flight.dart';
 import 'package:frontend/models/vehicle.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:toastification/toastification.dart';
 
 class MobileLayout extends StatelessWidget {
   const MobileLayout({super.key});
@@ -52,99 +53,101 @@ class MobileLayout extends StatelessWidget {
         ],
         child: LocalizationProvider(
           state: LocalizationProvider.of(context).state,
-          child: MaterialApp(
-            routes: {
-              '/home': (context) => const Home(),
-              '/login': (context) => const LoginScreen(),
-              '/register': (context) => const RegisterScreen(),
-              '/register-pilot': (context) => const RegisterScreen(),
-              '/profile': (context) => const UserProfileScreen(),
-              '/vehicles-management': (context) => const VehiclesManagementScreen(),
-              '/proposals-management': (context) => const ProposalsManagementScreen(),
-            },
-            onGenerateRoute: (settings) {
-              final args = settings.arguments;
-              switch (settings.name) {
-                case UserVehiclesScreen.routeName:
-                  return MaterialPageRoute(
-                    builder: (context) {
-                      return UserVehiclesScreen(vehicles: args as List<Vehicle>);
-                    },
-                  );
-                case FlightRequestDetail.routeName:
-                  return MaterialPageRoute(
-                    builder: (context) {
-                      return FlightRequestDetail(flight: args as Flight);
-                    },
-                  );
-                case VehicleDetailsPage.routeName:
-                  return MaterialPageRoute(
-                    builder: (context) {
-                      return VehicleDetailsPage(vehicleId: args as int);
-                    },
-                  );
-                case FlightChat.routeName:
-                  return MaterialPageRoute(
-                    builder: (context) {
-                      return FlightChat(flightId: args as int);
-                    },
-                  );
-                case FlightDetails.routeName:
-                  return MaterialPageRoute(
-                    builder: (context) {
-                      return FlightDetails(flightId: args as int);
-                    },
-                  );
-                case ProposalDetail.routeName:
-                  return MaterialPageRoute(
-                    builder: (context) {
-                      return ProposalDetail(proposalId: args as int);
-                    },
-                  );
-                case PaymentScreen.routeName:
-                  return MaterialPageRoute(
-                    builder: (context) {
-                      return PaymentScreen(flight: args as Flight);
-                    },
-                  );
-              }
-            },
-            navigatorKey: navigatorKey,
-            supportedLocales: localizationDelegate.supportedLocales,
-            locale: localizationDelegate.currentLocale,
-            localizationsDelegates: [
-              GlobalMaterialLocalizations.delegate,
-              GlobalCupertinoLocalizations.delegate,
-              GlobalWidgetsLocalizations.delegate,
-              localizationDelegate
-            ],
-            home: BlocBuilder<AuthBloc, AuthState>(builder: (context, state) {
-              return state.status == AuthStatus.connected ? const Home() : const LoginScreen();
-            }),
-            theme: ThemeData(
-              colorSchemeSeed: const Color(0xFF0D003B),
-              textTheme: TextTheme(
-                  displayLarge: GoogleFonts.prostoOne(
-                color: const Color(0xFFDCA200),
-                fontSize: 32,
-                fontWeight: FontWeight.bold,
-              )),
-              elevatedButtonTheme: ElevatedButtonThemeData(
-                style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFDCA200),
-                    foregroundColor: Colors.white,
-                    textStyle: const TextStyle(
-                        // fontWeight: FontWeight.bold,
-                        fontSize: 16),
-                    // Couleur du texte blanc
-                    shape: RoundedRectangleBorder(
-                      borderRadius:
-                          BorderRadius.circular(8.0), // Coins arrondis de 4px
-                    ),
-                    padding: const EdgeInsets.all(14)),
+          child: ToastificationWrapper(
+            child: MaterialApp(
+              routes: {
+                '/home': (context) => const Home(),
+                '/login': (context) => const LoginScreen(),
+                '/register': (context) => const RegisterScreen(),
+                '/register-pilot': (context) => const RegisterScreen(),
+                '/profile': (context) => const UserProfileScreen(),
+                '/vehicles-management': (context) => const VehiclesManagementScreen(),
+                '/proposals-management': (context) => const ProposalsManagementScreen(),
+              },
+              onGenerateRoute: (settings) {
+                final args = settings.arguments;
+                switch (settings.name) {
+                  case UserVehiclesScreen.routeName:
+                    return MaterialPageRoute(
+                      builder: (context) {
+                        return UserVehiclesScreen(vehicles: args as List<Vehicle>);
+                      },
+                    );
+                  case FlightRequestDetail.routeName:
+                    return MaterialPageRoute(
+                      builder: (context) {
+                        return FlightRequestDetail(flight: args as Flight);
+                      },
+                    );
+                  case VehicleDetailsPage.routeName:
+                    return MaterialPageRoute(
+                      builder: (context) {
+                        return VehicleDetailsPage(vehicleId: args as int);
+                      },
+                    );
+                  case FlightChat.routeName:
+                    return MaterialPageRoute(
+                      builder: (context) {
+                        return FlightChat(flightId: args as int);
+                      },
+                    );
+                  case FlightDetails.routeName:
+                    return MaterialPageRoute(
+                      builder: (context) {
+                        return FlightDetails(flightId: args as int);
+                      },
+                    );
+                  case ProposalDetail.routeName:
+                    return MaterialPageRoute(
+                      builder: (context) {
+                        return ProposalDetail(proposalId: args as int);
+                      },
+                    );
+                  case PaymentScreen.routeName:
+                    return MaterialPageRoute(
+                      builder: (context) {
+                        return PaymentScreen(flight: args as Flight);
+                      },
+                    );
+                }
+              },
+              navigatorKey: navigatorKey,
+              supportedLocales: localizationDelegate.supportedLocales,
+              locale: localizationDelegate.currentLocale,
+              localizationsDelegates: [
+                GlobalMaterialLocalizations.delegate,
+                GlobalCupertinoLocalizations.delegate,
+                GlobalWidgetsLocalizations.delegate,
+                localizationDelegate
+              ],
+              home: BlocBuilder<AuthBloc, AuthState>(builder: (context, state) {
+                return state.status == AuthStatus.connected ? const Home() : const LoginScreen();
+              }),
+              theme: ThemeData(
+                colorSchemeSeed: const Color(0xFF0D003B),
+                textTheme: TextTheme(
+                    displayLarge: GoogleFonts.prostoOne(
+                  color: const Color(0xFFDCA200),
+                  fontSize: 32,
+                  fontWeight: FontWeight.bold,
+                )),
+                elevatedButtonTheme: ElevatedButtonThemeData(
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFFDCA200),
+                      foregroundColor: Colors.white,
+                      textStyle: const TextStyle(
+                          // fontWeight: FontWeight.bold,
+                          fontSize: 16),
+                      // Couleur du texte blanc
+                      shape: RoundedRectangleBorder(
+                        borderRadius:
+                            BorderRadius.circular(8.0), // Coins arrondis de 4px
+                      ),
+                      padding: const EdgeInsets.all(14)),
+                ),
+                // ALTERNATIVE
+                /*textTheme: GoogleFonts.prostoOneTextTheme(),*/
               ),
-              // ALTERNATIVE
-              /*textTheme: GoogleFonts.prostoOneTextTheme(),*/
             ),
           ),
         ));
