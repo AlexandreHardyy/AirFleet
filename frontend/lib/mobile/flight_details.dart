@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_translate/flutter_translate.dart';
+import 'package:frontend/mobile/flight_animated_paths.dart';
 import 'package:frontend/models/flight.dart';
 import 'package:frontend/models/rating.dart';
 import 'package:frontend/services/flight.dart';
@@ -56,10 +57,17 @@ class _FlightDetailsState extends State<FlightDetails> {
                 } else if (snapshot.hasError) {
                   return Text('Error: ${snapshot.error}');
                 } else {
-                  return FlightInfoCard(flight: snapshot.data!);
+                  return Column(
+                    children: [
+                      FlightInfoCard(flight: snapshot.data!),
+                      // FlightAnimatedPath(flight: snapshot.data!),
+                    ],
+                  );
                 }
               },
             ),
+            // const SizedBox(height: 16),
+            // const FlightAnimatedPath(flight: snapshot.data!),
             if (UserStore.user?.role == "ROLE_PILOT")
               FutureBuilder<List<Rating>>(
                 future: _ratings,
