@@ -136,4 +136,24 @@ class ProposalService {
     }
   }
 
+  static Future<Proposal> startProposal(int id) async {
+    try {
+      final response = await dioApi.patch(
+        '/proposals/$id/start',
+        options: Options(
+          headers: {
+            'Content-Type': 'application/json; charset=UTF-8',
+          },
+        ),
+      );
+      print(response.data);
+      return Proposal.fromJson(response.data);
+    } catch (error) {
+      if (error is DioException) {
+        throw Exception('Failed to leave proposal: ${error.message}');
+      } else {
+        throw Exception('Unexpected error: $error');
+      }
+    }
+  }
 }

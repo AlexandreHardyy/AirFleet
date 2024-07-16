@@ -3,12 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 import 'package:frontend/mobile/home/flights_management/user_flight_management/create_flight.dart';
+import 'package:frontend/mobile/map/mapbox_endpoint/retrieve.dart';
 import 'package:frontend/mobile/map/mapbox_endpoint/suggest.dart';
 import 'package:frontend/models/flight.dart';
 import 'package:frontend/models/vehicle.dart';
 import 'package:frontend/services/dio.dart';
+import 'package:frontend/services/proposal.dart';
 import 'package:frontend/services/vehicle.dart';
 import 'package:frontend/widgets/input.dart';
+import 'package:intl/intl.dart';
 
 class CreateProposalView extends StatefulWidget {
   const CreateProposalView({super.key});
@@ -22,7 +25,7 @@ class _CreateProposalViewState extends State<CreateProposalView> {
   String mapboxSessionToken = uuid.v4();
   List<DropdownMenuItem<Vehicle>> _vehicleDropdownItems = [];
   int availableSeats = 0;
-  String departureTime = '';
+  DateTime departureTime = DateTime.now();
   String description = '';
   double price = 0;
   int vehicleId = 0;
@@ -48,11 +51,10 @@ class _CreateProposalViewState extends State<CreateProposalView> {
       List<Vehicle> vehicles = await VehicleService.getVehiclesForMe();
       setState(() {
         _vehicleDropdownItems = vehicles
-            .map((vehicle) =>
-            DropdownMenuItem<Vehicle>(
-              value: vehicle,
-              child: Text(vehicle.modelName),
-            ))
+            .map((vehicle) => DropdownMenuItem<Vehicle>(
+                  value: vehicle,
+                  child: Text(vehicle.modelName),
+                ))
             .toList();
       });
     } catch (e) {
@@ -74,12 +76,51 @@ class _CreateProposalViewState extends State<CreateProposalView> {
           'session_token': mapboxSessionToken,
         },
       );
-      return SuggestionResponse
-          .fromJson(response.data)
-          .suggestions;
+      return SuggestionResponse.fromJson(response.data).suggestions;
     } on DioException catch (e) {
       throw Exception('Something went wrong: ${e.response}');
     }
+  }
+
+  Future<Feature> _retrieveAirportData(String mapboxId) async {
+    Response response;
+
+    try {
+      response = await dioMapbox.get(
+        "search/searchbox/v1/retrieve/$mapboxId",
+        queryParameters: {
+          'access_token': const String.fromEnvironment("PUBLIC_ACCESS_TOKEN"),
+          'session_token': mapboxSessionToken,
+        },
+      );
+
+      return RetrieveResponse.fromJson(response.data).features[0];
+    } on DioException catch (e) {
+      throw Exception('Something went wrong: ${e.response}');
+    }
+  }
+
+  Future<void> _onSelectAirport(
+    Suggestion suggestion,
+  ) async {
+    final feature = await _retrieveAirportData(suggestion.mapboxId);
+    final airport = Airport(
+      name: feature.properties.name,
+      address: feature.properties.fullAddress ?? "",
+      longitude: feature.geometry.coordinates[0],
+      latitude: feature.geometry.coordinates[1],
+    );
+
+    setState(() {
+      _suggestions = [];
+      if (departureTextFieldFocusNode.hasFocus) {
+        selectedDepartureAirport = airport;
+        _departureController.text = selectedDepartureAirport!.name;
+      } else if (arrivalTextFieldFocusNode.hasFocus) {
+        selectedArrivalAirport = airport;
+        _arrivalController.text = selectedArrivalAirport!.name;
+      }
+    });
   }
 
   @override
@@ -104,6 +145,7 @@ class _CreateProposalViewState extends State<CreateProposalView> {
               ),
               TextFormField(
                 controller: _departureController,
+                focusNode: departureTextFieldFocusNode,
                 onChanged: (value) async {
                   final suggestions = await _retrieveAirport(value);
                   setState(() {
@@ -111,31 +153,30 @@ class _CreateProposalViewState extends State<CreateProposalView> {
                   });
                 },
                 decoration: InputDecoration(
-                  labelText: 'Search Airport',
+                  labelText: 'Search Departure Airport',
                   suffixIcon: _departureController.text.isNotEmpty
                       ? IconButton(
-                    icon: const Icon(Icons.clear),
-                    onPressed: () {
-                      _departureController.clear();
-                      setState(() {
-                        _suggestions = [];
-                      });
-                    },
-                  )
+                          icon: const Icon(Icons.clear),
+                          onPressed: () {
+                            _departureController.clear();
+                            setState(() {
+                              _suggestions = [];
+                            });
+                          },
+                        )
                       : null,
                 ),
               ),
-              if (_suggestions.isNotEmpty)
+              if (_suggestions.isNotEmpty &&
+                  departureTextFieldFocusNode.hasFocus)
                 SizedBox(
-                  height: 200, // Fixed height for the suggestions list
+                  height: 200,
                   child: ListView.builder(
                     itemCount: _suggestions.length,
                     itemBuilder: (BuildContext context, int index) {
                       final airportSuggestion = _suggestions[index];
                       return GestureDetector(
-                        onTap: () {
-                          // Implement onTap functionality
-                        },
+                        onTap: () => _onSelectAirport(airportSuggestion),
                         child: Container(
                           decoration: const BoxDecoration(
                             border: Border(
@@ -152,10 +193,60 @@ class _CreateProposalViewState extends State<CreateProposalView> {
                   ),
                 ),
               TextFormField(
+                controller: _arrivalController,
+                focusNode: arrivalTextFieldFocusNode,
+                onChanged: (value) async {
+                  final suggestions = await _retrieveAirport(value);
+                  setState(() {
+                    _suggestions = suggestions;
+                  });
+                },
+                decoration: InputDecoration(
+                  labelText: 'Search Arrival Airport',
+                  suffixIcon: _arrivalController.text.isNotEmpty
+                      ? IconButton(
+                          icon: const Icon(Icons.clear),
+                          onPressed: () {
+                            _arrivalController.clear();
+                            setState(() {
+                              _suggestions = [];
+                            });
+                          },
+                        )
+                      : null,
+                ),
+              ),
+              if (_suggestions.isNotEmpty && arrivalTextFieldFocusNode.hasFocus)
+                SizedBox(
+                  height: 200,
+                  child: ListView.builder(
+                    itemCount: _suggestions.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      final airportSuggestion = _suggestions[index];
+                      return GestureDetector(
+                        onTap: () => _onSelectAirport(airportSuggestion),
+                        child: Container(
+                          decoration: const BoxDecoration(
+                            border: Border(
+                              top: BorderSide(width: 1.0, color: Colors.grey),
+                            ),
+                          ),
+                          child: ListTile(
+                            title: Text(airportSuggestion.name),
+                            subtitle: Text(airportSuggestion.fullAddress ?? ""),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              FormBuilderDateTimePicker(
+                name: 'departureTime',
                 decoration: const InputDecoration(labelText: 'Departure Time'),
+                inputType: InputType.both,
                 onSaved: (value) => departureTime = value!,
                 validator: (value) {
-                  if (value == null || value.isEmpty) {
+                  if (value == null) {
                     return 'Please enter departure time';
                   }
                   return null;
@@ -182,24 +273,53 @@ class _CreateProposalViewState extends State<CreateProposalView> {
                   return null;
                 },
               ),
+              const SizedBox(height: 20),
               FormBuilderDropdown(
                 name: "vehicleId",
                 decoration: getInputDecoration(hintText: 'Select vehicle'),
                 items: _vehicleDropdownItems,
+                onChanged: (dynamic value) {
+                  setState(() {
+                    vehicleId = (value as Vehicle).id!;
+                  });
+                },
               ),
               const SizedBox(height: 20),
               ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
                   if (_formKey.currentState!.validate()) {
                     _formKey.currentState!.save();
-                    // Envoyer les données à l'API via le service Dart
-                    print({
-                      "availableSeats": availableSeats,
-                      "departureTime": departureTime,
-                      "description": description,
-                      "price": price,
-                      "vehicleId": vehicleId,
-                    });
+                    try {
+                      await ProposalService.createProposal({
+                        "availableSeats": availableSeats,
+                        "departureTime": DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").format(departureTime.toUtc()),
+                        "description": description,
+                        "price": price,
+                        "vehicleId": vehicleId,
+                        "createFlight": {
+                          "departure": {
+                            "name": selectedDepartureAirport!.name,
+                            "address": selectedDepartureAirport!.address,
+                            "longitude": selectedDepartureAirport!.longitude,
+                            "latitude": selectedDepartureAirport!.latitude,
+                          },
+                          "arrival": {
+                            "name": selectedArrivalAirport!.name,
+                            "address": selectedArrivalAirport!.address,
+                            "longitude": selectedArrivalAirport!.longitude,
+                            "latitude": selectedArrivalAirport!.latitude,
+                          },
+                        },
+                      });
+                      Navigator.pop(context, true);
+                    } on DioException catch (e) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content:
+                              Text('Error: ${e.response?.data['message']}'),
+                        ),
+                      );
+                    }
                   }
                 },
                 child: const Text('Submit'),

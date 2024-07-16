@@ -21,4 +21,5 @@ func InitProposalRoutes(api *gin.RouterGroup) {
 	api.DELETE("/:id", middlewares.IsPilotAuth(), proposalHandler.DeleteProposal)
 	api.PATCH("/:id/join", middlewares.IsAuth(), proposalHandler.JoinProposal)
 	api.PATCH("/:id/leave", middlewares.IsAuth(), proposalHandler.LeaveProposal)
+	api.PATCH("/:id/start", middlewares.IsAuth(), proposalHandler.StartProposal)
 }

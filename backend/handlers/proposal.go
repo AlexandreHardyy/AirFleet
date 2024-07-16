@@ -126,6 +126,7 @@ func (h *ProposalHandler) CreateProposal(c *gin.Context) {
 	var input inputs.InputCreateProposal
 	err := c.ShouldBindJSON(&input)
 	if err != nil {
+		println(err.Error())
 		response := &Response{
 			Message: "Error: cannot extract JSON body",
 		}
@@ -370,4 +371,48 @@ func (h *ProposalHandler) LeaveProposal(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "Proposal left"})
+}
+
+// StartProposal startProposal godoc
+//
+// @Summary Start a proposal
+// @Schemes
+// @Description Start a proposal
+// @Tags proposals
+// @Accept			json
+// @Produce		json
+//
+// @Param			id	path	int	true	"ID"
+//
+// @Success		200				{object}	Response
+// @Failure		400				{object}	Response
+//
+// @Router			/proposals/{id}/start [patch]
+//
+// @Security	BearerAuth
+func (h *ProposalHandler) StartProposal(c *gin.Context) {
+	idStr := c.Param("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		c.String(http.StatusBadRequest, "Invalid ID format")
+		return
+	}
+
+	userID, err := token.ExtractTokenID(c)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Error: cannot extract user ID"})
+		return
+	}
+
+	proposal, err := h.proposalService.StartProposal(id, userID)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			c.Status(http.StatusNotFound)
+			return
+		}
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, proposal)
 }

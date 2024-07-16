@@ -10,5 +10,5 @@ type Proposal struct {
 	Description    string    `json:"description" gorm:"not null"`
 	AvailableSeats int       `json:"available_seats" gorm:"not null"`
 	FlightID       int       `json:"flight_id" gorm:"not null"`
-	Flight         Flight    `json:"flights" gorm:"foreignkey:FlightID"`
+	Flight         Flight    `json:"flight" gorm:"foreignkey:FlightID"`
 }
