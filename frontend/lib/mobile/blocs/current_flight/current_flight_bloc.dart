@@ -6,6 +6,7 @@ import 'package:frontend/local_notification_setup.dart';
 import 'package:frontend/models/flight.dart';
 import 'package:frontend/models/rating.dart';
 import 'package:frontend/services/flight.dart';
+import 'package:frontend/services/module.dart';
 import 'package:frontend/services/rating.dart';
 
 part 'current_flight_event.dart';
@@ -25,6 +26,12 @@ class CurrentFlightBloc extends Bloc<CurrentFlightEvent, CurrentFlightState> {
   Future<void> _onCurrentFlightInitialized(CurrentFlightInitialized event, Emitter<CurrentFlightState> emit) async {
     emit(state.copyWith(status: CurrentFlightStatus.loading));
 
+    final module = await ModuleService.getModuleByName("flight");
+    if (!module.isEnabled) {
+      emit(state.copyWith(status: CurrentFlightStatus.loaded, isModuleEnabled: false));
+      return;
+    }
+
     final flight = await FlightService.getCurrentFlight();
 
     if (flight == null) {
@@ -35,6 +42,7 @@ class CurrentFlightBloc extends Bloc<CurrentFlightEvent, CurrentFlightState> {
         flight: null,
         flightRequest: null,
         pendingRating: pendingRating,
+        isModuleEnabled: module.isEnabled,
         errorMessage: null
       ));
     }
@@ -42,6 +50,7 @@ class CurrentFlightBloc extends Bloc<CurrentFlightEvent, CurrentFlightState> {
     emit(state.copyWith(
       status: CurrentFlightStatus.loaded,
       flight: flight,
+      isModuleEnabled: module.isEnabled,
     ));
 
     //TODO handle error

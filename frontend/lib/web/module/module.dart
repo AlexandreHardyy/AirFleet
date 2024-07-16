@@ -43,17 +43,33 @@ class _ModuleScreenState extends State<ModuleScreen> {
               itemCount: snapshot.data!.length,
               itemBuilder: (context, index) {
                 Module module = snapshot.data![index];
-                return ListTile(
-                  title: Text(module.name),
-                  trailing: Switch(
-                    value: module.isEnabled,
-                    onChanged: (bool value) {
-                      setState(() {
-                        module.isEnabled = value;
-                      });
-
-                      updateModule(module.id, value);
-                    },
+                return Card(
+                  margin: const EdgeInsets.all(8.0),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            module.name,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
+                        ),
+                        Switch(
+                          value: module.isEnabled,
+                          onChanged: (bool value) {
+                            setState(() {
+                              module.isEnabled = value;
+                            });
+                            updateModule(module.id, value);
+                          },
+                        ),
+                      ],
+                    ),
                   ),
                 );
               },
@@ -71,9 +87,9 @@ class _ModuleScreenState extends State<ModuleScreen> {
   }
 
   void updateModule(int moduleId, bool isEnabled) async {
-    final UpdateModuleRequest request = UpdateModuleRequest(isEnabled: isEnabled);
+    final UpdateModuleRequest request =
+        UpdateModuleRequest(isEnabled: isEnabled);
     await ModuleService.updateModule(moduleId, request);
     fetchModules();
   }
 }
-
