@@ -21,8 +21,9 @@ type CreateFlight struct {
 // WEBSOCKET
 
 type InputCreateFlightProposal struct {
-	FlightId int     `json:"flightId" binding:"required"`
-	Price    float64 `json:"price" binding:"required"`
+	FlightId  int     `json:"flightId" binding:"required"`
+	VehicleId int     `json:"vehicleId" binding:"required"`
+	Price     float64 `json:"price" binding:"required"`
 }
 
 type InputFlightProposalChoice struct {

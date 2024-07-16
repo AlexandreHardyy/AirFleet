@@ -248,14 +248,14 @@ func (s *FlightService) MakeFlightPriceProposal(input inputs.InputCreateFlightPr
 	var vehicleId int
 	var selectedVehicleID *int
 	for _, vehicle := range user.Vehicles {
-		if vehicle.IsSelected != nil && *vehicle.IsSelected {
+		if vehicle.ID == input.VehicleId {
 			selectedVehicleID = &vehicle.ID
 			break
 		}
 	}
 
 	if selectedVehicleID == nil {
-		return errors.New("user has no selected vehicle")
+		return errors.New("user has no vehicle with this ID")
 	} else {
 		vehicleId = *selectedVehicleID
 	}

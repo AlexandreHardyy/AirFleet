@@ -107,6 +107,11 @@ class FlightRequestDetail extends StatelessWidget {
                                   const JsonEncoder().convert({
                                     'flightId': flight.id,
                                     'price': double.parse(formValues['price']),
+                                    'vehicleId': context
+                                        .read<PilotStatusBloc>()
+                                        .state
+                                        .selectedVehicle
+                                        ?.id,
                                   }));
 
                               context
@@ -123,7 +128,6 @@ class FlightRequestDetail extends StatelessWidget {
                               context
                                   .read<CurrentFlightBloc>()
                                   .add(CurrentFlightUpdated());
-                            
                               context
                                   .read<PilotStatusBloc>()
                                   .add(PilotStatusNotReady());
