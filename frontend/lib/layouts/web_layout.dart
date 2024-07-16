@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 import 'package:frontend/blocs/auth/auth_bloc.dart';
+import 'package:frontend/models/flight.dart';
 import 'package:frontend/web/auth_screen/login_screen.dart';
+import 'package:frontend/web/flights/flight.dart';
+import 'package:frontend/web/flights/flight_details.dart';
 import 'package:frontend/web/home_web.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:frontend/web/module/module.dart';
@@ -24,8 +27,21 @@ class WebLayout extends StatelessWidget {
           '/home-web': (context) => const HomeWeb(),
           '/user': (context) => const UserScreen(),
           '/vehicle': (context) => const VehicleScreen(),
+          '/flight': (context) => const FlightsWebScreen(),
           '/module': (context) => const ModuleScreen(),
           '/monitoring-logs': (context) => const MonitoringLogScreen(),
+        },
+        onGenerateRoute: (settings) {
+          final args = settings.arguments;
+          switch (settings.name) {
+            case FlightDetailsScreen.routeName:
+              return MaterialPageRoute(
+                builder: (context) => FlightDetailsScreen(
+                  flight: args as Flight,
+                ),
+              );
+          }
+          return null;
         },
         localizationsDelegates: [
           GlobalMaterialLocalizations.delegate,

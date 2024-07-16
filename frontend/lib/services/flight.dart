@@ -68,6 +68,23 @@ class FlightService {
     }
   }
 
+  static Future<List<Flight>> getAllFlights() async {
+    try {
+      final response = await dioApi.get("/flights");
+
+      if (response.data == null) {
+        return [];
+      }
+
+      List<dynamic> data = response.data;
+      return data.map((json) => Flight.fromJson(json)).toList();
+    } on DioException catch (e) {
+      throw Exception('Something went wrong during flight retrieval: ${e.response}');
+    } catch (e) {
+      throw Exception('Something went wrong: $e');
+    }
+  }
+
   static Future<Flight> getFlight(int flightId) async {
     try {
       final response = await dioApi.get("/flights/$flightId");

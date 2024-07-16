@@ -27,8 +27,13 @@ func InitFlightSession(socketIoServer *socketio.Server) {
 
 	socketIoServer.OnEvent("/flights", "newMessageBack", messageSocketHandler.CreateMessage)
 
+	socketIoServer.OnEvent("/flights", "flightSimulation", flightSocketHandler.StartAndCompleteFlight)
+
 	socketIoServer.OnEvent("/flights", "bye", func(s socketio.Conn) {
-		s.Close()
+		err := s.Close()
+		if err != nil {
+			return
+		}
 	})
 
 	socketIoServer.OnDisconnect("/", func(s socketio.Conn, reason string) {

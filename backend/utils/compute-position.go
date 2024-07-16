@@ -32,3 +32,31 @@ func ComputeDistanceInKm(pos1, pos2 Position) float64 {
 
 	return math.Round(distance*100) / 100
 }
+
+// CalculateDistance calculates the distance between two points using the Haversine formula
+/**
+ * Calculate the distance between two points using the Haversine formula
+ * @param lat1 Latitude of the first point
+ * @param lon1 Longitude of the first point
+ * @param lat2 Latitude of the second point
+ * @param lon2 Longitude of the second point
+ * @return The distance between the two points in kilometers (km) using the Haversine formula
+ */
+func CalculateDistance(lat1, lon1, lat2, lon2 float64) float64 {
+	const R = 6371 // Earth radius in kilometers
+
+	lat1Rad := lat1 * (math.Pi / 180)
+	lon1Rad := lon1 * (math.Pi / 180)
+	lat2Rad := lat2 * (math.Pi / 180)
+	lon2Rad := lon2 * (math.Pi / 180)
+
+	dLat := lat2Rad - lat1Rad
+	dLon := lon2Rad - lon1Rad
+
+	a := math.Sin(dLat/2)*math.Sin(dLat/2) + math.Cos(lat1Rad)*math.Cos(lat2Rad)*math.Sin(dLon/2)*math.Sin(dLon/2)
+	c := 2 * math.Atan2(math.Sqrt(a), math.Sqrt(1-a))
+
+	distance := R * c
+
+	return distance
+}

@@ -8,7 +8,14 @@ import 'package:frontend/services/user.dart';
 import 'package:frontend/storage/user.dart';
 
 class LoginScreen extends StatefulWidget {
+  static const routeName = '/login-web';
+
+  static Future<void> navigateTo(BuildContext context) {
+    return Navigator.of(context).pushNamed(routeName);
+  }
+
   const LoginScreen({super.key});
+
   @override
   State<LoginScreen> createState() => _LoginScreenState();
 }
