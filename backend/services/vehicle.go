@@ -119,6 +119,7 @@ func formatVehicle(vehicle models.Vehicle) responses.ResponseVehicle {
 		CruiseSpeed:    vehicle.CruiseSpeed,
 		CruiseAltitude: vehicle.CruiseAltitude,
 		IsVerified:     vehicle.IsVerified,
+		IsSelected:     *vehicle.IsSelected,
 		CreatedAt:      vehicle.CreatedAt,
 		UpdatedAt:      vehicle.UpdatedAt,
 	}
