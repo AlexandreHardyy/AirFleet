@@ -27,6 +27,26 @@ func newRatingHandler(ratingService services.RatingServiceInterface) *RatingHand
 	return &RatingHandler{ratingService}
 }
 
+// Update godoc
+//
+// @Summary Update rating
+// @Schemes
+// @Description Update rating
+// @Tags ratings
+// @Accept			json
+// @Produce		json
+//
+// @Param			id	path	int		true	"Rating ID"
+// @Param			rating	body	object	false	"Rating"
+// @Param			comment	body	object	false	"Comment"
+//
+// @Success		200				{object}	Response
+// @Failure		400				{object}	Response
+// @Failure		500				{object}	Response
+//
+// @Router			/ratings/{id} [put]
+//
+// @Security	BearerAuth
 func (h *RatingHandler) Update(c *gin.Context) {
 	ratingID := c.Param("id")
 	convertedRatingID, err := strconv.Atoi(ratingID)
@@ -61,6 +81,23 @@ func (h *RatingHandler) Update(c *gin.Context) {
 	c.JSON(200, response)
 }
 
+// GetAllRatings godoc
+//
+// @Summary Get all ratings
+// @Schemes
+// @Description Get all ratings
+// @Tags ratings
+// @Accept			json
+// @Produce		json
+//
+// @Param			status	query	string	false	"Status"
+//
+// @Success		200				{object}	[]responses.ResponseRating
+// @Failure		400				{object}	Response
+//
+// @Router			/ratings [get]
+//
+// @Security	BearerAuth
 func (h *RatingHandler) GetAllRatings(c *gin.Context) {
 	filters := make(map[string]interface{})
 	queryParams := c.Request.URL.Query()
@@ -88,6 +125,23 @@ func (h *RatingHandler) GetAllRatings(c *gin.Context) {
 
 }
 
+// GetRatingByUserIDAndStatus godoc
+//
+// @Summary Get rating by user ID and status
+// @Schemes
+// @Description Get rating by user ID and status
+// @Tags ratings
+// @Accept			json
+// @Produce		json
+//
+// @Param			status	path	string	true	"Status"
+//
+// @Success		200				{object}	[]responses.ResponseRating
+// @Failure		400				{object}	Response
+//
+// @Router			/ratings/status/{status} [get]
+//
+// @Security	BearerAuth
 func (h *RatingHandler) GetRatingByUserIDAndStatus(c *gin.Context) {
 	userID, err := token.ExtractTokenID(c)
 	if err != nil {

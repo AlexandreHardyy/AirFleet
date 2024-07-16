@@ -52,7 +52,11 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
     final messages = List<Message>.from(state.messages)..add(event.message);
 
     if (event.message.user.id != UserStore.user?.id) {
-      LocalNotificationService().showNotification('New message !', 'You have received a new message !', null);
+      Map<String, dynamic> payload = {
+        'routeName': '/flight-chat',
+        'arguments': event.message.flightId,
+      };
+      LocalNotificationService().showNotification('New message !', 'You have received a new message !', jsonEncode(payload));
     }
 
     emit(state.copyWith(

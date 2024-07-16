@@ -159,6 +159,25 @@ func (h *FlightHandler) FlightHistory(c *gin.Context) {
 	c.JSON(http.StatusOK, flights)
 }
 
+// GetFlightRequestsNearBy godoc
+//
+// @Summary	Get flight requests near by
+// @Schemes
+// @Description	get flight requests near by
+// @Tags			flight
+// @Accept			json
+// @Produce		json
+//
+// @Param			latitude	query	float64	true	"Latitude"
+// @Param			longitude	query	float64	true	"Longitude"
+// @Param			range	query	float64	true	"Range"
+//
+// @Success		200				{object}	[]responses.ResponseFlight
+// @Failure		400				{object}	Response
+//
+// @Router			/flights/nearby [get]
+//
+// @Security	BearerAuth
 func (h *FlightHandler) GetFlightRequestsNearBy(c *gin.Context) {
 	var queryParams inputs.NearByParams
 	if err := c.ShouldBindQuery(&queryParams); err != nil {
