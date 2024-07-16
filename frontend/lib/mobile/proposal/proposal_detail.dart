@@ -1,5 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:frontend/mobile/blocs/current_flight/current_flight_bloc.dart';
 import 'package:frontend/models/proposal.dart';
 import 'package:frontend/services/proposal.dart';
 import 'package:frontend/storage/user.dart';
@@ -55,6 +57,12 @@ class _ProposalDetailState extends State<ProposalDetail> {
     } catch (e) {
       // Handle error
     }
+  }
+
+  bool isDepartureWithinOneHour(DateTime departureTime) {
+    final currentTime = DateTime.now();
+    final difference = departureTime.difference(currentTime).inMinutes;
+    return difference < 60;
   }
 
   @override
@@ -146,6 +154,54 @@ class _ProposalDetailState extends State<ProposalDetail> {
                     'Price: ${proposal.flight.price} €',
                     style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                   ),
+                  const SizedBox(height: 10),
+                  if (_isPilot && isDepartureWithinOneHour(parsedDepartureTime) && proposal.flight.status != "waiting_takeoff")
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          final confirm = await showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: const Text('Confirm'),
+                                content: const Text('Are you sure you want to start this proposal?'),
+                                actions: <Widget>[
+                                  TextButton(
+                                    onPressed: () => Navigator.of(context).pop(true),
+                                    child: const Text('Yes'),
+                                  ),
+                                  TextButton(
+                                    onPressed: () => Navigator.of(context).pop(false),
+                                    child: const Text('No'),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+
+                          if (confirm == true) {
+                            try {
+                              var proposalResult = await ProposalService.startProposal(proposal.id);
+                              if (context.mounted) {
+                                context
+                                    .read<CurrentFlightBloc>()
+                                    .add(CurrentFlightLoaded(flight: proposalResult.flight));
+                              }
+                              Navigator.of(context).pop();
+                              Navigator.of(context).pop();
+                            } on DioException catch (e) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('Error: ${e.response?.data['message']}'),
+                                ),
+                              );
+                            }
+                          }
+                        },
+                        child: const Text('Start Proposal'),
+                      ),
+                    ),
                   const SizedBox(height: 10),
                   if (_isPilot)
                     SizedBox(

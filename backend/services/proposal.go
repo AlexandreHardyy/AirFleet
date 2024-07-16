@@ -18,6 +18,7 @@ type ProposalServiceInterface interface {
 	DeleteProposal(id int) error
 	JoinProposal(proposalID int, userID int) error
 	LeaveProposal(proposalID int, userID int) error
+	StartProposal(proposalID int, userID int) (responses.ResponseProposal, error)
 }
 
 type ProposalService struct {
@@ -183,6 +184,37 @@ func (s *ProposalService) LeaveProposal(proposalID int, userID int) error {
 	flight, err = s.flightRepository.UpdateFlight(flight)
 
 	return nil
+}
+
+func (s *ProposalService) StartProposal(proposalID int, userID int) (responses.ResponseProposal, error) {
+	proposal, err := s.repository.GetProposalByID(proposalID)
+	if err != nil {
+		return responses.ResponseProposal{}, err
+	}
+
+	var flight models.Flight
+	flight, err = s.flightRepository.GetFlightByID(proposal.FlightID)
+
+	//----Check if someone can start----
+	if flight.PilotID != nil && *flight.PilotID != userID {
+		return responses.ResponseProposal{}, fmt.Errorf("only pilot can start the flight")
+	}
+	//----------------------------------
+
+	flight.Status = flightStatus.WAITING_TAKEOFF
+	_, err = s.flightRepository.UpdateFlight(flight)
+	if err != nil {
+		return responses.ResponseProposal{}, err
+	}
+
+	proposal, err = s.repository.GetProposalByID(proposalID)
+	if err != nil {
+		return responses.ResponseProposal{}, err
+	}
+
+	formattedProposal := formatProposal(proposal)
+
+	return formattedProposal, nil
 }
 
 func formatProposal(proposal models.Proposal) responses.ResponseProposal {
