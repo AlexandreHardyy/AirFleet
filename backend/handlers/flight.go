@@ -63,10 +63,13 @@ func (h *FlightHandler) GetAll(c *gin.Context) {
 		response := &Response{
 			Message: err.Error(),
 		}
-		repositories.CreateMonitoringLog(models.MonitoringLog{
+		_, err := repositories.CreateMonitoringLog(models.MonitoringLog{
 			Type:    "error",
 			Content: "[GetAllFlights]: " + err.Error(),
 		})
+		if err != nil {
+			return
+		}
 		c.JSON(http.StatusBadRequest, response)
 		return
 	}

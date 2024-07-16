@@ -141,7 +141,7 @@ class SocketIoBloc extends Bloc<SocketIoEvent, SocketIoState> {
 
   void startFlightTakeoff(int flightId) {
     print("startFlightTakeoff");
-    state.socket!.emit("flightTakeoff", "${flightId}");
+    state.socket!.emit("flightTakeoff", "$flightId");
 
     tickerSubscription?.cancel();
     tickerSubscription = _ticker

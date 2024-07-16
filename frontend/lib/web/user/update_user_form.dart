@@ -5,7 +5,6 @@ import 'package:frontend/models/user.dart';
 import 'package:frontend/services/user.dart';
 import 'package:frontend/storage/user.dart';
 import 'package:frontend/web/user/files_pilot.dart';
-import 'package:frontend/widgets/title.dart';
 
 class UpdateUserForm extends StatefulWidget {
   final User user;

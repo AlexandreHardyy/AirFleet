@@ -1,20 +1,20 @@
 import 'dart:math';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:frontend/models/user.dart';
+import 'package:frontend/models/flight.dart';
 import 'package:intl/intl.dart';
 
-class CustomBarChart extends StatefulWidget {
+class BarChartPayments extends StatefulWidget {
   final Color barColor = const Color(0xFF131141);
-  final List<User> users;
+  final List<Flight> flights;
 
-  const CustomBarChart({super.key, required this.users});
+  const BarChartPayments({super.key, required this.flights});
 
   @override
-  State<StatefulWidget> createState() => CustomBarChartState();
+  State<StatefulWidget> createState() => BarChartPaymentsState();
 }
 
-class CustomBarChartState extends State<CustomBarChart> {
+class BarChartPaymentsState extends State<BarChartPayments> {
   @override
   Widget build(BuildContext context) {
     return AspectRatio(
@@ -43,12 +43,12 @@ class CustomBarChartState extends State<CustomBarChart> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(Icons.person),
+                    const Icon(Icons.euro),
                     const SizedBox(
                       width: 16,
                     ),
                     Text(
-                      'New users chart',
+                      'Monthly Payments Chart',
                       style: TextStyle(
                         color: widget.barColor,
                         fontSize: 18,
@@ -62,7 +62,7 @@ class CustomBarChartState extends State<CustomBarChart> {
                 ),
                 Expanded(
                   child: BarChart(
-                    userData(),
+                    flightData(),
                   ),
                 ),
               ],
@@ -73,24 +73,15 @@ class CustomBarChartState extends State<CustomBarChart> {
     );
   }
 
-  BarChartGroupData makeGroupData(int x, double y, String label) {
+  BarChartGroupData makeGroupData(int x, double y) {
     return BarChartGroupData(
       x: x,
       barRods: [
         BarChartRodData(
           toY: y,
-          color: x >= 6 ? Colors.transparent : widget.barColor,
-          borderRadius: BorderRadius.zero,
-          borderDashArray: x >= 6 ? [4, 4] : null,
+          color: widget.barColor,
           width: 22,
-          borderSide: BorderSide(color: widget.barColor, width: 2.0),
-          rodStackItems: [
-            BarChartRodStackItem(
-              0,
-              y,
-              widget.barColor,
-            ),
-          ],
+          borderRadius: BorderRadius.zero,
         ),
       ],
     );
@@ -128,30 +119,33 @@ class CustomBarChartState extends State<CustomBarChart> {
     return months;
   }
 
-  BarChartData userData() {
-    List<int> userCounts = List.generate(6, (index) => 0);
+  BarChartData flightData() {
+    List<double> flightSums = List.generate(6, (index) => 0.0);
 
     DateTime now = DateTime.now();
-    for (var user in widget.users) {
-      DateTime userCreatedAt = DateFormat('yyyy-MM-dd').parse(user.createdAt);
+    for (var flight in widget.flights) {
+      if (flight.status != "finished") {
+        continue;
+      }
+      DateTime flightCreatedAt = DateFormat('yyyy-MM-dd').parse(flight.createdAt!);
       for (int i = 0; i < 6; i++) {
         DateTime start = DateTime(now.year, now.month - i, 1);
         DateTime end = DateTime(now.year, now.month - i + 1, 1);
-        if (userCreatedAt.isAfter(start) && userCreatedAt.isBefore(end)) {
-          userCounts[5 - i]++;
+        if (flightCreatedAt.isAfter(start) && flightCreatedAt.isBefore(end)) {
+          flightSums[5 - i] += flight.price!;
           break;
         }
       }
     }
 
     return BarChartData(
-      maxY: (userCounts.reduce(max) + userCounts.reduce(max) / 10).ceil().toDouble(),
+      maxY: (flightSums.reduce(max) + flightSums.reduce(max) / 10).ceil().toDouble(),
       barTouchData: BarTouchData(
         touchTooltipData: BarTouchTooltipData(
           tooltipRoundedRadius: 30,
           getTooltipItem: (group, groupIndex, rod, rodIndex) {
             return BarTooltipItem(
-              '${userCounts[group.x]}',
+              '${flightSums[group.x].toStringAsFixed(2)} €',
               const TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
@@ -191,7 +185,7 @@ class CustomBarChartState extends State<CustomBarChart> {
       ),
       barGroups: List.generate(
         6,
-            (i) => makeGroupData(i, userCounts[i].toDouble(), '${userCounts[i]}'),
+            (i) => makeGroupData(i, flightSums[i]),
       ),
       gridData: const FlGridData(show: false),
     );

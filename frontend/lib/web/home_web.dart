@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:frontend/models/flight.dart';
 import 'package:frontend/models/user.dart';
 import 'package:frontend/models/vehicle.dart';
+import 'package:frontend/services/flight.dart';
 import 'package:frontend/services/user.dart';
 import 'package:frontend/services/vehicle.dart';
+import 'package:frontend/web/charts/bar_chart_payments.dart';
 import 'package:frontend/web/charts/bar_chart.dart';
 import 'package:frontend/web/charts/pie_chart.dart';
 import 'package:frontend/web/flights/flight.dart';
@@ -26,12 +29,14 @@ class _HomeWebState extends State<HomeWeb> {
   List<User> _users = [];
   List<Vehicle> _vehicles = [];
   List<Vehicle> _unverifiedVehicles = [];
+  List<Flight> _flights = [];
 
   @override
   void initState() {
     super.initState();
     _fetchUsers();
     _fetchVehicles();
+    _fetchFlights();
   }
 
   Future<void> _fetchUsers() async {
@@ -75,6 +80,15 @@ class _HomeWebState extends State<HomeWeb> {
       vehicle.isVerified = true;
       await VehicleService.updateVehicle(vehicle);
       _fetchVehicles(); // Refresh the list of vehicles after update
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  Future<void> _fetchFlights() async {
+    try {
+      _flights = await FlightService.getAllFlights();
+      setState(() {});
     } catch (e) {
       print(e);
     }
@@ -190,6 +204,7 @@ class _HomeWebState extends State<HomeWeb> {
                           children: [
                             _buildChart(CustomBarChart(users: _users)),
                             _buildChart(CustomPieChart(vehicles: _vehicles)),
+                            _buildChart(BarChartPayments(flights: _flights)),
                           ],
                         ),
                       ),

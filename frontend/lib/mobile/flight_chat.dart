@@ -149,7 +149,7 @@ class _FlightChatState extends State<FlightChat> {
 
                               _controller.clear();
                             },
-                            child: Icon(Icons.send),
+                            child: const Icon(Icons.send),
                           ),
                         ],
                       ),

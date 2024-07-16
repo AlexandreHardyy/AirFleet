@@ -113,6 +113,7 @@ class MobileLayout extends StatelessWidget {
                       },
                     );
                 }
+                return null;
               },
               navigatorKey: navigatorKey,
               supportedLocales: localizationDelegate.supportedLocales,

@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'dart:io' show Platform;
 
@@ -56,12 +55,12 @@ class LocalNotificationService {
         priority: Priority.high,
         ticker: 'ticker');
 
-    int notification_id = 1;
+    int notificationId = 1;
     const NotificationDetails notificationDetails =
     NotificationDetails(android: androidNotificationDetails);
 
     await flutterLocalNotificationsPlugin
-        .show(notification_id, title, value, notificationDetails, payload: route);
+        .show(notificationId, title, value, notificationDetails, payload: route);
   }
 
 
@@ -78,13 +77,13 @@ class LocalNotificationService {
         //threadIdentifier: String? (only from iOS 10 onwards)
     );
 
-    int notification_id = 1;
+    int notificationId = 1;
 
     const NotificationDetails notificationDetails =
     NotificationDetails(iOS: iOSPlatformChannelSpecifics);
 
     await flutterLocalNotificationsPlugin
-        .show(notification_id, title, value, notificationDetails, payload: route);
+        .show(notificationId, title, value, notificationDetails, payload: route);
   }
 
   void showNotification(String title, String value, String? route) async {
