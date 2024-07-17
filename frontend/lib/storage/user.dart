@@ -1,4 +1,5 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:frontend/models/user.dart';
 import 'package:frontend/services/user.dart';
 
@@ -15,6 +16,9 @@ class UserStore {
 
   static getUser() async {
     user ??= await UserService.getCurrentUser();
+    if (user == null) {
+      removeToken();
+    }
     return user;
   }
 
