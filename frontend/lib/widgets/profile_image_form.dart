@@ -1,7 +1,7 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:flutter_translate/flutter_translate.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:frontend/services/user.dart';
 import 'package:image_picker/image_picker.dart';
@@ -41,6 +41,7 @@ class ProfileImageFormState extends State<ProfileImageForm> {
     if (pickedFile != null) {
       setState(() {
         _newPhoto = File(pickedFile.path);
+        _showConfirmationDialog();
       });
     }
   }
@@ -50,6 +51,36 @@ class ProfileImageFormState extends State<ProfileImageForm> {
       await UserService.uploadImage(_newPhoto!.path);
       setState(() {
         _time = DateTime.now();
+        _newPhoto = null;
+      });
+    }
+  }
+
+  Future<void> _showConfirmationDialog() async {
+    final confirm = await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(translate("common.confirm")),
+          content: Text(translate("home.profile.updateProfilePicture.submit")),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: Text(translate("common.yes")),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: Text(translate("common.no")),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirm == true) {
+      _submit();
+    } else {
+      setState(() {
         _newPhoto = null;
       });
     }
@@ -96,31 +127,6 @@ class ProfileImageFormState extends State<ProfileImageForm> {
             ],
           ),
         ),
-        if (_newPhoto != null)
-          Positioned(
-            // top: 80,
-            child: Align(
-              alignment: Alignment.center,
-              child: Container(
-                padding: const EdgeInsets.all(8.0),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  border: Border.all(color: const Color(0xFF131141)),
-                  boxShadow: const [
-                    BoxShadow(
-                      color: Colors.black26,
-                      blurRadius: 4.0,
-                      offset: Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: TextButton(
-                  onPressed: _submit,
-                  child: const Text('Confirm upload'),
-                ),
-              ),
-            ),
-          ),
       ],
     );
   }

@@ -29,15 +29,18 @@ class HomeDrawer extends StatelessWidget {
                   children: [
                     const ClipOval(
                       child: SizedBox(
-                          width: 80,
-                          height: 80,
-                          child: ProfileImage(),
-                        ),
+                        width: 80,
+                        height: 80,
+                        child: ProfileImage(),
+                      ),
                     ),
                     const SizedBox(height: 16.0),
                     AutoSizeText(
-                      '${UserStore.user?.firstName ?? ''} ${UserStore.user?.lastName?.toUpperCase() ?? ''}',
-                      style: const TextStyle(fontSize: 18.0),
+                      '${UserStore.user?.firstName ?? ''} ${UserStore.user?.lastName.toUpperCase() ?? ''}',
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
                       maxLines: 2,
                     ),
                     Text(
@@ -85,11 +88,17 @@ class HomeDrawer extends StatelessWidget {
           ),
           ListTile(
             tileColor: Colors.red.shade100,
-            leading: const Icon(FontAwesomeIcons.rightFromBracket,
-                color: Colors.red),
-            title: Text(translate('home.drawer.logout'),
-                style: const TextStyle(
-                    color: Colors.red, fontWeight: FontWeight.bold)),
+            leading: const Icon(
+              FontAwesomeIcons.rightFromBracket,
+              color: Colors.red,
+            ),
+            title: Text(
+              translate('home.drawer.logout'),
+              style: const TextStyle(
+                color: Colors.red,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
             onTap: () async {
               await UserService.logOut(context);
             },

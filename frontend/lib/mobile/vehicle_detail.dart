@@ -27,7 +27,8 @@ class _VehicleDetailsPageState extends State<VehicleDetailsPage> {
   late Vehicle _vehicle;
   bool isPlaneSelected = true;
 
-  InputDecoration _buildInputDecoration({required String labelText, IconData? prefixIcon, String? suffixText}) {
+  InputDecoration _buildInputDecoration(
+      {required String labelText, IconData? prefixIcon, String? suffixText}) {
     return InputDecoration(
       labelText: labelText,
       prefixIcon: prefixIcon != null ? Icon(prefixIcon) : null,
@@ -94,7 +95,8 @@ class _VehicleDetailsPageState extends State<VehicleDetailsPage> {
                     children: [
                       TextFormField(
                         initialValue: _vehicle.modelName,
-                        decoration: _buildInputDecoration(labelText: 'Model Name'),
+                        decoration:
+                            _buildInputDecoration(labelText: 'Model Name'),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Please enter a model name';
@@ -106,7 +108,8 @@ class _VehicleDetailsPageState extends State<VehicleDetailsPage> {
                       const SizedBox(height: 18),
                       TextFormField(
                         initialValue: _vehicle.matriculation,
-                        decoration: _buildInputDecoration(labelText: 'Matriculation'),
+                        decoration:
+                            _buildInputDecoration(labelText: 'Matriculation'),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Please enter a matriculation';
@@ -140,7 +143,8 @@ class _VehicleDetailsPageState extends State<VehicleDetailsPage> {
                       const SizedBox(height: 18),
                       TextFormField(
                         initialValue: _vehicle.cruiseSpeed.toString(),
-                        decoration: _buildInputDecoration(labelText: 'Cruise Speed', suffixText: 'kts'),
+                        decoration: _buildInputDecoration(
+                            labelText: 'Cruise Speed', suffixText: 'kts'),
                         keyboardType: TextInputType.number,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
@@ -152,12 +156,13 @@ class _VehicleDetailsPageState extends State<VehicleDetailsPage> {
                           return null;
                         },
                         onSaved: (value) =>
-                        _vehicle.cruiseSpeed = num.parse(value!),
+                            _vehicle.cruiseSpeed = num.parse(value!),
                       ),
                       const SizedBox(height: 18),
                       TextFormField(
                         initialValue: _vehicle.cruiseSpeed.toString(),
-                        decoration: _buildInputDecoration(labelText: 'Cruise Speed', suffixText: 'ft'),
+                        decoration: _buildInputDecoration(
+                            labelText: 'Cruise Speed', suffixText: 'ft'),
                         keyboardType: TextInputType.number,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
@@ -169,7 +174,7 @@ class _VehicleDetailsPageState extends State<VehicleDetailsPage> {
                           return null;
                         },
                         onSaved: (value) =>
-                        _vehicle.cruiseSpeed = num.parse(value!),
+                            _vehicle.cruiseSpeed = num.parse(value!),
                       ),
                       const SizedBox(height: 20),
                       Row(
@@ -183,7 +188,7 @@ class _VehicleDetailsPageState extends State<VehicleDetailsPage> {
                                   color: Colors.transparent,
                                   border: Border.all(
                                     color: isPlaneSelected
-                                        ? Colors.blue
+                                        ? const Color(0xFFDCA200)
                                         : Colors.grey,
                                     width: 3,
                                   ),
@@ -211,7 +216,7 @@ class _VehicleDetailsPageState extends State<VehicleDetailsPage> {
                                   color: Colors.transparent,
                                   border: Border.all(
                                     color: !isPlaneSelected
-                                        ? Colors.blue
+                                        ? const Color(0xFFDCA200)
                                         : Colors.grey,
                                     width: 3,
                                   ),
@@ -221,7 +226,7 @@ class _VehicleDetailsPageState extends State<VehicleDetailsPage> {
                                   child: Text(
                                     'Helicopter',
                                     style: TextStyle(
-                                      color: Colors.black,
+                                      color: Color(0xFF131141),
                                       fontSize: 18,
                                     ),
                                   ),
@@ -234,31 +239,36 @@ class _VehicleDetailsPageState extends State<VehicleDetailsPage> {
                       const SizedBox(height: 60),
                       ...widget.vehicleId == null
                           ? [
-                        SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton(
-                            onPressed: () async {
-                              if (_formKey.currentState!.validate()) {
-                                _formKey.currentState!.save();
-                                try {
-                                  await VehicleService.createVehicle(_vehicle);
-                                  Navigator.of(context).pop();
-                                } on DioException catch (e) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text('Error: ${e.response?.data['message']}'),
+                              SizedBox(
+                                width: double.infinity,
+                                child: ElevatedButton(
+                                  onPressed: () async {
+                                    if (_formKey.currentState!.validate()) {
+                                      _formKey.currentState!.save();
+                                      try {
+                                        await VehicleService.createVehicle(
+                                            _vehicle);
+                                        Navigator.of(context).pop();
+                                      } on DioException catch (e) {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          SnackBar(
+                                            content: Text(
+                                                'Error: ${e.response?.data['message']}'),
+                                          ),
+                                        );
+                                      }
+                                    }
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    foregroundColor: Colors.black,
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 15,
                                     ),
-                                  );
-                                }
-                              }
-                            },
-                            style: ElevatedButton.styleFrom(
-                              foregroundColor: Colors.black,
-                              padding: const EdgeInsets.symmetric(vertical: 15), // Adds padding vertically for better touch area
-                            ),
-                            child: const Text('Save Vehicle'),
-                          ),
-                        ),
+                                  ),
+                                  child: const Text('Save Vehicle'),
+                                ),
+                              ),
                             ]
                           : [
                               Row(
@@ -277,9 +287,13 @@ class _VehicleDetailsPageState extends State<VehicleDetailsPage> {
                                         }
                                       },
                                       style: ElevatedButton.styleFrom(
-                                        foregroundColor: Colors.black,
+                                        foregroundColor:
+                                            const Color(0xFF131141),
+                                        backgroundColor:
+                                            const Color(0xFFDCA200),
                                       ),
-                                      child: Text(translate('vehicle.update_vehicle')),
+                                      child: Text(
+                                          translate('vehicle.update_vehicle')),
                                     ),
                                   ),
                                   const SizedBox(width: 10),
@@ -329,10 +343,11 @@ class _VehicleDetailsPageState extends State<VehicleDetailsPage> {
                                         }
                                       },
                                       style: ElevatedButton.styleFrom(
-                                        backgroundColor: Colors.red,
-                                        foregroundColor: Colors.white,
+                                        backgroundColor: Colors.red.shade100,
+                                        foregroundColor: Colors.red,
                                       ),
-                                      child: Text(translate('vehicle.delete_vehicle')),
+                                      child: Text(
+                                          translate('vehicle.delete_vehicle')),
                                     ),
                                   ),
                                 ],
