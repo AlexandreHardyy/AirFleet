@@ -16,13 +16,13 @@ import 'package:frontend/mobile/home/home.dart';
 import 'package:frontend/mobile/payment_screen.dart';
 import 'package:frontend/mobile/pilot_flight_request_detail.dart';
 import 'package:frontend/mobile/profile/user_profile.dart';
-import 'package:frontend/mobile/profile/user_vehicles.dart';
+import 'package:frontend/mobile/profile/user_ratings.dart';
 import 'package:frontend/mobile/proposal/proposal_detail.dart';
 import 'package:frontend/mobile/proposal/proposals_management.dart';
 import 'package:frontend/mobile/vehicle_detail.dart';
 import 'package:frontend/mobile/vehicles_management.dart';
 import 'package:frontend/models/flight.dart';
-import 'package:frontend/models/vehicle.dart';
+import 'package:frontend/models/rating.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:toastification/toastification.dart';
@@ -70,11 +70,10 @@ class MobileLayout extends StatelessWidget {
               onGenerateRoute: (settings) {
                 final args = settings.arguments;
                 switch (settings.name) {
-                  case UserVehiclesScreen.routeName:
+                  case UserRatingsScreen.routeName:
                     return MaterialPageRoute(
                       builder: (context) {
-                        return UserVehiclesScreen(
-                            vehicles: args as List<Vehicle>);
+                        return UserRatingsScreen(ratings: args as List<Rating>);
                       },
                     );
                   case FlightRequestDetail.routeName:

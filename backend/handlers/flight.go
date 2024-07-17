@@ -727,18 +727,11 @@ func (h *FlightSocketHandler) StartAndCompleteFlight(s socketio.Conn, msg string
 		return err
 	}
 
-	if flight.Status != flightStatus.WAITING_TAKEOFF {
+	if flight.Status != flightStatus.IN_PROGRESS {
 		s.Emit("error", "Flight is not ready to take off")
 		log.Println("Flight is not ready to take off")
 		return nil
 	}
-
-	err = h.flightService.FlightTakeoff(simulationRequest.FlightId, simulationRequest.PilotId)
-	if err != nil {
-		s.Emit("error", err.Error())
-		return err
-	}
-	log.Println("Flight has taken off")
 
 	go func() {
 		ticker := time.NewTicker(5 * time.Second)

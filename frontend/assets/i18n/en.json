@@ -16,6 +16,12 @@
       "submit": "Submit",
       "ignore": "Ignore"
     },
+    "role": {
+      "user": "User",
+      "pilot": "Pilot",
+      "admin": "Admin",
+      "unknown": "Unknown role"
+    },
     "plane": "Plane",
     "helicopter": "Helicopter"
   },
@@ -41,6 +47,21 @@
       "vehicle": "Vehicle",
       "offerFlight": "Offer flight",
       "logout": "Logout"
+    },
+    "profile": {
+      "ratings": "Ratings",
+      "flightList": {
+        "status": {
+          "waitingTakeoff": "Waiting for takeoff",
+          "inProgress": "In progress",
+          "finished": "Finished",
+          "cancelled": "canceled"
+        }
+      },
+      "show": {
+        "more": "Show more",
+        "less": "Show less"
+      }
     },
     "flight_management": {
       "create": {

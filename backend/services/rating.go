@@ -115,6 +115,12 @@ func (s *RatingService) GetRatingsByPilotID(pilotID int, filters map[string]inte
 			Rating:  ratingModel.Rating,
 			Comment: ratingModel.Comment,
 			Status:  ratingModel.Status,
+			UserID:  ratingModel.UserID,
+			User: responses.ListUser{
+				FirstName: ratingModel.User.FirstName,
+				LastName:  ratingModel.User.LastName,
+				Email:     ratingModel.User.Email,
+			},
 			PilotID: ratingModel.PilotID,
 			Pilot: responses.ListUser{
 				ID:         ratingModel.Pilot.ID,

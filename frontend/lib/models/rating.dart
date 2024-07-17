@@ -5,6 +5,8 @@ class Rating {
   num? rating;
   String? comment;
   String status;
+  int userId;
+  User user;
   int pilotId;
   User pilot;
   String createdAt;
@@ -15,6 +17,8 @@ class Rating {
     this.rating,
     this.comment,
     required this.status,
+    required this.userId,
+    required this.user,
     required this.pilotId,
     required this.pilot,
     required this.createdAt,
@@ -27,6 +31,8 @@ class Rating {
       rating: json['rating'],
       comment: json['comment'],
       status: json['status'],
+      userId: json['user_id'],
+      user: User.fromJson(json['user']),
       pilotId: json['pilot_id'],
       pilot: User.fromJson(json['pilot']),
       createdAt: json['created_at'],
@@ -40,6 +46,8 @@ class Rating {
       'rating': rating,
       'comment': comment,
       'status': status,
+      'user_id': userId,
+      'user': user.toJson(),
       'pilot_id': pilotId,
       'pilot': pilot.toJson(),
       'created_at': createdAt,
