@@ -39,7 +39,7 @@ class _LoginScreenState extends State<LoginScreen> {
             children: [
               FormBuilderTextField(
                 key: _emailFieldKey,
-                name: 'email',
+                name: 'email - ${const String.fromEnvironment('API_URL')}',
                 decoration: const InputDecoration(labelText: 'Email'),
                 validator: FormBuilderValidators.compose([
                   FormBuilderValidators.required(),
