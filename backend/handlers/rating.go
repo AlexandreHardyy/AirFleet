@@ -70,13 +70,11 @@ func (h *RatingHandler) Update(c *gin.Context) {
 
 	response, err := h.ratingService.UpdateRating(convertedRatingID, rating, userID)
 	if err != nil {
-		_, err := repositories.CreateMonitoringLog(models.MonitoringLog{
+		repositories.CreateMonitoringLog(models.MonitoringLog{
 			Type:    "error",
 			Content: "[UpdateRating]: " + err.Error(),
 		})
-		if err != nil {
-			return
-		}
+
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
@@ -196,16 +194,10 @@ func (h *RatingHandler) GetRatingByUserIDAndStatus(c *gin.Context) {
 
 	response, err := h.ratingService.GetRatingByUserIDAndStatus(userID, status)
 	if err != nil {
-		_, err := repositories.CreateMonitoringLog(models.MonitoringLog{
+		repositories.CreateMonitoringLog(models.MonitoringLog{
 			Type:    "error",
 			Content: "[GetRatingByUserIDAndStatus]: " + err.Error(),
 		})
-		if err != nil {
-			return
-		}
-		response := &Response{
-			Message: err.Error(),
-		}
 
 		//TODO status can be different
 		c.JSON(http.StatusNotFound, response)

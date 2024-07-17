@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"backend/auth"
 	flightStatus "backend/data/flight-status"
 	"backend/inputs"
 	"backend/models"
@@ -63,13 +64,12 @@ func (h *FlightHandler) GetAll(c *gin.Context) {
 		response := &Response{
 			Message: err.Error(),
 		}
-		_, err := repositories.CreateMonitoringLog(models.MonitoringLog{
+
+		repositories.CreateMonitoringLog(models.MonitoringLog{
 			Type:    "error",
 			Content: "[GetAllFlights]: " + err.Error(),
 		})
-		if err != nil {
-			return
-		}
+
 		c.JSON(http.StatusBadRequest, response)
 		return
 	}
@@ -95,6 +95,8 @@ func (h *FlightHandler) GetAll(c *gin.Context) {
 //
 // @Success		200				{object}	responses.ResponseFlight
 // @Failure		400				{object}	Response
+// @Failure		401				{object}	Response
+// @Failure		403				{object}	Response
 //
 // @Router			/flights/{id} [get]
 //
@@ -108,6 +110,14 @@ func (h *FlightHandler) GetFlight(c *gin.Context) {
 		return
 	}
 
+	userID, err := token.ExtractTokenID(c)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, Response{
+			Message: "Unauthorized",
+		})
+		return
+	}
+
 	flight, err := h.flightService.GetFlight(flightId)
 	if err != nil {
 		repositories.CreateMonitoringLog(models.MonitoringLog{
@@ -116,6 +126,36 @@ func (h *FlightHandler) GetFlight(c *gin.Context) {
 		})
 		c.JSON(http.StatusBadRequest, Response{
 			Message: err.Error(),
+		})
+		return
+	}
+
+	// Check if the user is the pilot, one of the users, or an admin
+	isUserAuthorized := false
+	if flight.PilotID != nil && *flight.PilotID == userID {
+		isUserAuthorized = true
+	} else {
+		for _, user := range flight.Users {
+			if user.ID == userID {
+				isUserAuthorized = true
+				break
+			}
+		}
+	}
+
+	// Assuming a function that checks if the user is an admin: isAdmin(userID int) bool
+
+	isAdmin, err := auth.IsAdmin(userID)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, Response{
+			Message: "Unauthorized",
+		})
+		return
+	}
+
+	if !isUserAuthorized && !isAdmin {
+		c.JSON(http.StatusForbidden, Response{
+			Message: "Forbidden",
 		})
 		return
 	}
