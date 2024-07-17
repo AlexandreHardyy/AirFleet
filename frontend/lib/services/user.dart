@@ -60,14 +60,15 @@ class UserService {
       return response.data;
     } catch (error) {
       if (error is DioException) {
-        return error.response?.data ?? { 'message': error.message };
+        return error.response?.data ?? {'message': error.message};
       } else {
         throw Exception('Failed to register pilot: $error');
       }
     }
   }
 
-  static Future<Map<String, dynamic>> login(String email, String password) async {
+  static Future<Map<String, dynamic>> login(
+      String email, String password) async {
     try {
       final response = await dioApi.post(
         '/users/login',
@@ -87,9 +88,7 @@ class UserService {
       if (error is DioException) {
         return error.response?.data;
       } else {
-        return {
-          'message': 'an error occurred.'
-        };
+        return {'message': 'an error occurred.'};
       }
     }
   }
@@ -110,11 +109,7 @@ class UserService {
       }
       return User.fromJson(response.data);
     } catch (error) {
-      if (error is DioException) {
-        return null;
-      } else {
-        throw Exception('Failed to getCurrent user: $error');
-      }
+      return null;
     }
   }
 
@@ -161,15 +156,15 @@ class UserService {
     }
   }
 
-  static Future<Map<String, dynamic>> update(int id, Map<String, dynamic> data) async {
+  static Future<Map<String, dynamic>> update(
+      int id, Map<String, dynamic> data) async {
     try {
       final response = await dioApi.put('/users/$id', data: data);
       if (response.statusCode == 200) {
-        return { 'message': 'user updated !' };
+        return {'message': 'user updated !'};
       }
 
-      return { 'message': 'error occured' };
-
+      return {'message': 'error occured'};
     } catch (error) {
       if (error is DioException) {
         throw Exception('Failed to update user: ${error.message}');
