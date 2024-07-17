@@ -5,6 +5,7 @@ import 'package:flutter_translate/flutter_translate.dart';
 import 'package:frontend/mobile/blocs/current_flight/current_flight_bloc.dart';
 import 'package:frontend/mobile/home/flights_management/pilot_flight_management/pilot_current_flight_management/index.dart';
 import 'package:frontend/mobile/home/flights_management/pilot_flight_management/search_flights.dart';
+import 'package:frontend/mobile/proposal/search.dart';
 import 'package:frontend/models/rating.dart';
 import 'package:frontend/models/user.dart';
 import 'package:frontend/services/rating.dart';
@@ -174,22 +175,20 @@ class _FlightsManagementState extends State<FlightsManagement> {
                               toolbarHeight: 0,
                               bottom: const TabBar(
                                 tabs: [
-                                  Text("Search"),
                                   Text("Create"),
-                                  Text("List"),
+                                  Text("Search"),
                                 ],
                               ),
                             ),
                             body: TabBarView(
                               children: [
-                                const Icon(Icons.directions_car),
                                 CreateFlightWidget(
                                   departureTextFieldFocusNode:
                                   departureTextFieldFocusNode,
                                   arrivalTextFieldFocusNode:
                                   arrivalTextFieldFocusNode,
                                 ),
-                                const Icon(Icons.directions_bike),
+                                const SearchView(),
                               ],
                             ),
                           ),
