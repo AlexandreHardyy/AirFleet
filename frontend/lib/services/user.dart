@@ -196,11 +196,7 @@ class UserService {
         data: formData,
       );
     } catch (error) {
-      if (error is DioException) {
-        return error.response?.data ?? {'message': error.message};
-      } else {
-        throw Exception('Failed to register pilot: $error');
-      }
+      return null;
     }
   }
 }

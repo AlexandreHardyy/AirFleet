@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:frontend/services/dio.dart';
 import 'package:frontend/storage/user.dart';
 
@@ -32,16 +33,25 @@ class ProfileImageState extends State<ProfileImage> {
     if (_isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
-    return Image.network(
-      fit: BoxFit.fitHeight,
-      key: ValueKey(_time),
-      '$apiUrl/users/${UserStore.user?.id}/files/profile?time=${_time}',
-      headers: {
-        'Authorization': 'Bearer $_token',
-      },
-      errorBuilder: (context, error, stackTrace) {
-        return const Icon(Icons.person, size: 30.0);
-      },
+
+    return CircleAvatar(
+      radius: 50,
+      backgroundColor: const Color(0xFF131141),
+      child: Image.network(
+        '$apiUrl/users/${UserStore.user?.id}/files/profile?time=$_time',
+        headers: {
+              'Authorization': 'Bearer $_token',
+        },
+        errorBuilder: (context, error, stackTrace) {
+          return Icon(
+            UserStore.user?.role == Roles.pilot
+                ? FontAwesomeIcons.userTie
+                : FontAwesomeIcons.userLarge,
+            color: const Color(0xFFDCA200),
+            size: 50,
+          );
+        },
+      ),
     );
   }
 }

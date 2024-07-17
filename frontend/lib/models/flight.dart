@@ -1,5 +1,6 @@
 import 'package:frontend/models/user.dart';
 import 'package:frontend/models/vehicle.dart';
+import 'dart:math';
 
 class CreateFlightRequest {
   final Airport departure;
@@ -30,6 +31,7 @@ class Flight {
   Vehicle? vehicle;
   List<User>? users;
   String? createdAt;
+  String? updatedAt;
 
   Flight({
     required this.id,
@@ -43,6 +45,7 @@ class Flight {
     this.vehicle,
     this.users,
     this.createdAt,
+    this.updatedAt,
   });
 
   factory Flight.fromJson(Map<String, dynamic> json) {
@@ -58,6 +61,7 @@ class Flight {
       vehicle: json['vehicle'] != null ? Vehicle.fromJson(json['vehicle']) : null,
       users: json['users'] != null ? (json['users'] as List).map((user) => User.fromJson(user)).toList() : null,
       createdAt: json['created_at'],
+      updatedAt: json['updated_at'],
     );
   }
 
@@ -74,6 +78,7 @@ class Flight {
       'vehicle': vehicle?.toJson(),
       'users': users?.map((user) => user.toJson()).toList(),
       'createdAt': createdAt,
+      'updatedAt': updatedAt,
     };
   }
 }

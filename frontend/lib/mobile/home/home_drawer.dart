@@ -29,13 +29,14 @@ class HomeDrawer extends StatelessWidget {
                   children: [
                     ClipOval(
                       child: Container(
-                          decoration: const BoxDecoration(
-                            color: Color(0xFF131141),
-                          ),
-                          width: 100,
-                          height: 100,
-                          padding: const EdgeInsets.all(12.0),
-                          child: ProfileImage()),
+                          // decoration: const BoxDecoration(
+                          //   color: Color(0xFF131141),
+                          // ),
+                          width: 80,
+                          height: 80,
+                          // padding: const EdgeInsets.all(12.0),
+                          child: const ProfileImage(),
+                        ),
                     ),
                     const SizedBox(height: 16.0),
                     AutoSizeText(
@@ -106,12 +107,12 @@ class HomeDrawer extends StatelessWidget {
 String _displayRole(String role) {
   switch (role) {
     case 'ROLE_ADMIN':
-      return 'Admin';
+      return translate('common.role.admin');
     case 'ROLE_USER':
-      return 'User';
+      return translate('common.role.user');
     case 'ROLE_PILOT':
-      return 'Pilot';
+      return translate('common.role.pilot');
     default:
-      return 'Unknown Role';
+      return translate('common.role.unknown');
   }
 }
