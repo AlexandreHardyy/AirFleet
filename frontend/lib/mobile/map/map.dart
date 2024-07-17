@@ -49,16 +49,6 @@ class AirFleetMapState extends State<AirFleetMap> {
     });
 
     await _getPermission();
-
-    // var status = await Permission.locationWhenInUse.request();
-
-    // if (status.isGranted) {
-    //   this.mapboxMap.location.updateSettings(LocationComponentSettings(
-    //       enabled: true,
-    //       puckBearingEnabled: true,
-    //       locationPuck: LocationPuck(locationPuck2D: DefaultLocationPuck2D())
-    //   ));
-    // }
   }
 
   _getPermission() async {
@@ -195,18 +185,6 @@ class AirFleetMapState extends State<AirFleetMap> {
 
   @override
   Widget build(BuildContext context) {
-    if (context.read<SocketIoBloc>().state.socket != null) {
-      context.read<SocketIoBloc>().add(SocketIoListenEvent(
-          eventId: "pilotPositionUpdated",
-          event: "pilotPositionUpdated",
-          callback: (data) {
-            Map<String, dynamic> jsonData = jsonDecode(data);
-            final position =
-                Position(jsonData['longitude'], jsonData['latitude']);
-            _createPilotPositionOnMap(position);
-          }));
-    }
-
     return BlocListener<CurrentFlightBloc, CurrentFlightState>(
       listener: (context, state) {
         //TODO Remove duplicated code
@@ -223,6 +201,18 @@ class AirFleetMapState extends State<AirFleetMap> {
               _trackLocation = true;
               _refreshTrackLocation();
             });
+          }
+
+          if (context.read<SocketIoBloc>().state.socket != null && state.flight?.status == "in_progress") {
+            context.read<SocketIoBloc>().add(SocketIoListenEvent(
+                eventId: "pilotPositionUpdated",
+                event: "pilotPositionUpdated",
+                callback: (data) {
+                  Map<String, dynamic> jsonData = jsonDecode(data);
+                  final position =
+                  Position(jsonData['longitude'], jsonData['latitude']);
+                  _createPilotPositionOnMap(position);
+                }));
           }
         }
 

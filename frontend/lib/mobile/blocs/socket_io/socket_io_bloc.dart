@@ -101,6 +101,7 @@ class SocketIoBloc extends Bloc<SocketIoEvent, SocketIoState> {
     state.socket!.disconnect();
     emit(state.copyWith(
       status: SocketIoStatus.disconnected,
+      listenedEvents: {},
     ));
   }
 
