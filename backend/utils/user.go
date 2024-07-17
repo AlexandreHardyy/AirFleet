@@ -1,6 +1,8 @@
 package utils
 
-import "backend/models"
+import (
+	"backend/models"
+)
 
 func ContainsUser(users []*models.User, userID int) bool {
 	for _, user := range users {
