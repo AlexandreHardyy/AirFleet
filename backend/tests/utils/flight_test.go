@@ -38,6 +38,16 @@ func (m *FlightRepositoryInterface) UpdateFlight(flight models.Flight) (models.F
 	return args.Get(0).(models.Flight), args.Error(1)
 }
 
+func (m *FlightRepositoryInterface) GetAllFlights(limit int, offset int) ([]models.Flight, error) {
+	args := m.Called(limit, offset)
+	return args.Get(0).([]models.Flight), args.Error(1)
+}
+
+func (m *FlightRepositoryInterface) GetFlightsByUserID(userID int) ([]models.Flight, error) {
+	args := m.Called(userID)
+	return args.Get(0).([]models.Flight), args.Error(1)
+}
+
 func TestEstimateFlightTimeInHour(t *testing.T) {
 	// Mock the repository to return a specific flight
 	mockRepo := new(FlightRepositoryInterface)
