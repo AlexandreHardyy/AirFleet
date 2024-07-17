@@ -55,6 +55,7 @@
           "pilot": "Pilot",
           "price": "Price",
           "aircraft": "Aircraft",
+          "seat": "Seat Nb",
           "estimated_flight_time": "Estimated flight time"
         },
         "waiting_takeoff": {

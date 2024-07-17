@@ -55,6 +55,7 @@
           "pilot": "Pilote",
           "price": "Prix",
           "aircraft": "Avion",
+          "seat": "Nb Siège",
           "estimated_flight_time": "Temps de vol estimé"
         },
         "waiting_takeoff": {

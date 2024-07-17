@@ -90,6 +90,16 @@ class _WaitingProposalApprovalCardState
           ],
         ),
         const SizedBox(height: 8),
+        Row(
+          children: [
+            Text(
+              "${translate('home.flight_management.user_current_flight_management.waiting_proposal_approval.seat')}: ",
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+            Text(widget.flight.vehicle!.seat.toString())
+          ],
+        ),
+        const SizedBox(height: 8),
         estimatedFlightTime == null
             ? const CircularProgressIndicator()
             : Row(
