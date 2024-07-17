@@ -42,7 +42,7 @@ class CustomPieChartState extends State<CustomPieChart> {
                   children: [
                     Icon(Icons.airplanemode_active),
                     SizedBox(
-                      width: 32,
+                      width: 16,
                     ),
                     Text(
                       'Verified vehicles chart',
@@ -112,7 +112,7 @@ class CustomPieChartState extends State<CustomPieChart> {
 
     return [
       PieChartSectionData(
-        color: Color(0xFF131141),
+        color: const Color(0xFF131141),
         value: verified.toDouble(),
         title: '$verified',
         radius: 50,

@@ -1,5 +1,4 @@
 import 'package:frontend/models/flight.dart';
-import 'package:frontend/models/user.dart';
 
 class Proposal {
   int id;

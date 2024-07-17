@@ -9,7 +9,7 @@ ButtonStyle dangerButtonStyle = ElevatedButton.styleFrom(
   ),
   shape: RoundedRectangleBorder(
     borderRadius: BorderRadius.circular(8.0),
-    side: BorderSide(color: const Color.fromARGB(255, 253, 70, 56)),
+    side: const BorderSide(color: Color.fromARGB(255, 253, 70, 56)),
   ),
   padding: const EdgeInsets.all(14),
 );

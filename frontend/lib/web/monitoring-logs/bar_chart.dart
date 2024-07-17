@@ -155,7 +155,7 @@ class MonitoringLogChartState extends State<MonitoringLogChart> {
             seconds: now.second,
             milliseconds: now.millisecond,
             microseconds: now.microsecond));
-        DateTime end = start.add(Duration(days: 1));
+        DateTime end = start.add(const Duration(days: 1));
 
         if (logCreatedAt.isAfter(start) && logCreatedAt.isBefore(end)) {
           if (log.type == "error") {
