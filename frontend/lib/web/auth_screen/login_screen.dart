@@ -29,7 +29,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Login'),
+        title: const Text('Login - ${const String.fromEnvironment('API_URL')}'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -39,7 +39,7 @@ class _LoginScreenState extends State<LoginScreen> {
             children: [
               FormBuilderTextField(
                 key: _emailFieldKey,
-                name: 'email - ${const String.fromEnvironment('API_URL')}',
+                name: 'email',
                 decoration: const InputDecoration(labelText: 'Email'),
                 validator: FormBuilderValidators.compose([
                   FormBuilderValidators.required(),
