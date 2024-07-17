@@ -1,12 +1,5 @@
 #!/bin/bash
 
-# Clone or update the Flutter repository
-if cd flutter; then
-    git pull && cd ..
-else
-    git clone https://github.com/flutter/flutter.git
-fi
-
 # Set up Flutter environment
 export PATH="$PATH:$(pwd)/flutter/bin"
 echo "PUBLIC_ACCESS_TOKEN_MAPBOX=$PUBLIC_ACCESS_TOKEN_MAPBOX" >> .env
