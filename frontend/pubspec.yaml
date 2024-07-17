@@ -63,10 +63,17 @@ dependencies:
   flutter_stripe: ^10.2.0
   toastification: ^2.0.0
 
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/icons/icon.png"
+  adaptive_icon_background: "#131141"
+  adaptive_icon_foreground: "assets/icons/icon_foreground.png"
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  flutter_launcher_icons: ^0.13.1
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -92,6 +99,7 @@ flutter:
    - assets/symbols/
    - .env
    - assets/i18n/
+   - assets/icons/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
