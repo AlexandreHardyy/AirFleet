@@ -64,7 +64,7 @@ class _CurrentPilotFlightManagementState
   @override
   void dispose() {
     _socketIoBloc.add(SocketIoStopListeningEvent(eventId: 'flightUpdated'));
-    _socketIoBloc.state.socket!.disconnect();
+    _socketIoBloc.add(SocketIoDisconnected());
     super.dispose();
   }
 

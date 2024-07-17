@@ -94,113 +94,120 @@ class _FlightsManagementState extends State<FlightsManagement> {
               topRight: Radius.circular(25),
             ),
           ),
-          child: CustomScrollView(
-            controller: scrollController,
-            slivers: [
-              SliverToBoxAdapter(
-                child: Center(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).hintColor,
-                      borderRadius: const BorderRadius.all(
-                        Radius.circular(10),
+          child: RefreshIndicator(
+            onRefresh: _handleRefresh,
+            child: CustomScrollView(
+              controller: scrollController,
+              slivers: [
+                SliverToBoxAdapter(
+                  child: Center(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).hintColor,
+                        borderRadius: const BorderRadius.all(
+                          Radius.circular(10),
+                        ),
                       ),
+                      height: 4,
+                      width: 40,
+                      margin: const EdgeInsets.symmetric(vertical: 10),
                     ),
-                    height: 4,
-                    width: 40,
-                    margin: const EdgeInsets.symmetric(vertical: 10),
                   ),
                 ),
-              ),
-              SliverFillRemaining(
-                child: MediaQuery.removePadding(
-                  context: context,
-                  removeTop: true,
-                  child: BlocConsumer<CurrentFlightBloc, CurrentFlightState>(
-                    listener: (context, state) {
-                      if (state.status == CurrentFlightStatus.loaded &&
-                          state.flight == null &&
-                          state.pendingRating != null) {
-                        WidgetsBinding.instance.addPostFrameCallback((_) {
-                          _dialogBuilder(context);
-                        });
-                      }
-                    },
-                    builder: (context, state) {
-                      if (state.status == CurrentFlightStatus.loading) {
-                        return const Center(
-                          child: CircularProgressIndicator(),
-                        );
-                      }
+                SliverFillRemaining(
+                  child: MediaQuery.removePadding(
+                    context: context,
+                    removeTop: true,
+                    child: BlocConsumer<CurrentFlightBloc, CurrentFlightState>(
+                      listener: (context, state) {
+                        if (state.status == CurrentFlightStatus.loaded &&
+                            state.flight == null &&
+                            state.pendingRating != null) {
+                          WidgetsBinding.instance.addPostFrameCallback((_) {
+                            _dialogBuilder(context);
+                          });
+                        }
+                      },
+                      builder: (context, state) {
+                        if (state.status == CurrentFlightStatus.loading) {
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        }
 
-                      if (state.status == CurrentFlightStatus.loaded && !state.isModuleEnabled) {
-                        return const Center(
-                          child: Text("Module flight is disabled"),
-                        );
-                      }
+                        if (state.status == CurrentFlightStatus.loaded && !state.isModuleEnabled) {
+                          return const Center(
+                            child: Text("Module flight is disabled"),
+                          );
+                        }
 
-                      if (state.status == CurrentFlightStatus.loaded &&
-                          state.flight != null) {
+                        if (state.status == CurrentFlightStatus.loaded &&
+                            state.flight != null) {
+                          return UserStore.user?.role == Roles.pilot
+                              ? const CurrentPilotFlightManagement()
+                              : const CurrentFlightManagement();
+                        }
+
                         return UserStore.user?.role == Roles.pilot
-                            ? const CurrentPilotFlightManagement()
-                            : const CurrentFlightManagement();
-                      }
-
-                      return UserStore.user?.role == Roles.pilot
-                          ? DefaultTabController(
-                              length: 1,
-                              child: Scaffold(
-                                appBar: AppBar(
-                                  toolbarHeight: 0,
-                                  bottom: const TabBar(
-                                    tabs: [
-                                      Text("List"),
-                                    ],
-                                  ),
-                                ),
-                                body: TabBarView(
-                                  children: [
-                                    SearchFlights(),
-                                  ],
-                                ),
+                            ? DefaultTabController(
+                          length: 1,
+                          child: Scaffold(
+                            appBar: AppBar(
+                              toolbarHeight: 0,
+                              bottom: const TabBar(
+                                tabs: [
+                                  Text("List"),
+                                ],
                               ),
-                            )
-                          : DefaultTabController(
-                              length: 3,
-                              child: Scaffold(
-                                appBar: AppBar(
-                                  toolbarHeight: 0,
-                                  bottom: const TabBar(
-                                    tabs: [
-                                      Text("Search"),
-                                      Text("Create"),
-                                      Text("List"),
-                                    ],
-                                  ),
-                                ),
-                                body: TabBarView(
-                                  children: [
-                                    const Icon(Icons.directions_car),
-                                    CreateFlightWidget(
-                                      departureTextFieldFocusNode:
-                                          departureTextFieldFocusNode,
-                                      arrivalTextFieldFocusNode:
-                                          arrivalTextFieldFocusNode,
-                                    ),
-                                    const Icon(Icons.directions_bike),
-                                  ],
-                                ),
+                            ),
+                            body: TabBarView(
+                              children: [
+                                SearchFlights(),
+                              ],
+                            ),
+                          ),
+                        )
+                            : DefaultTabController(
+                          length: 3,
+                          child: Scaffold(
+                            appBar: AppBar(
+                              toolbarHeight: 0,
+                              bottom: const TabBar(
+                                tabs: [
+                                  Text("Search"),
+                                  Text("Create"),
+                                  Text("List"),
+                                ],
                               ),
-                            );
-                    },
+                            ),
+                            body: TabBarView(
+                              children: [
+                                const Icon(Icons.directions_car),
+                                CreateFlightWidget(
+                                  departureTextFieldFocusNode:
+                                  departureTextFieldFocusNode,
+                                  arrivalTextFieldFocusNode:
+                                  arrivalTextFieldFocusNode,
+                                ),
+                                const Icon(Icons.directions_bike),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
                   ),
-                ),
-              )
-            ],
+                )
+              ],
+            ),
           ),
         );
       },
     );
+  }
+
+  Future<void> _handleRefresh() async {
+    context.read<CurrentFlightBloc>().add(CurrentFlightInitialized());
   }
 }
 
