@@ -299,6 +299,10 @@ definitions:
         type: string
       updated_at:
         type: string
+      user:
+        $ref: '#/definitions/responses.ListUser'
+      user_id:
+        type: integer
     type: object
   responses.ResponseVehicle:
     properties:
@@ -431,6 +435,14 @@ paths:
             $ref: '#/definitions/responses.ResponseFlight'
         "400":
           description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.Response'
+        "403":
+          description: Forbidden
           schema:
             $ref: '#/definitions/handlers.Response'
       security:
@@ -1019,6 +1031,39 @@ paths:
       summary: Update rating
       tags:
       - ratings
+  /ratings/pilot/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get rating by pilot ID
+      parameters:
+      - description: Pilot ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/responses.ResponseRating'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.Response'
+      security:
+      - BearerAuth: []
+      summary: Get rating by pilot ID
+      tags:
+      - ratings
   /ratings/status/{status}:
     get:
       consumes:
@@ -1302,7 +1347,7 @@ paths:
     post:
       consumes:
       - application/json
-      description: create a new vehicle for a pilot
+      description: Create vehicle
       parameters:
       - description: Message body
         in: body
@@ -1348,6 +1393,8 @@ paths:
           description: Not Found
           schema:
             $ref: '#/definitions/handlers.Response'
+      security:
+      - BearerAuth: []
       summary: delete vehicle by id
       tags:
       - vehicle
@@ -1377,7 +1424,7 @@ paths:
       summary: get vehicle by id
       tags:
       - vehicle
-    patch:
+    put:
       consumes:
       - application/json
       description: update vehicle by id
@@ -1404,6 +1451,8 @@ paths:
           description: Not Found
           schema:
             $ref: '#/definitions/handlers.Response'
+      security:
+      - BearerAuth: []
       summary: update vehicle by id
       tags:
       - vehicle
@@ -1411,7 +1460,7 @@ paths:
     get:
       consumes:
       - application/json
-      description: get all vehicles for current user
+      description: get all vehicles
       produces:
       - application/json
       responses:
@@ -1427,7 +1476,7 @@ paths:
             $ref: '#/definitions/handlers.Response'
       security:
       - BearerAuth: []
-      summary: Get all vehicles for current user
+      summary: Get all vehicles
       tags:
       - vehicle
 securityDefinitions:
