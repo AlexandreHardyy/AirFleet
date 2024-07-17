@@ -285,45 +285,50 @@ class _CreateProposalViewState extends State<CreateProposalView> {
                 },
               ),
               const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () async {
-                  if (_formKey.currentState!.validate()) {
-                    _formKey.currentState!.save();
-                    try {
-                      await ProposalService.createProposal({
-                        "availableSeats": availableSeats,
-                        "departureTime": DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").format(departureTime.toUtc()),
-                        "description": description,
-                        "price": price,
-                        "vehicleId": vehicleId,
-                        "createFlight": {
-                          "departure": {
-                            "name": selectedDepartureAirport!.name,
-                            "address": selectedDepartureAirport!.address,
-                            "longitude": selectedDepartureAirport!.longitude,
-                            "latitude": selectedDepartureAirport!.latitude,
-                          },
-                          "arrival": {
-                            "name": selectedArrivalAirport!.name,
-                            "address": selectedArrivalAirport!.address,
-                            "longitude": selectedArrivalAirport!.longitude,
-                            "latitude": selectedArrivalAirport!.latitude,
-                          },
-                        },
-                      });
-                      Navigator.pop(context, true);
-                    } on DioException catch (e) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content:
-                              Text('Error: ${e.response?.data['message']}'),
-                        ),
-                      );
-                    }
-                  }
-                },
-                child: const Text('Submit'),
-              ),
+              Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        if (_formKey.currentState!.validate()) {
+                          _formKey.currentState!.save();
+                          try {
+                            await ProposalService.createProposal({
+                              "availableSeats": availableSeats,
+                              "departureTime": DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").format(departureTime.toUtc()),
+                              "description": description,
+                              "price": price,
+                              "vehicleId": vehicleId,
+                              "createFlight": {
+                                "departure": {
+                                  "name": selectedDepartureAirport!.name,
+                                  "address": selectedDepartureAirport!.address,
+                                  "longitude": selectedDepartureAirport!.longitude,
+                                  "latitude": selectedDepartureAirport!.latitude,
+                                },
+                                "arrival": {
+                                  "name": selectedArrivalAirport!.name,
+                                  "address": selectedArrivalAirport!.address,
+                                  "longitude": selectedArrivalAirport!.longitude,
+                                  "latitude": selectedArrivalAirport!.latitude,
+                                },
+                              },
+                            });
+                            Navigator.pop(context, true);
+                          } on DioException catch (e) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('Error: ${e.response?.data['message']}'),
+                              ),
+                            );
+                          }
+                        }
+                      },
+                      child: const Text('Submit'),
+                    ),
+                  ),
+                ],
+              )
             ],
           ),
         ),

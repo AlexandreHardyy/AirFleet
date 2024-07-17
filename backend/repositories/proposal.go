@@ -7,7 +7,7 @@ import (
 )
 
 type ProposalRepositoryInterface interface {
-	GetAllProposals(limit int, offset int) ([]models.Proposal, error)
+	GetAllProposals(limit int, offset int, filter inputs.FilterPropsal) ([]models.Proposal, error)
 	GetProposalsForMe(userID int) ([]models.Proposal, error)
 	GetProposalByID(proposalID int) (models.Proposal, error)
 	CreateProposal(proposal models.Proposal) (models.Proposal, error)
@@ -23,14 +23,22 @@ func NewProposalRepository(db *gorm.DB) *ProposalRepository {
 	return &ProposalRepository{db}
 }
 
-func (r *ProposalRepository) GetAllProposals(limit int, offset int) ([]models.Proposal, error) {
+func (r *ProposalRepository) GetAllProposals(limit int, offset int, filter inputs.FilterPropsal) ([]models.Proposal, error) {
 	var proposals []models.Proposal
 	query := r.db.Preload("Flight").
 		Preload("Flight.Users").
 		Preload("Flight.Pilot").
 		Preload("Flight.Vehicle").
+		Joins("JOIN flights ON flights.id = proposals.flight_id").
 		Offset(offset).
 		Limit(limit)
+
+	if filter.MaxPrice != 0 {
+		query = query.Where("flights.price <= ?", filter.MaxPrice)
+	}
+	if filter.LeftAvailableSeats != 0 {
+		query = query.Where("available_seats >= ?", filter.LeftAvailableSeats)
+	}
 
 	err := query.Find(&proposals).Error
 	if err != nil {

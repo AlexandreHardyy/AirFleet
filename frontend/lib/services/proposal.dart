@@ -3,10 +3,22 @@ import 'package:frontend/models/proposal.dart';
 import 'package:frontend/services/dio.dart';
 
 class ProposalService {
-  static Future<List<Proposal>> getProposals() async {
+  static Future<List<Proposal>> getProposals({double? maxPrice, int? minSeatsAvailable}) async {
+    var basePath = '/proposals';
+    Map<String, dynamic> queryParams = {};
+    if (maxPrice != null) {
+      queryParams['max_price'] = maxPrice.toString();
+    }
+    if (minSeatsAvailable != null) {
+      queryParams['min_seats_available'] = minSeatsAvailable.toString();
+    }
+
+    String queryString = Uri(queryParameters: queryParams).query;
+    String finalPath = basePath + (queryString.isNotEmpty ? '?$queryString' : '');
+
     try {
       final response = await dioApi.get(
-        '/proposals',
+        finalPath,
         options: Options(
           headers: {
             'Content-Type': 'application/json; charset=UTF-8',

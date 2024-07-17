@@ -62,6 +62,7 @@ dependencies:
   flutter_translate: ^4.0.4
   flutter_stripe: ^10.2.0
   toastification: ^2.0.0
+  flutter_svg: ^2.0.10+1
 
 flutter_launcher_icons:
   android: true

@@ -37,8 +37,10 @@ func NewProposalHandler(proposalService services.ProposalServiceInterface) *Prop
 // @Accept			json
 // @Produce		json
 //
-// @Param			limit	query	int		false	"Limit"
-// @Param			offset	query	int		false	"Offset"
+// @Param			limit					query	int		false	"Limit"
+// @Param			offset					query	int		false	"Offset"
+// @Param			max_price				query	string	false	"Maximum price"
+// @Param			left_available_seats	query	string	false	"Left available seats"
 //
 // @Success		200				{object}	[]responses.ResponseProposal
 // @Failure		400				{object}	Response
@@ -49,8 +51,18 @@ func NewProposalHandler(proposalService services.ProposalServiceInterface) *Prop
 func (h *ProposalHandler) GetAllProposal(c *gin.Context) {
 	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "10"))
 	offset, _ := strconv.Atoi(c.DefaultQuery("offset", "0"))
+	maxPrice := c.Query("max_price")
+	leftAvailableSeats := c.Query("left_available_seats")
 
-	proposals, err := h.proposalService.GetAllProposals(limit, offset)
+	newMaxPrice, err := strconv.ParseFloat(maxPrice, 64)
+	newLeftAvailableSeats, err := strconv.Atoi(leftAvailableSeats)
+
+	filter := inputs.FilterPropsal{
+		MaxPrice:           newMaxPrice,
+		LeftAvailableSeats: newLeftAvailableSeats,
+	}
+
+	proposals, err := h.proposalService.GetAllProposals(limit, offset, filter)
 	if err != nil {
 		response := &Response{
 			Message: err.Error(),
@@ -372,7 +384,7 @@ func (h *ProposalHandler) LeaveProposal(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Proposal left"})
 }
 
-// StartProposal startProposal godoc
+// StartProposal godoc
 //
 // @Summary Start a proposal
 // @Schemes

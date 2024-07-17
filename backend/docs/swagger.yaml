@@ -151,16 +151,37 @@ definitions:
       user_id:
         type: integer
     type: object
+  models.File:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      path:
+        type: string
+      type:
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        type: integer
+    type: object
   responses.ListUser:
     properties:
       created_at:
         type: string
       email:
         type: string
+      files:
+        items:
+          $ref: '#/definitions/models.File'
+        type: array
       first_name:
         type: string
       id:
         type: integer
+      is_pilot_verified:
+        type: boolean
       is_verified:
         type: boolean
       last_name:
@@ -211,7 +232,7 @@ definitions:
           $ref: '#/definitions/responses.ListUser'
         type: array
       vehicle:
-        $ref: '#/definitions/responses.Vehicle'
+        $ref: '#/definitions/responses.ResponseVehicle'
       vehicle_id:
         type: integer
     required:
@@ -219,6 +240,33 @@ definitions:
     - departure
     - id
     - status
+    type: object
+  responses.ResponseMessage:
+    properties:
+      content:
+        type: string
+      created_at:
+        type: string
+      flight_id:
+        type: integer
+      id:
+        type: integer
+      user:
+        $ref: '#/definitions/responses.ListUser'
+      user_id:
+        type: integer
+    required:
+    - content
+    - id
+    type: object
+  responses.ResponseModule:
+    properties:
+      id:
+        type: integer
+      is_enabled:
+        type: boolean
+      name:
+        type: string
     type: object
   responses.ResponseProposal:
     properties:
@@ -233,28 +281,26 @@ definitions:
       id:
         type: integer
     type: object
-  responses.User:
+  responses.ResponseRating:
     properties:
+      comment:
+        type: string
       created_at:
-        type: string
-      email:
-        type: string
-      first_name:
         type: string
       id:
         type: integer
-      last_name:
-        type: string
-      role:
+      pilot:
+        $ref: '#/definitions/responses.ListUser'
+      pilot_id:
+        type: integer
+      rating:
+        type: number
+      status:
         type: string
       updated_at:
         type: string
-      vehicles:
-        items:
-          $ref: '#/definitions/responses.Vehicle'
-        type: array
     type: object
-  responses.Vehicle:
+  responses.ResponseVehicle:
     properties:
       created_at:
         type: string
@@ -278,6 +324,27 @@ definitions:
         type: string
       updated_at:
         type: string
+    type: object
+  responses.User:
+    properties:
+      created_at:
+        type: string
+      email:
+        type: string
+      first_name:
+        type: string
+      id:
+        type: integer
+      last_name:
+        type: string
+      role:
+        type: string
+      updated_at:
+        type: string
+      vehicles:
+        items:
+          $ref: '#/definitions/responses.ResponseVehicle'
+        type: array
     type: object
 info:
   contact: {}
@@ -419,6 +486,214 @@ paths:
       summary: Get flight history
       tags:
       - flight
+  /flights/nearby:
+    get:
+      consumes:
+      - application/json
+      description: get flight requests near by
+      parameters:
+      - description: Latitude
+        in: query
+        name: latitude
+        required: true
+        type: number
+      - description: Longitude
+        in: query
+        name: longitude
+        required: true
+        type: number
+      - description: Range
+        in: query
+        name: range
+        required: true
+        type: number
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/responses.ResponseFlight'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.Response'
+      security:
+      - BearerAuth: []
+      summary: Get flight requests near by
+      tags:
+      - flight
+  /messages:
+    get:
+      consumes:
+      - application/json
+      description: Get all messages
+      parameters:
+      - description: Limit
+        in: query
+        name: limit
+        type: integer
+      - description: Offset
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/responses.ResponseMessage'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.Response'
+      security:
+      - BearerAuth: []
+      summary: Get all messages
+      tags:
+      - messages
+  /messages/flight/{flightId}:
+    get:
+      consumes:
+      - application/json
+      description: Get all messages by flight ID
+      parameters:
+      - description: Flight ID
+        in: path
+        name: flightId
+        required: true
+        type: integer
+      - description: Limit
+        in: query
+        name: limit
+        type: integer
+      - description: Offset
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/responses.ResponseMessage'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.Response'
+      security:
+      - BearerAuth: []
+      summary: Get all messages by flight ID
+      tags:
+      - messages
+  /modules:
+    get:
+      consumes:
+      - application/json
+      description: Get all modules
+      parameters:
+      - description: Limit
+        in: query
+        name: limit
+        type: integer
+      - description: Offset
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/responses.ResponseModule'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.Response'
+      security:
+      - BearerAuth: []
+      summary: Get all modules
+      tags:
+      - modules
+  /modules/{id}:
+    put:
+      consumes:
+      - application/json
+      description: Update module
+      parameters:
+      - description: Module ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Is Enabled
+        in: body
+        name: is_enabled
+        required: true
+        schema:
+          type: boolean
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.Response'
+      security:
+      - BearerAuth: []
+      summary: Update module
+      tags:
+      - modules
+  /modules/{name}:
+    get:
+      consumes:
+      - application/json
+      description: Get module by name
+      parameters:
+      - description: Module Name
+        in: path
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/responses.ResponseModule'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.Response'
+      security:
+      - BearerAuth: []
+      summary: Get module by name
+      tags:
+      - modules
   /proposals:
     get:
       consumes:
@@ -433,6 +708,14 @@ paths:
         in: query
         name: offset
         type: integer
+      - description: Maximum price
+        in: query
+        name: max_price
+        type: string
+      - description: Left available seats
+        in: query
+        name: left_available_seats
+        type: string
       produces:
       - application/json
       responses:
@@ -617,6 +900,33 @@ paths:
       summary: Leave a proposal
       tags:
       - proposals
+  /proposals/{id}/start:
+    patch:
+      consumes:
+      - application/json
+      description: Start a proposal
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.Response'
+      security:
+      - BearerAuth: []
+      summary: Start a proposal
+      tags:
+      - proposals
   /proposals/me:
     get:
       consumes:
@@ -640,6 +950,104 @@ paths:
       summary: Get my proposals
       tags:
       - proposals
+  /ratings:
+    get:
+      consumes:
+      - application/json
+      description: Get all ratings
+      parameters:
+      - description: Status
+        in: query
+        name: status
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/responses.ResponseRating'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.Response'
+      security:
+      - BearerAuth: []
+      summary: Get all ratings
+      tags:
+      - ratings
+  /ratings/{id}:
+    put:
+      consumes:
+      - application/json
+      description: Update rating
+      parameters:
+      - description: Rating ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Rating
+        in: body
+        name: rating
+        schema:
+          type: object
+      - description: Comment
+        in: body
+        name: comment
+        schema:
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.Response'
+      security:
+      - BearerAuth: []
+      summary: Update rating
+      tags:
+      - ratings
+  /ratings/status/{status}:
+    get:
+      consumes:
+      - application/json
+      description: Get rating by user ID and status
+      parameters:
+      - description: Status
+        in: path
+        name: status
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/responses.ResponseRating'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.Response'
+      security:
+      - BearerAuth: []
+      summary: Get rating by user ID and status
+      tags:
+      - ratings
   /users:
     get:
       consumes:
@@ -880,7 +1288,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/responses.Vehicle'
+              $ref: '#/definitions/responses.ResponseVehicle'
             type: array
         "401":
           description: Unauthorized
@@ -908,7 +1316,7 @@ paths:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/responses.Vehicle'
+            $ref: '#/definitions/responses.ResponseVehicle'
         "400":
           description: Bad Request
           schema:
@@ -959,7 +1367,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/responses.Vehicle'
+            $ref: '#/definitions/responses.ResponseVehicle'
         "404":
           description: Not Found
           schema:
@@ -991,7 +1399,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/responses.Vehicle'
+            $ref: '#/definitions/responses.ResponseVehicle'
         "404":
           description: Not Found
           schema:
@@ -1011,7 +1419,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/responses.Vehicle'
+              $ref: '#/definitions/responses.ResponseVehicle'
             type: array
         "401":
           description: Unauthorized

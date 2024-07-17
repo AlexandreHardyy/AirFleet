@@ -113,7 +113,6 @@ class _ProposalDetailState extends State<ProposalDetail> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      const Text('Proposed by', style: TextStyle(fontSize: 18)),
                       const SizedBox(height: 10),
                       Row(
                         children: <Widget>[
