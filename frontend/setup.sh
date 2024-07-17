@@ -12,4 +12,4 @@ echo "PUBLIC_API_KEY_STRIPE=$PUBLIC_API_KEY_STRIPE" >> .env
 # Build the Flutter web app
 flutter doctor
 flutter pub get
-flutter build web --release --web-renderer html --output build/web
+flutter build web --release --output build/web
