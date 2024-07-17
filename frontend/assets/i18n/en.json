@@ -36,6 +36,12 @@
     "update_vehicle": "Update vehicle"
   },
   "home": {
+    "drawer": {
+      "profile": "Profile",
+      "vehicle": "Vehicle",
+      "offerFlight": "Offer flight",
+      "logout": "Logout"
+    },
     "flight_management": {
       "create": {
         "idle_label": "Enter a search query"
