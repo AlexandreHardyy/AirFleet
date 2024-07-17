@@ -4,7 +4,6 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:frontend/services/position.dart';
 import 'package:frontend/storage/user.dart';
 import 'package:frontend/utils/ticker.dart';
@@ -17,11 +16,11 @@ part 'socket_io_event.dart';
 
 part 'socket_io_state.dart';
 
-final String? socketIoUrl = kIsWeb
-    ? dotenv.env['SOCKET_IO_URL']
+final String socketIoUrl = kIsWeb
+    ? const String.fromEnvironment('SOCKET_IO_URL')
     : (Platform.isAndroid
-        ? dotenv.env['SOCKET_IO_URL_ANDROID']
-        : dotenv.env['SOCKET_IO_URL']);
+        ? const String.fromEnvironment('SOCKET_IO_URL_ANDROID')
+        : const String.fromEnvironment('SOCKET_IO_URL'));
 
 class SocketIoBloc extends Bloc<SocketIoEvent, SocketIoState> {
   final Ticker _ticker = const Ticker();

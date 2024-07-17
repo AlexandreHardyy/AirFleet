@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 import 'package:frontend/mobile/blocs/current_flight/current_flight_bloc.dart';
 import 'package:frontend/mobile/map/mapbox_endpoint/retrieve.dart';
@@ -69,10 +68,10 @@ class _CreateFlightWidgetState extends State<CreateFlightWidget> {
   Future<List<Suggestion>> _retrieveNearbyAirport(String searchValue) async {
     Response response;
 
-    final String mapboxAccessToken =
-      const String.fromEnvironment("PUBLIC_ACCESS_TOKEN") != ""
-          ? const String.fromEnvironment("PUBLIC_ACCESS_TOKEN")
-          : dotenv.get("PUBLIC_ACCESS_TOKEN_MAPBOX");
+    const String mapboxAccessToken =
+      String.fromEnvironment("PUBLIC_ACCESS_TOKEN_MAPBOX") != ""
+          ? String.fromEnvironment("PUBLIC_ACCESS_TOKEN_MAPBOX")
+          : String.fromEnvironment(("PUBLIC_ACCESS_TOKEN_MAPBOX"));
 
     try {
       response = await dioMapbox.get(
@@ -97,10 +96,10 @@ class _CreateFlightWidgetState extends State<CreateFlightWidget> {
   Future<Feature> _retrieveAirportData(String mapboxId) async {
     Response response;
 
-    final String mapboxAccessToken =
-      const String.fromEnvironment("PUBLIC_ACCESS_TOKEN") != ""
-          ? const String.fromEnvironment("PUBLIC_ACCESS_TOKEN")
-          : dotenv.get("PUBLIC_ACCESS_TOKEN_MAPBOX");
+    const String mapboxAccessToken =
+      String.fromEnvironment("PUBLIC_ACCESS_TOKEN_MAPBOX") != ""
+          ? String.fromEnvironment("PUBLIC_ACCESS_TOKEN_MAPBOX")
+          : String.fromEnvironment("PUBLIC_ACCESS_TOKEN_MAPBOX");
 
     try {
       response = await dioMapbox.get(
