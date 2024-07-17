@@ -21,6 +21,8 @@ func initUserRoutes(api *gin.RouterGroup) {
 	api.PATCH("/:id", middlewares.IsAdminAuth(), userHandler.Update)
 	api.PATCH("/pilot-validate/:id", middlewares.IsAdminAuth(), userHandler.ValidatePilotAccount)
 
+	api.PUT("/upload-image", middlewares.IsAuth(), userHandler.UploadImage)
+	api.GET("/:id/files/:type", middlewares.IsAuth(), userHandler.GetUserFile)
 	api.GET("/me", middlewares.IsAuth(), userHandler.CurrentUser)
 	api.GET("", middlewares.IsAdminAuth(), userHandler.GetAll)
 

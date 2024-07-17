@@ -7,6 +7,7 @@ import 'package:frontend/mobile/proposal/proposals_management.dart';
 import 'package:frontend/mobile/vehicles_management.dart';
 import 'package:frontend/services/user.dart';
 import 'package:frontend/storage/user.dart';
+import 'package:frontend/widgets/profile_image.dart';
 
 class HomeDrawer extends StatelessWidget {
   const HomeDrawer({super.key});
@@ -26,19 +27,15 @@ class HomeDrawer extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Container(
-                      decoration: const BoxDecoration(
-                        color: Color(0xFF131141),
-                        shape: BoxShape.circle,
-                      ),
-                      padding: const EdgeInsets.all(12.0),
-                      child: Icon(
-                        UserStore.user?.role == Roles.pilot
-                            ? FontAwesomeIcons.userTie
-                            : Icons.person,
-                        size: 30.0,
-                        color: const Color(0xFFDCA200),
-                      ),
+                    ClipOval(
+                      child: Container(
+                          decoration: const BoxDecoration(
+                            color: Color(0xFF131141),
+                          ),
+                          width: 100,
+                          height: 100,
+                          padding: const EdgeInsets.all(12.0),
+                          child: ProfileImage()),
                     ),
                     const SizedBox(height: 16.0),
                     AutoSizeText(
@@ -57,7 +54,8 @@ class HomeDrawer extends StatelessWidget {
                 ),
               ),
               ListTile(
-                leading: const Icon(FontAwesomeIcons.userLarge, color: Color(0xFF131141)),
+                leading: const Icon(FontAwesomeIcons.userLarge,
+                    color: Color(0xFF131141)),
                 title: Text(
                   translate('home.drawer.profile'),
                   style: const TextStyle(color: Color(0xFF131141)),
@@ -93,8 +91,8 @@ class HomeDrawer extends StatelessWidget {
             leading: const Icon(FontAwesomeIcons.rightFromBracket,
                 color: Colors.red),
             title: Text(translate('home.drawer.logout'),
-                style:
-                    const TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
+                style: const TextStyle(
+                    color: Colors.red, fontWeight: FontWeight.bold)),
             onTap: () async {
               await UserService.logOut(context);
             },

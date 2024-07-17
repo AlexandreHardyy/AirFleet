@@ -395,6 +395,93 @@ func (th *UserHandler) CurrentUser(c *gin.Context) {
 	})
 }
 
+func (th *UserHandler) GetUserFile(c *gin.Context) {
+	fileType := c.Param("type")
+	if fileType == "" {
+		c.JSON(http.StatusBadRequest, &Response{
+			Message: "Wrong type parameter",
+		})
+		return
+	}
+	userId, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, &Response{
+			Message: "Wrong id parameter",
+		})
+		return
+	}
+
+	userById, err := th.userService.GetById(userId)
+	if err != nil {
+		c.JSON(http.StatusNotFound, &Response{
+			Message: "user not found",
+		})
+		return
+	}
+
+	for _, file := range userById.Files {
+		if fileType == file.Type {
+			myFile, err := amazonS3.DownloadFromBucketS3(file.Path)
+			if err != nil {
+				c.JSON(http.StatusNotFound, &Response{
+					Message: err.Error(),
+				})
+				return
+			}
+			c.Data(http.StatusOK, "image/jpeg", myFile)
+			break
+		}
+	}
+
+	c.JSON(http.StatusNotFound, "")
+}
+
+func (th *UserHandler) UploadImage(c *gin.Context) {
+	var input struct {
+		Image *multipart.FileHeader `form:"image" binding:"required"`
+	}
+	if err := c.ShouldBind(&input); err != nil {
+		c.JSON(http.StatusBadRequest, &Response{
+			Message: err.Error(),
+		})
+		return
+	}
+	if !utils.IsImageValid(input.Image) {
+		c.JSON(http.StatusBadRequest, &Response{
+			Message: "Error: only file .jpeg .png .jpg are authorize with a size limit of 5mo",
+		})
+		return
+	}
+
+	userId, err := token.ExtractTokenID(c)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	user, err := th.userService.GetById(userId)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, &Response{
+			Message: err.Error(),
+		})
+		return
+	}
+
+	fileRepository := repositories.NewFileRepository(database.DB)
+
+	extension := utils.GetFileExtension(input.Image.Filename)
+	newFileName := utils.GenerateRandomString() + "." + extension
+
+	amazonS3.UploadToBucketS3(input.Image, newFileName)
+
+	_, err = fileRepository.Update(newFileName, user.ID)
+	if err != nil {
+		return
+	}
+
+	c.JSON(http.StatusNoContent, "")
+}
+
 // GetAll godoc
 //
 // @Summary Get all users

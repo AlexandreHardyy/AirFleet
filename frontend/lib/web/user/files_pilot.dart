@@ -1,40 +1,73 @@
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:frontend/models/user.dart';
+import 'package:frontend/services/dio.dart';
 import 'package:frontend/storage/user.dart';
 import 'package:frontend/widgets/title.dart';
 
-class FilesPilot extends StatelessWidget {
+class FilesPilot extends StatefulWidget {
   final User user;
+
   const FilesPilot({super.key, required this.user});
 
   @override
-  Widget build(BuildContext context) {
+  _FilesPilotState createState() => _FilesPilotState();
+}
 
-    if (user.role != Roles.pilot) {
+class _FilesPilotState extends State<FilesPilot> {
+  String? _token;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadToken();
+  }
+
+  Future<void> _loadToken() async {
+    _token = await UserStore.getToken();
+    setState(() {
+      _isLoading = false;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (widget.user.role != Roles.pilot) {
       return const SizedBox();
+    }
+
+    if (_isLoading) {
+      return const Center(child: CircularProgressIndicator());
     }
 
     return Column(
       children: [
         const SecondaryTitle(content: "Informations about the pilot"),
-        const SizedBox(
-          height: 24,
-        ),
+        const SizedBox(height: 24),
         Row(
           children: [
-            ...(user.files?.map((file) {
+            ...(widget.user.files?.map((file) {
                   return Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Text(file.type),
                       const SizedBox(height: 16),
-                      Image.network(
-                          'https://airfleet-prod.s3.eu-west-3.amazonaws.com/${file.path}')
+                      SizedBox(
+                        width: 250,
+                        child: Image(
+                          image: NetworkImage(
+                              '$apiUrl/users/${widget.user.id}/files/${file.type}',
+                              headers: {
+                                'Authorization': 'Bearer $_token',
+                              }),
+                        ),
+                      )
                     ],
                   );
                 }) ??
                 []),
           ],
-        )
+        ),
       ],
     );
   }

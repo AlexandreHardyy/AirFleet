@@ -10,6 +10,7 @@ import 'package:frontend/services/rating.dart';
 import 'package:frontend/services/vehicle.dart';
 import 'package:frontend/services/user.dart';
 import 'package:frontend/storage/user.dart';
+import 'package:frontend/widgets/profile_image_form.dart';
 
 class UserProfileScreen extends StatefulWidget {
   static const route = '/profile';
@@ -48,6 +49,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
       body: SingleChildScrollView(
         child: Column(
           children: [
+            const ProfileImageForm(),
             Row(
               children: [
                 Expanded(

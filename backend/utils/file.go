@@ -20,3 +20,12 @@ func IsFileValid(file *multipart.FileHeader) bool {
 
 	return file.Size < 5*1024*1024
 }
+
+func IsImageValid(file *multipart.FileHeader) bool {
+	extension := GetFileExtension(file.Filename)
+	if !ArrayContain(extension, []string{"jpg", "jpeg", "png"}) {
+		return false
+	}
+
+	return file.Size < 5*1024*1024
+}

@@ -185,4 +185,22 @@ class UserService {
       }
     }
   }
+
+  static uploadImage(String image) async {
+    try {
+      final formData =
+          FormData.fromMap({'image': await MultipartFile.fromFile(image)});
+
+      await dioApi.put(
+        '/users/upload-image',
+        data: formData,
+      );
+    } catch (error) {
+      if (error is DioException) {
+        return error.response?.data ?? {'message': error.message};
+      } else {
+        throw Exception('Failed to register pilot: $error');
+      }
+    }
+  }
 }
