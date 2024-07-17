@@ -135,7 +135,7 @@ class MonitoringLogChartState extends State<MonitoringLogChart> {
     List<String> days = [];
     for (int i = 6; i >= 0; i--) {
       DateTime date = now.subtract(Duration(days: i));
-      String day = DateFormat.E().format(date); // Short name of the day
+      String day = DateFormat.E().format(date);
       days.add(day);
     }
     return days;
@@ -169,9 +169,11 @@ class MonitoringLogChartState extends State<MonitoringLogChart> {
     }
 
     return BarChartData(
-      maxY: (logInfoCounts.reduce(max) + logInfoCounts.reduce(max) / 10)
-          .ceil()
-          .toDouble(),
+      maxY: (logErrorCounts.reduce(max) > logInfoCounts.reduce(max))
+          ? logErrorCounts.reduce(max) +
+              logErrorCounts.reduce(max) / 10.ceil().toDouble()
+          : logInfoCounts.reduce(max) +
+              logInfoCounts.reduce(max) / 10.ceil().toDouble(),
       barTouchData: BarTouchData(
         touchTooltipData: BarTouchTooltipData(
           tooltipRoundedRadius: 10,
@@ -197,10 +199,23 @@ class MonitoringLogChartState extends State<MonitoringLogChart> {
             reservedSize: 38,
           ),
         ),
-        leftTitles: const AxisTitles(
+        leftTitles: AxisTitles(
           sideTitles: SideTitles(
-            reservedSize: 40,
             showTitles: true,
+            getTitlesWidget: (value, meta) {
+              if (value % 1 == 0) {
+                return Text(
+                  value.toInt().toString(),
+                  style: const TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                  ),
+                );
+              }
+              return Container();
+            },
+            reservedSize: 38,
           ),
         ),
         topTitles: const AxisTitles(

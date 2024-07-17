@@ -4,17 +4,17 @@ import 'package:flutter/material.dart';
 import 'package:frontend/models/user.dart';
 import 'package:intl/intl.dart';
 
-class CustomBarChart extends StatefulWidget {
+class BarChartUsers extends StatefulWidget {
   final Color barColor = const Color(0xFF131141);
   final List<User> users;
 
-  const CustomBarChart({super.key, required this.users});
+  const BarChartUsers({super.key, required this.users});
 
   @override
-  State<StatefulWidget> createState() => CustomBarChartState();
+  State<StatefulWidget> createState() => BarChartUsersState();
 }
 
-class CustomBarChartState extends State<CustomBarChart> {
+class BarChartUsersState extends State<BarChartUsers> {
   @override
   Widget build(BuildContext context) {
     return AspectRatio(

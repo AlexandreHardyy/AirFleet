@@ -36,7 +36,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
     _currentUser = UserService.getCurrentUser();
     _userVehicles = VehicleService.getVehiclesForMe();
     _recentFlights = FlightService.getFlightsHistory();
-    _ratings = RatingService.getAllRatings({"status": "reviewed"});
+    _ratings = RatingService.getRatingsByPilotID(UserStore.user!.id, {"status": "reviewed"});
   }
 
   @override

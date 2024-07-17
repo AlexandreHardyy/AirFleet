@@ -2,16 +2,16 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/models/vehicle.dart';
 
-class CustomPieChart extends StatefulWidget {
+class PieChartVehicles extends StatefulWidget {
   final List<Vehicle> vehicles;
 
-  const CustomPieChart({super.key, required this.vehicles});
+  const PieChartVehicles({super.key, required this.vehicles});
 
   @override
-  State<StatefulWidget> createState() => CustomPieChartState();
+  State<StatefulWidget> createState() => PieChartVehiclesState();
 }
 
-class CustomPieChartState extends State<CustomPieChart> {
+class PieChartVehiclesState extends State<PieChartVehicles> {
   @override
   Widget build(BuildContext context) {
     return AspectRatio(

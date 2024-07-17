@@ -14,5 +14,6 @@ func InitRatingRoutes(api *gin.RouterGroup) {
 
 	api.PUT("/:id", middlewares.IsAuth(), ratingHandler.Update)
 	api.GET("/status/:status", middlewares.IsAuth(), ratingHandler.GetRatingByUserIDAndStatus)
-	api.GET("", middlewares.IsAuth(), ratingHandler.GetAllRatings)
+	api.GET("/pilot/:id", middlewares.IsAuth(), ratingHandler.GetRatingsByPilotID)
+	api.GET("", middlewares.IsAdminAuth(), ratingHandler.GetAllRatings)
 }

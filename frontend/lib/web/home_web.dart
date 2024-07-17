@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:frontend/models/rating.dart';
 import 'package:frontend/models/flight.dart';
 import 'package:frontend/models/user.dart';
 import 'package:frontend/models/vehicle.dart';
+import 'package:frontend/services/rating.dart';
 import 'package:frontend/services/flight.dart';
 import 'package:frontend/services/user.dart';
 import 'package:frontend/services/vehicle.dart';
+import 'package:frontend/web/charts/bar_chart_users.dart';
+import 'package:frontend/web/charts/pie_chart_vehicles.dart';
+import 'package:frontend/web/charts/pie_chart_ratings.dart';
 import 'package:frontend/web/charts/bar_chart_payments.dart';
-import 'package:frontend/web/charts/bar_chart.dart';
-import 'package:frontend/web/charts/pie_chart.dart';
 import 'package:frontend/web/flights/flight.dart';
 import 'package:frontend/web/module/module.dart';
 import 'package:frontend/web/monitoring-logs/index.dart';
@@ -29,6 +32,7 @@ class _HomeWebState extends State<HomeWeb> {
   List<User> _users = [];
   List<Vehicle> _vehicles = [];
   List<Vehicle> _unverifiedVehicles = [];
+  List<Rating> _ratings = [];
   List<Flight> _flights = [];
 
   @override
@@ -36,6 +40,7 @@ class _HomeWebState extends State<HomeWeb> {
     super.initState();
     _fetchUsers();
     _fetchVehicles();
+    _fetchRatings();
     _fetchFlights();
   }
 
@@ -75,11 +80,20 @@ class _HomeWebState extends State<HomeWeb> {
     }).toList();
   }
 
+  Future<void> _fetchRatings() async {
+    try {
+      _ratings = await RatingService.getAllRatings({"status": "reviewed"});
+      setState(() {});
+    } catch (e) {
+      print(e);
+    }
+  }
+
   Future<void> _verifyVehicle(Vehicle vehicle) async {
     try {
       vehicle.isVerified = true;
       await VehicleService.updateVehicle(vehicle);
-      _fetchVehicles(); // Refresh the list of vehicles after update
+      _fetchVehicles();
     } catch (e) {
       print(e);
     }
@@ -202,20 +216,12 @@ class _HomeWebState extends State<HomeWeb> {
                           mainAxisSpacing: 16,
                           childAspectRatio: 1.8,
                           children: [
-                            _buildChart(CustomBarChart(users: _users)),
-                            _buildChart(CustomPieChart(vehicles: _vehicles)),
+                            _buildChart(BarChartUsers(users: _users)),
+                            _buildChart(PieChartVehicles(vehicles: _vehicles)),
+                            _buildChart(PieChartRatings(ratings: _ratings)),
                             _buildChart(BarChartPayments(flights: _flights)),
                           ],
                         ),
-                      ),
-                      ListTile(
-                        leading: const Icon(Icons.airplane_ticket,
-                            color: Color(0xFFDCA200)),
-                        title: const Text('Flights',
-                            style: TextStyle(color: Colors.white)),
-                        onTap: () {
-                          FlightsWebScreen.navigateTo(context);
-                        },
                       ),
                     ],
                   ),

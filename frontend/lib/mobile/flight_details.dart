@@ -32,8 +32,10 @@ class _FlightDetailsState extends State<FlightDetails> {
     _flight = FlightService.getFlight(widget.flightId);
 
     if (UserStore.user?.role == "ROLE_PILOT") {
-      _ratings = RatingService.getAllRatings(
-          {"status": "reviewed", "flight_id": widget.flightId.toString()});
+      _ratings = RatingService.getRatingsByPilotID(
+          UserStore.user!.id,
+          {"status": "reviewed", "flight_id": widget.flightId.toString()}
+      );
     } else {
       _ratings = Future.value([]);
     }
