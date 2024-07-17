@@ -136,7 +136,8 @@ class _FlightsManagementState extends State<FlightsManagement> {
                           );
                         }
 
-                        if (state.status == CurrentFlightStatus.loaded && !state.isModuleEnabled) {
+                        if (state.status == CurrentFlightStatus.loaded &&
+                            !state.isModuleEnabled) {
                           return const Center(
                             child: Text("Module flight is disabled"),
                           );
@@ -150,33 +151,16 @@ class _FlightsManagementState extends State<FlightsManagement> {
                         }
 
                         return UserStore.user?.role == Roles.pilot
-                            ? DefaultTabController(
-                          length: 1,
-                          child: Scaffold(
-                            appBar: AppBar(
-                              toolbarHeight: 0,
-                              bottom: const TabBar(
-                                tabs: [
-                                  Text("List"),
-                                ],
-                              ),
-                            ),
-                            body: TabBarView(
-                              children: [
-                                SearchFlights(),
-                              ],
-                            ),
-                          ),
-                        )
+                            ? SearchFlights()
                             : DefaultTabController(
                           length: 3,
                           child: Scaffold(
                             appBar: AppBar(
                               toolbarHeight: 0,
-                              bottom: const TabBar(
+                              bottom: TabBar(
                                 tabs: [
-                                  Text("Create"),
-                                  Text("Search"),
+                                  Text(translate('home.flight_management.list.create')),
+                                  Text(translate('home.flight_management.list.search')),
                                 ],
                               ),
                             ),
@@ -211,7 +195,8 @@ class _FlightsManagementState extends State<FlightsManagement> {
 }
 
 Future<void> _dialogBuilder(BuildContext context) async {
-  final Rating? pendingRating = context.read<CurrentFlightBloc>().state.pendingRating;
+  final Rating? pendingRating =
+      context.read<CurrentFlightBloc>().state.pendingRating;
 
   if (pendingRating == null) {
     return;
@@ -220,7 +205,9 @@ Future<void> _dialogBuilder(BuildContext context) async {
   final result = await showDialog<Map<String, dynamic>>(
     context: context,
     builder: (BuildContext context) {
-      return RateFlightWidget(pilot: pendingRating.pilot,);
+      return RateFlightWidget(
+        pilot: pendingRating.pilot,
+      );
     },
   );
 
@@ -228,7 +215,9 @@ Future<void> _dialogBuilder(BuildContext context) async {
   if (result != null) {
     try {
       await RatingService.updateRating(
-          ratingId, UpdateRatingRequest(rating: result['rating'], comment: result['comment']));
+          ratingId,
+          UpdateRatingRequest(
+              rating: result['rating'], comment: result['comment']));
     } catch (e) {
       print(e);
     }
@@ -268,13 +257,16 @@ class _RateFlightWidgetState extends State<RateFlightWidget> {
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(translate('home.flight_management.rating.subtitle', args: {'pilotName': widget.pilot.firstName}), style: Theme.of(context).textTheme.labelLarge),
+          Text(
+              translate('home.flight_management.rating.subtitle',
+                  args: {'pilotName': widget.pilot.firstName}),
+              style: Theme.of(context).textTheme.labelLarge),
           const SizedBox(height: 20),
           PannableRatingBar(
             rate: rating,
             items: List.generate(
               5,
-                  (index) => const RatingWidget(
+              (index) => const RatingWidget(
                 selectedColor: Color(0xFFDCA200),
                 unSelectedColor: Colors.grey,
                 child: Icon(

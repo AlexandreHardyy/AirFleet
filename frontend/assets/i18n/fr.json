@@ -43,6 +43,11 @@
       "logout": "Déconnexion"
     },
     "flight_management": {
+      "list": {
+        "search": "Rechercher",
+        "create": "Créer",
+        "list": "Liste"
+      },
       "create": {
         "idle_label": "Entrez une requête de recherche"
       },
@@ -82,6 +87,7 @@
 
       "search_flights": {
         "no_vehicle": "Aucun véhicule disponible",
+        "select_vehicle": "Sélectionnez votre véhicule pour trouver des vols",
         "add_new_vehicle": "Ajouter un nouveau véhicule",
         "cancel": "Annuler la recherche",
         "select": "Sélectionner le véhicule",

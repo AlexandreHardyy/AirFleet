@@ -32,8 +32,9 @@ class SearchFlights extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              SecondaryTitle(content: translate(
-                        "home.flight_management.search_flights.no_vehicle")),
+              SecondaryTitle(
+                  content: translate(
+                      "home.flight_management.search_flights.no_vehicle")),
               const SizedBox(
                 height: 24,
               ),
@@ -42,7 +43,7 @@ class SearchFlights extends StatelessWidget {
                     VehiclesManagementScreen.navigateTo(context);
                   },
                   child: Text(translate(
-                        "home.flight_management.search_flights.add_new_vehicle")))
+                      "home.flight_management.search_flights.add_new_vehicle")))
             ],
           ),
         );
@@ -77,19 +78,25 @@ class SearchFlights extends StatelessWidget {
       }
 
       return Padding(
-          padding: const EdgeInsets.symmetric(vertical: 42, horizontal: 24),
+          padding: const EdgeInsets.all(24),
           child: FormBuilder(
               key: _formKey,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
+                   SecondaryTitle(
+                    content: translate(
+                            "home.flight_management.search_flights.select_vehicle"),
+                  ),
+                  const SizedBox(height: 24),
                   FormBuilderDropdown(
                     name: "vehicle_selected",
                     validator: FormBuilderValidators.compose([
                       FormBuilderValidators.required(),
                     ]),
-                    decoration: getInputDecoration(hintText: translate(
-                        "home.flight_management.search_flights.select")),
+                    decoration: getInputDecoration(
+                        hintText: translate(
+                            "home.flight_management.search_flights.select")),
                     items: state.vehicles!
                         .map((vehicle) => DropdownMenuItem(
                               value: vehicle,

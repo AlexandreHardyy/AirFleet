@@ -92,6 +92,11 @@
       "add": "Add a vehicle"
     },
     "flight_management": {
+      "list": {
+        "search": "Search",
+        "create": "Create",
+        "list": "List"
+      },
       "create": {
         "idle_label": "Enter a search query"
       },
@@ -132,6 +137,7 @@
 
       "search_flights": {
         "no_vehicle": "No vehicle available",
+        "select_vehicle": "Select your vehicle to find flights",
         "add_new_vehicle": "Add new vehicle",
         "cancel": "Cancel search",
         "select": "Select vehicle",
