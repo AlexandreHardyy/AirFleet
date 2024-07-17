@@ -1,16 +1,22 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_translate/flutter_translate.dart';
 import 'package:frontend/mobile/blocs/current_flight/current_flight_bloc.dart';
+import 'package:frontend/mobile/proposal/confirm_animation.dart';
 import 'package:frontend/models/proposal.dart';
 import 'package:frontend/services/proposal.dart';
 import 'package:frontend/storage/user.dart';
+import 'package:frontend/widgets/profile_image.dart';
 import 'package:intl/intl.dart';
+import 'package:toastification/toastification.dart';
 
 class ProposalDetail extends StatefulWidget {
   static const routeName = '/proposal-detail';
 
-  static Future<void> navigateTo(BuildContext context, {required int proposalId}) {
+  static Future<void> navigateTo(BuildContext context,
+      {required int proposalId}) {
     return Navigator.of(context).pushNamed(routeName, arguments: proposalId);
   }
 
@@ -35,28 +41,53 @@ class _ProposalDetailState extends State<ProposalDetail> {
 
   void _joinProposal({required int id}) async {
     try {
+      _showConfirmation(context);
       await ProposalService.joinProposal(id);
-      final updatedProposal = await ProposalService.getProposalById(widget.proposalId);
+      final updatedProposal =
+          await ProposalService.getProposalById(widget.proposalId);
       setState(() {
         _proposal = Future.value(updatedProposal);
         _isUserInProposal = true;
       });
     } catch (e) {
-      // Handle error
+      toastification.show(
+        title: const Text('Error, could not join proposal'),
+        autoCloseDuration: const Duration(seconds: 5),
+        primaryColor: CupertinoColors.systemRed,
+      );
     }
   }
 
   void _leaveProposal({required int id}) async {
     try {
       await ProposalService.leaveProposal(id);
-      final updatedProposal = await ProposalService.getProposalById(widget.proposalId);
+      final updatedProposal =
+          await ProposalService.getProposalById(widget.proposalId);
       setState(() {
         _proposal = Future.value(updatedProposal);
         _isUserInProposal = false;
       });
     } catch (e) {
-      // Handle error
+      toastification.show(
+        title: const Text('Error, could not leave proposal'),
+        autoCloseDuration: const Duration(seconds: 5),
+        primaryColor: CupertinoColors.systemRed,
+      );
     }
+  }
+
+  void _showConfirmation(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return ConfirmationScreen(
+          onCompleted: () {
+            Navigator.of(context).pop();
+          },
+        );
+      },
+    );
   }
 
   bool isDepartureWithinOneHour(DateTime departureTime) {
@@ -69,7 +100,7 @@ class _ProposalDetailState extends State<ProposalDetail> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Proposal Detail'),
+        title: Text(translate('proposal.proposal_details')),
       ),
       body: FutureBuilder<Proposal?>(
         future: _proposal,
@@ -80,9 +111,13 @@ class _ProposalDetailState extends State<ProposalDetail> {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else if (snapshot.hasData) {
             final proposal = snapshot.data!;
-            _isUserInProposal = proposal.flight.users?.any((user) => user.id == UserStore.user?.id) ?? false;
-            DateTime parsedDepartureTime = DateTime.parse(proposal.departureTime);
-            String formattedDepartureTime = DateFormat('dd/MM/yyyy HH:mm').format(parsedDepartureTime);
+            _isUserInProposal = proposal.flight.users
+                    ?.any((user) => user.id == UserStore.user?.id) ??
+                false;
+            DateTime parsedDepartureTime =
+                DateTime.parse(proposal.departureTime);
+            String formattedDepartureTime =
+                DateFormat('dd/MM/yyyy HH:mm').format(parsedDepartureTime);
 
             return Padding(
               padding: const EdgeInsets.all(16.0),
@@ -91,20 +126,21 @@ class _ProposalDetailState extends State<ProposalDetail> {
                 children: <Widget>[
                   Center(
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                         Text(
                           proposal.flight.departure.name,
-                          style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                          style: const TextStyle(
+                              fontSize: 24, fontWeight: FontWeight.bold),
+                        ),
+                        Text(
+                          proposal.flight.arrival.name,
+                          style: const TextStyle(
+                              fontSize: 24, fontWeight: FontWeight.bold),
                         ),
                         Text(
                           formattedDepartureTime,
-                          style: const TextStyle(fontSize: 18),
-                        ),
-                        const Icon(Icons.arrow_downward),
-                        Text(
-                          proposal.flight.arrival.name,
-                          style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                          style: const TextStyle(fontSize: 20),
                         ),
                       ],
                     ),
@@ -116,22 +152,29 @@ class _ProposalDetailState extends State<ProposalDetail> {
                       const SizedBox(height: 10),
                       Row(
                         children: <Widget>[
-                          const CircleAvatar(
-                            backgroundImage: AssetImage('assets/images/default_profile.png'),
+                          const ClipOval(
+                            child: SizedBox(
+                              width: 45,
+                              height: 45,
+                              child: ProfileImage(),
+                            ),
                           ),
-                          const SizedBox(width: 10), // Add some spacing between the image and the text
-                          Text('${proposal.flight.pilot?.firstName} ${proposal.flight.pilot?.lastName}',
+                          const SizedBox(width: 10),
+                          Text(
+                              '${proposal.flight.pilot?.firstName} ${proposal.flight.pilot?.lastName}',
                               style: const TextStyle(fontSize: 18)),
                         ],
                       ),
                     ],
                   ),
                   const SizedBox(height: 10),
-                  Text(proposal.description, style: const TextStyle(fontSize: 18)),
+                  Text(proposal.description,
+                      style: const TextStyle(fontSize: 18)),
                   const SizedBox(height: 20),
                   Text(
-                    'People already in flight: ${proposal.flight.users?.length ?? 0} / ${proposal.availableSeats}',
-                    style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    '${translate('proposal.people_in_flight')}: ${proposal.flight.users?.length ?? 0} / ${proposal.availableSeats}',
+                    style: const TextStyle(
+                        fontSize: 20, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 10),
                   Expanded(
@@ -140,8 +183,12 @@ class _ProposalDetailState extends State<ProposalDetail> {
                       itemBuilder: (context, index) {
                         final user = proposal.flight.users![index];
                         return ListTile(
-                          leading: const CircleAvatar(
-                            backgroundImage: AssetImage('assets/images/default_profile.png'),
+                          leading: const ClipOval(
+                            child: SizedBox(
+                              width: 45,
+                              height: 45,
+                              child: ProfileImage(),
+                            ),
                           ),
                           title: Text('${user.firstName} ${user.lastName}'),
                         );
@@ -150,11 +197,14 @@ class _ProposalDetailState extends State<ProposalDetail> {
                   ),
                   const SizedBox(height: 20),
                   Text(
-                    'Price: ${proposal.flight.price} €',
-                    style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                    '${translate('common.input.price')}: ${proposal.flight.price} €',
+                    style: const TextStyle(
+                        fontSize: 24, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 10),
-                  if (_isPilot && isDepartureWithinOneHour(parsedDepartureTime) && proposal.flight.status != "waiting_takeoff")
+                  if (_isPilot &&
+                      isDepartureWithinOneHour(parsedDepartureTime) &&
+                      proposal.flight.status != "waiting_takeoff")
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
@@ -163,16 +213,19 @@ class _ProposalDetailState extends State<ProposalDetail> {
                             context: context,
                             builder: (BuildContext context) {
                               return AlertDialog(
-                                title: const Text('Confirm'),
-                                content: const Text('Are you sure you want to start this proposal?'),
+                                title: Text(translate('common.confirm')),
+                                content: Text(translate(
+                                    'proposal.confirm_start_proposal')),
                                 actions: <Widget>[
                                   TextButton(
-                                    onPressed: () => Navigator.of(context).pop(true),
-                                    child: const Text('Yes'),
+                                    onPressed: () =>
+                                        Navigator.of(context).pop(true),
+                                    child: Text(translate('common.yes')),
                                   ),
                                   TextButton(
-                                    onPressed: () => Navigator.of(context).pop(false),
-                                    child: const Text('No'),
+                                    onPressed: () =>
+                                        Navigator.of(context).pop(false),
+                                    child: Text(translate('common.no')),
                                   ),
                                 ],
                               );
@@ -181,24 +234,27 @@ class _ProposalDetailState extends State<ProposalDetail> {
 
                           if (confirm == true) {
                             try {
-                              var proposalResult = await ProposalService.startProposal(proposal.id);
+                              var proposalResult =
+                                  await ProposalService.startProposal(
+                                      proposal.id);
                               if (context.mounted) {
-                                context
-                                    .read<CurrentFlightBloc>()
-                                    .add(CurrentFlightLoaded(flight: proposalResult.flight));
+                                context.read<CurrentFlightBloc>().add(
+                                    CurrentFlightLoaded(
+                                        flight: proposalResult.flight));
                               }
                               Navigator.of(context).pop();
                               Navigator.of(context).pop();
                             } on DioException catch (e) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
-                                  content: Text('Error: ${e.response?.data['message']}'),
+                                  content: Text(
+                                      'Error: ${e.response?.data['message']}'),
                                 ),
                               );
                             }
                           }
                         },
-                        child: const Text('Start Proposal'),
+                        child: Text(translate('proposal.start_proposal')),
                       ),
                     ),
                   const SizedBox(height: 10),
@@ -211,16 +267,19 @@ class _ProposalDetailState extends State<ProposalDetail> {
                             context: context,
                             builder: (BuildContext context) {
                               return AlertDialog(
-                                title: const Text('Confirm'),
-                                content: const Text('Are you sure you want to delete this proposal?'),
+                                title: Text(translate('common.confirm')),
+                                content: const Text(
+                                    'Are you sure you want to delete this proposal?'),
                                 actions: <Widget>[
                                   TextButton(
-                                    onPressed: () => Navigator.of(context).pop(true),
-                                    child: const Text('Yes'),
+                                    onPressed: () =>
+                                        Navigator.of(context).pop(true),
+                                    child: Text(translate('common.yes')),
                                   ),
                                   TextButton(
-                                    onPressed: () => Navigator.of(context).pop(false),
-                                    child: const Text('No'),
+                                    onPressed: () =>
+                                        Navigator.of(context).pop(false),
+                                    child: Text(translate('common.no')),
                                   ),
                                 ],
                               );
@@ -234,7 +293,8 @@ class _ProposalDetailState extends State<ProposalDetail> {
                             } on DioException catch (e) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
-                                  content: Text('Error: ${e.response?.data['message']}'),
+                                  content: Text(
+                                      'Error: ${e.response?.data['message']}'),
                                 ),
                               );
                             }
@@ -244,28 +304,68 @@ class _ProposalDetailState extends State<ProposalDetail> {
                           backgroundColor: Colors.red,
                           foregroundColor: Colors.white,
                         ),
-                        child: const Text('Delete Proposal'),
+                        child: Text(translate('proposal.delete_proposal')),
                       ),
                     ),
                   if (!_isUserInProposal && !_isPilot)
                     Padding(
-                      padding: const EdgeInsets.only(bottom: 20.0), // Add padding at the bottom
+                      padding: const EdgeInsets.only(bottom: 20.0),
+                      // Add padding at the bottom
                       child: SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
-                          onPressed: () => _joinProposal(id: proposal.id),
-                          child: const Text('Join Flight'),
+                          onPressed: () => {
+                            _joinProposal(id: proposal.id),
+                          },
+                          child: Text(translate('proposal.join_proposal')),
                         ),
                       ),
                     ),
                   if (_isUserInProposal && !_isPilot)
                     Padding(
-                      padding: const EdgeInsets.only(bottom: 20.0), // Add padding at the bottom
+                      padding: const EdgeInsets.only(bottom: 20.0),
                       child: SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
-                          onPressed: () => _leaveProposal(id: proposal.id),
-                          child: const Text('Leave Flight'),
+                          onPressed: () async {
+                            final confirm = await showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: Text(translate('common.confirm')),
+                                  content: Text(translate(
+                                      'proposal.confirm_leave_proposal')),
+                                  actions: <Widget>[
+                                    TextButton(
+                                      onPressed: () =>
+                                          Navigator.of(context).pop(true),
+                                      child: Text(translate('common.yes')),
+                                    ),
+                                    TextButton(
+                                      onPressed: () =>
+                                          Navigator.of(context).pop(false),
+                                      child: Text(translate('common.no')),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+
+                            if (confirm == true) {
+                              try {
+                                _leaveProposal(id: proposal.id);
+                                Navigator.of(context).pop();
+                              } on DioException catch (e) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                        'Error: ${e.response?.data['message']}'),
+                                  ),
+                                );
+                              }
+                            }
+                          },
+                          child: Text(translate('proposal.leave_proposal')),
                         ),
                       ),
                     ),

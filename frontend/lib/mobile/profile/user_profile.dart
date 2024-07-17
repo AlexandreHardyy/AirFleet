@@ -13,9 +13,6 @@ import 'package:frontend/services/user.dart';
 import 'package:frontend/storage/user.dart';
 import 'package:frontend/widgets/profile_image_form.dart';
 
-import 'package:intl/intl.dart';
-import 'package:geolocator/geolocator.dart';
-
 class UserProfileScreen extends StatefulWidget {
   static const route = '/profile';
 

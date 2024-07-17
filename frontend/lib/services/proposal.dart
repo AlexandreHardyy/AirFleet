@@ -3,7 +3,7 @@ import 'package:frontend/models/proposal.dart';
 import 'package:frontend/services/dio.dart';
 
 class ProposalService {
-  static Future<List<Proposal>> getProposals({double? maxPrice, int? minSeatsAvailable}) async {
+  static Future<List<Proposal>> getProposals({int? limit, int? offset, double? maxPrice, int? minSeatsAvailable}) async {
     var basePath = '/proposals';
     Map<String, dynamic> queryParams = {};
     if (maxPrice != null) {
