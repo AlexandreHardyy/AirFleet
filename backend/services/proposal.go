@@ -10,7 +10,7 @@ import (
 )
 
 type ProposalServiceInterface interface {
-	GetAllProposals(limit int, offset int) ([]responses.ResponseProposal, error)
+	GetAllProposals(limit int, offset int, filter inputs.FilterPropsal) ([]responses.ResponseProposal, error)
 	GetProposalsForMe(userID int) ([]responses.ResponseProposal, error)
 	CreateProposal(input inputs.InputCreateProposal, userID int) (responses.ResponseProposal, error)
 	GetProposal(proposalID int) (responses.ResponseProposal, error)
@@ -33,8 +33,8 @@ func NewProposalService(r repositories.ProposalRepositoryInterface, rf repositor
 	}
 }
 
-func (s *ProposalService) GetAllProposals(limit int, offset int) ([]responses.ResponseProposal, error) {
-	proposals, err := s.repository.GetAllProposals(limit, offset)
+func (s *ProposalService) GetAllProposals(limit int, offset int, filter inputs.FilterPropsal) ([]responses.ResponseProposal, error) {
+	proposals, err := s.repository.GetAllProposals(limit, offset, filter)
 	if err != nil {
 		return []responses.ResponseProposal{}, err
 	}
@@ -274,6 +274,10 @@ func formatProposal(proposal models.Proposal) responses.ResponseProposal {
 }
 
 func formatProposals(proposals []models.Proposal) []responses.ResponseProposal {
+	if len(proposals) == 0 {
+		return []responses.ResponseProposal{}
+	}
+
 	var responseProposals []responses.ResponseProposal
 	for _, proposal := range proposals {
 		responseProposals = append(responseProposals, formatProposal(proposal))

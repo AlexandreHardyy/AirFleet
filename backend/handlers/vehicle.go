@@ -38,7 +38,7 @@ func NewVehicleHandler(vehicleService services.IVehicleService) *VehicleHandler 
 // @Produce json
 // @Param vehicleInput body inputs.CreateVehicle true "Message body"
 //
-//	@Success	201	{object}	responses.Vehicle
+//	@Success	201	{object}	responses.ResponseVehicle
 //	@Failure	400	{object}	Response
 //
 // @Router /vehicles [post]
@@ -86,7 +86,7 @@ func (th *VehicleHandler) CreateVehicle(c *gin.Context) {
 //	@Accept			json
 //	@Produce		json
 //
-//	@Success		200	{object}	[]responses.Vehicle
+//	@Success		200	{object}	[]responses.ResponseVehicle
 //	@Failure		401	{object}	Response
 //
 //	@Router			/vehicles [get]
@@ -113,7 +113,7 @@ func (th *VehicleHandler) GetAll(c *gin.Context) {
 //	@Accept			json
 //	@Produce		json
 //
-//	@Success		200	{object}	[]responses.Vehicle
+//	@Success		200	{object}	[]responses.ResponseVehicle
 //	@Failure		401	{object}	Response
 //
 //	@Router			/vehicles/me [get]
@@ -149,7 +149,7 @@ func (th *VehicleHandler) GetAllMe(c *gin.Context) {
 // @Produce json
 // @Param id path int true "Vehicle ID"
 //
-//	@Success	200			{object}	responses.Vehicle
+//	@Success	200			{object}	responses.ResponseVehicle
 //	@Failure	404			{object}	Response
 //
 // @Router /vehicles/{id} [get]
@@ -236,7 +236,7 @@ func (th *VehicleHandler) DeleteVehicle(c *gin.Context) {
 // @Param id path int true "Vehicle ID"
 // @Param vehicleInput body inputs.UpdateVehicle true "Message body"
 //
-//	@Success	200			{object}	responses.Vehicle
+//	@Success	200			{object}	responses.ResponseVehicle
 //	@Failure	404			{object}	Response
 //
 // @Router /vehicles/{id} [put]

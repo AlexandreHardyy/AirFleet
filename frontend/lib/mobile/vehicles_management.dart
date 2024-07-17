@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:frontend/mobile/vehicle_detail.dart';
 import 'package:frontend/services/vehicle.dart';
 import 'package:frontend/models/vehicle.dart';
@@ -13,7 +14,8 @@ class VehiclesManagementScreen extends StatefulWidget {
   const VehiclesManagementScreen({super.key});
 
   @override
-  _VehiclesManagementScreenState createState() => _VehiclesManagementScreenState();
+  _VehiclesManagementScreenState createState() =>
+      _VehiclesManagementScreenState();
 }
 
 class _VehiclesManagementScreenState extends State<VehiclesManagementScreen> {
@@ -39,11 +41,11 @@ class _VehiclesManagementScreenState extends State<VehiclesManagementScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          VehicleDetailsPage.navigateTo(context, vehicleId: null);
+          await VehicleDetailsPage.navigateTo(context, vehicleId: null);
           refreshVehicles();
         },
-        foregroundColor: Theme.of(context).textTheme.displayLarge?.color,
-        backgroundColor: Theme.of(context).primaryColor,
+        backgroundColor: Theme.of(context).textTheme.displayLarge?.color,
+        foregroundColor: Theme.of(context).primaryColor,
         child: const Icon(Icons.add),
       ),
       body: FutureBuilder<List<Vehicle>>(
@@ -54,7 +56,28 @@ class _VehiclesManagementScreenState extends State<VehiclesManagementScreen> {
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(child: Text('No vehicles found.'));
+            return Center(
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    SvgPicture.asset(
+                      'assets/images/empty.svg',
+                      semanticsLabel: 'Plane icon',
+                    ),
+                    const Padding(
+                      padding: EdgeInsets.only(top: 8.0),
+                      child: Text(
+                        'You are not part of any proposal',
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
           } else {
             return ListView.builder(
               itemCount: snapshot.data!.length,
@@ -69,7 +92,8 @@ class _VehiclesManagementScreenState extends State<VehiclesManagementScreen> {
                         ? const Icon(Icons.check_circle, color: Colors.green)
                         : const Icon(Icons.cancel, color: Colors.red),
                     onTap: () async {
-                      VehicleDetailsPage.navigateTo(context, vehicleId: vehicle.id);
+                      await VehicleDetailsPage.navigateTo(context,
+                          vehicleId: vehicle.id);
                       refreshVehicles();
                     },
                   ),
@@ -79,9 +103,6 @@ class _VehiclesManagementScreenState extends State<VehiclesManagementScreen> {
           }
         },
       ),
-
     );
   }
 }
-
-

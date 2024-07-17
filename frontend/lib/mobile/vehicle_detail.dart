@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_translate/flutter_translate.dart';
 import 'package:frontend/mobile/blocs/pilot_status/pilot_status_bloc.dart';
 import 'package:frontend/models/vehicle.dart';
 import 'package:frontend/services/vehicle.dart';
@@ -61,8 +62,8 @@ class _VehicleDetailsPageState extends State<VehicleDetailsPage> {
     return Scaffold(
       appBar: AppBar(
         title: widget.vehicleId == null
-            ? const Text('Create a new Vehicle')
-            : const Text('Edit Vehicle'),
+            ? Text(translate('vehicle.create_vehicle'))
+            : Text(translate('vehicle.edit_vehicle')),
       ),
       body: FutureBuilder<Vehicle>(
         future: _vehicleDetails,
@@ -221,97 +222,111 @@ class _VehicleDetailsPageState extends State<VehicleDetailsPage> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 60),
                       ...widget.vehicleId == null
                           ? [
-                              ElevatedButton(
-                                onPressed: () async {
-                                  if (_formKey.currentState!.validate()) {
-                                    _formKey.currentState!.save();
-                                    try {
-                                      await VehicleService.createVehicle(
-                                          _vehicle);
-                                      Navigator.of(context).pop();
-                                    } on DioException catch (e) {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                        SnackBar(
-                                          content: Text(
-                                              'Error: ${e.response?.data['message']}'),
-                                        ),
-                                      );
-                                    }
-                                  }
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  foregroundColor: Colors.black,
-                                ),
-                                child: const Text('Save Vehicle'),
-                              ),
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            onPressed: () async {
+                              if (_formKey.currentState!.validate()) {
+                                _formKey.currentState!.save();
+                                try {
+                                  await VehicleService.createVehicle(_vehicle);
+                                  Navigator.of(context).pop();
+                                } on DioException catch (e) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text('Error: ${e.response?.data['message']}'),
+                                    ),
+                                  );
+                                }
+                              }
+                            },
+                            style: ElevatedButton.styleFrom(
+                              foregroundColor: Colors.black,
+                              padding: const EdgeInsets.symmetric(vertical: 15), // Adds padding vertically for better touch area
+                            ),
+                            child: const Text('Save Vehicle'),
+                          ),
+                        ),
                             ]
                           : [
-                              ElevatedButton(
-                                onPressed: () => {
-                                  if (_formKey.currentState!.validate())
-                                    {
-                                      _formKey.currentState!.save(),
-                                      VehicleService.updateVehicle(_vehicle),
-                                      Navigator.of(context).pop(),
-                                      context.read<PilotStatusBloc>().add(PilotStatusNotReady())
-                                    }
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  foregroundColor: Colors.black,
-                                ),
-                                child: const Text('Update Vehicle'),
-                              ),
-                              ElevatedButton(
-                                onPressed: () async {
-                                  final confirm = await showDialog(
-                                    context: context,
-                                    builder: (BuildContext context) {
-                                      return AlertDialog(
-                                        title: const Text('Confirm'),
-                                        content: const Text(
-                                            'Are you sure you want to delete this vehicle?'),
-                                        actions: <Widget>[
-                                          TextButton(
-                                            onPressed: () =>
-                                                Navigator.of(context).pop(true),
-                                            child: const Text('Yes'),
-                                          ),
-                                          TextButton(
-                                            onPressed: () =>
-                                                Navigator.of(context)
-                                                    .pop(false),
-                                            child: const Text('No'),
-                                          ),
-                                        ],
-                                      );
-                                    },
-                                  );
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: ElevatedButton(
+                                      onPressed: () {
+                                        if (_formKey.currentState!.validate()) {
+                                          _formKey.currentState!.save();
+                                          VehicleService.updateVehicle(
+                                              _vehicle);
+                                          Navigator.of(context).pop();
+                                          context
+                                              .read<PilotStatusBloc>()
+                                              .add(PilotStatusNotReady());
+                                        }
+                                      },
+                                      style: ElevatedButton.styleFrom(
+                                        foregroundColor: Colors.black,
+                                      ),
+                                      child: Text(translate('vehicle.update_vehicle')),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 10),
+                                  // Spacing between buttons
+                                  Expanded(
+                                    child: ElevatedButton(
+                                      onPressed: () async {
+                                        final confirm = await showDialog(
+                                          context: context,
+                                          builder: (BuildContext context) {
+                                            return AlertDialog(
+                                              title: const Text('Confirm'),
+                                              content: const Text(
+                                                  'Are you sure you want to delete this vehicle?'),
+                                              actions: <Widget>[
+                                                TextButton(
+                                                  onPressed: () =>
+                                                      Navigator.of(context)
+                                                          .pop(true),
+                                                  child: const Text('Yes'),
+                                                ),
+                                                TextButton(
+                                                  onPressed: () =>
+                                                      Navigator.of(context)
+                                                          .pop(false),
+                                                  child: const Text('No'),
+                                                ),
+                                              ],
+                                            );
+                                          },
+                                        );
 
-                                  if (confirm == true) {
-                                    try {
-                                      await VehicleService.deleteVehicle(
-                                          widget.vehicleId!);
-                                      Navigator.of(context).pop();
-                                    } on DioException catch (e) {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                        SnackBar(
-                                          content: Text(
-                                              'Error: ${e.response?.data['message']}'),
-                                        ),
-                                      );
-                                    }
-                                  }
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.red,
-                                  foregroundColor: Colors.white,
-                                ),
-                                child: const Text('Delete Vehicle'),
+                                        if (confirm == true) {
+                                          try {
+                                            await VehicleService.deleteVehicle(
+                                                widget.vehicleId!);
+                                            Navigator.of(context).pop();
+                                          } on DioException catch (e) {
+                                            ScaffoldMessenger.of(context)
+                                                .showSnackBar(
+                                              SnackBar(
+                                                content: Text(
+                                                    'Error: ${e.response?.data['message']}'),
+                                              ),
+                                            );
+                                          }
+                                        }
+                                      },
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.red,
+                                        foregroundColor: Colors.white,
+                                      ),
+                                      child: Text(translate('vehicle.delete_vehicle')),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ],
                     ],

@@ -2,6 +2,11 @@ package inputs
 
 import "time"
 
+type FilterPropsal struct {
+	MaxPrice           float64 `form:"max_price"`
+	LeftAvailableSeats int     `form:"left_available_seats"`
+}
+
 type InputCreateProposal struct {
 	DepartureTime  time.Time    `json:"departureTime" binding:"required"`
 	Description    string       `json:"description" binding:"required"`

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 import 'package:frontend/mobile/proposal/proposal_detail.dart';
 import 'package:frontend/models/proposal.dart';
@@ -44,29 +45,33 @@ class _MyProposalViewState extends State<MyProposalView> {
               DateTime parsedDepartureTime = DateTime.parse(proposal.departureTime);
               String formattedDepartureTime = DateFormat('dd/MM/yyyy HH:mm').format(parsedDepartureTime);
               return Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: const EdgeInsets.all(14.0),
                 child: Container(
-                  color: Colors.grey[200],
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: Colors.grey[300]!,
+                      width: 1.0,
+                    ),
+                    borderRadius: BorderRadius.circular(12.0),
+                  ),
                   child: ListTile(
                     title: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        Text(proposal.flight.departure.name,
+                            style: const TextStyle(fontWeight: FontWeight.bold)),
+                        Text(proposal.flight.arrival.name,
+                            style: const TextStyle(fontWeight: FontWeight.bold)),
+                        Divider(color: Colors.grey[400]), // Separator
                         Padding(
-                          padding: const EdgeInsets.only(bottom: 4.0),
-                          child: RichText(
-                            text: TextSpan(
-                              children: [
-                                TextSpan(text: proposal.flight.departure.name, style: const TextStyle(fontWeight: FontWeight.bold)),
-                                const TextSpan(text: ' → '),
-                                TextSpan(text: proposal.flight.arrival.name, style: const TextStyle(fontWeight: FontWeight.bold)),
-                              ],
-                              style: const TextStyle(color: Colors.black),
-                            ),
+                          padding: const EdgeInsets.only(top: 4.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('Departure Time: $formattedDepartureTime',
+                                  style: const TextStyle(fontSize: 12)),
+                            ],
                           ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 8.0),
-                          child: Text('${translate('common.departure')}: $formattedDepartureTime', style: const TextStyle(fontSize: 12)),
                         ),
                       ],
                     ),
@@ -80,7 +85,28 @@ class _MyProposalViewState extends State<MyProposalView> {
             },
           );
         } else {
-          return const Center(child: Text('You are not part of any proposal'));
+          return Center(
+            child: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  SvgPicture.asset(
+                    'assets/images/plane.svg',
+                    semanticsLabel: 'Plane icon',
+                  ),
+                  const Padding(
+                    padding: EdgeInsets.only(top: 8.0),
+                    child: Text(
+                      'You are not part of any proposal',
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
         }
       },
     );
