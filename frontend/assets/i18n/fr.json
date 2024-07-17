@@ -36,6 +36,12 @@
     "update_vehicle": "Mettre à jour le véhicule"
   },
   "home": {
+    "drawer": {
+      "profile": "Profil",
+      "vehicle": "Véhicule",
+      "offerFlight": "Proposition de vol",
+      "logout": "Déconnexion"
+    },
     "flight_management": {
       "create": {
         "idle_label": "Entrez une requête de recherche"
