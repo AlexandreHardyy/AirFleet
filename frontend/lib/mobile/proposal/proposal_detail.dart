@@ -60,7 +60,7 @@ class _ProposalDetailState extends State<ProposalDetail> {
   }
 
   bool isDepartureWithinOneHour(DateTime departureTime) {
-    final currentTime = DateTime.now();
+    final currentTime = DateTime.now().toUtc();
     final difference = departureTime.difference(currentTime).inMinutes;
     return difference < 60;
   }

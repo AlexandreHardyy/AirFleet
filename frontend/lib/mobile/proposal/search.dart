@@ -20,12 +20,14 @@ class _SearchViewState extends State<SearchView> {
   @override
   void initState() {
     super.initState();
-    _proposalsFuture = ProposalService.getProposals(maxPrice: maxPrice, minSeatsAvailable: minSeatsAvailable);
+    _proposalsFuture = ProposalService.getProposals(
+        maxPrice: maxPrice, minSeatsAvailable: minSeatsAvailable);
   }
 
   void refreshProposals() {
     setState(() {
-      _proposalsFuture = ProposalService.getProposals(maxPrice: maxPrice, minSeatsAvailable: minSeatsAvailable);
+      _proposalsFuture = ProposalService.getProposals(
+          maxPrice: maxPrice, minSeatsAvailable: minSeatsAvailable);
     });
   }
 
@@ -68,8 +70,10 @@ class _SearchViewState extends State<SearchView> {
                 itemCount: snapshot.data!.length,
                 itemBuilder: (context, index) {
                   Proposal proposal = snapshot.data![index];
-                  DateTime parsedDepartureTime = DateTime.parse(proposal.departureTime);
-                  String formattedDepartureTime = DateFormat('dd/MM/yyyy HH:mm').format(parsedDepartureTime);
+                  DateTime parsedDepartureTime =
+                      DateTime.parse(proposal.departureTime);
+                  String formattedDepartureTime = DateFormat('dd/MM/yyyy HH:mm')
+                      .format(parsedDepartureTime);
                   return Padding(
                     padding: const EdgeInsets.all(14.0),
                     child: Container(
@@ -85,39 +89,55 @@ class _SearchViewState extends State<SearchView> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(proposal.flight.departure.name,
-                                style: const TextStyle(fontWeight: FontWeight.bold)),
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold)),
                             Text(proposal.flight.arrival.name,
-                                style: const TextStyle(fontWeight: FontWeight.bold)),
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold)),
                             Divider(color: Colors.grey[400]), // Separator
                             Padding(
                               padding: const EdgeInsets.only(top: 4.0),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text('Departure Time: $formattedDepartureTime',
+                                  Text(
+                                      'Departure Time: $formattedDepartureTime',
                                       style: const TextStyle(fontSize: 12)),
                                   const SizedBox(height: 8),
                                   Row(
                                     children: [
                                       const CircleAvatar(
-                                        backgroundImage: AssetImage('assets/images/avatar.png'),
+                                        backgroundImage: AssetImage(
+                                            'assets/images/avatar.png'),
                                         radius: 16,
                                       ),
                                       const SizedBox(width: 8),
-                                      Text('${proposal.flight.pilot?.firstName} ${proposal.flight.pilot?.lastName}',
+                                      Text(
+                                          '${proposal.flight.pilot?.firstName} ${proposal.flight.pilot?.lastName}',
                                           style: const TextStyle(fontSize: 12)),
                                     ],
                                   ),
-                                  const SizedBox(height: 8),
-                                  Text('Seats available: ${proposal.flight.users?.length ?? 0} / ${proposal.availableSeats}',
-                                      style: const TextStyle(fontSize: 12)),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                          'Seats available: ${proposal.flight.users?.length ?? 0} / ${proposal.availableSeats}',
+                                          style: const TextStyle(fontSize: 12)),
+                                      Text('${proposal.flight.price} €',
+                                          style: const TextStyle(
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.bold)),
+                                    ],
+                                  ),
                                 ],
                               ),
                             ),
                           ],
                         ),
                         onTap: () async {
-                          await ProposalDetail.navigateTo(context, proposalId: proposal.id);
+                          await ProposalDetail.navigateTo(context,
+                              proposalId: proposal.id);
                           refreshProposals();
                         },
                       ),

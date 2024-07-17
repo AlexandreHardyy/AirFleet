@@ -21,20 +21,7 @@ class ProposalsManagementScreen extends StatefulWidget {
 }
 
 class _ProposalsManagementScreenState extends State<ProposalsManagementScreen> {
-  late Future<List<Vehicle>> _proposalsFuture;
   int _currentIndex = 0;
-
-  @override
-  void initState() {
-    super.initState();
-    _proposalsFuture = VehicleService.getVehiclesForMe();
-  }
-
-  void refreshProposals() {
-    setState(() {
-      _proposalsFuture = VehicleService.getVehiclesForMe();
-    });
-  }
 
   @override
   Widget build(BuildContext context) {

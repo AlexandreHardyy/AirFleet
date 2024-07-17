@@ -27,6 +27,17 @@ class _VehicleDetailsPageState extends State<VehicleDetailsPage> {
   late Vehicle _vehicle;
   bool isPlaneSelected = true;
 
+  InputDecoration _buildInputDecoration({required String labelText, IconData? prefixIcon, String? suffixText}) {
+    return InputDecoration(
+      labelText: labelText,
+      prefixIcon: prefixIcon != null ? Icon(prefixIcon) : null,
+      suffixText: suffixText,
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8),
+      ),
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -83,8 +94,7 @@ class _VehicleDetailsPageState extends State<VehicleDetailsPage> {
                     children: [
                       TextFormField(
                         initialValue: _vehicle.modelName,
-                        decoration:
-                            const InputDecoration(labelText: 'Model Name'),
+                        decoration: _buildInputDecoration(labelText: 'Model Name'),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Please enter a model name';
@@ -93,10 +103,10 @@ class _VehicleDetailsPageState extends State<VehicleDetailsPage> {
                         },
                         onSaved: (value) => _vehicle.modelName = value!,
                       ),
+                      const SizedBox(height: 18),
                       TextFormField(
                         initialValue: _vehicle.matriculation,
-                        decoration:
-                            const InputDecoration(labelText: 'Matriculation'),
+                        decoration: _buildInputDecoration(labelText: 'Matriculation'),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Please enter a matriculation';
@@ -105,9 +115,10 @@ class _VehicleDetailsPageState extends State<VehicleDetailsPage> {
                         },
                         onSaved: (value) => _vehicle.matriculation = value!,
                       ),
+                      const SizedBox(height: 18),
                       TextFormField(
                         initialValue: _vehicle.seat.toString(),
-                        decoration: const InputDecoration(labelText: 'Seat'),
+                        decoration: _buildInputDecoration(labelText: 'Seat'),
                         keyboardType: TextInputType.number,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
@@ -120,17 +131,16 @@ class _VehicleDetailsPageState extends State<VehicleDetailsPage> {
                         },
                         onSaved: (value) => _vehicle.seat = int.parse(value!),
                       ),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 18),
                       const Text(
                         'Select Vehicle Type:',
                         style: TextStyle(
                             fontSize: 18, fontWeight: FontWeight.bold),
                       ),
-                      const SizedBox(height: 10),
+                      const SizedBox(height: 18),
                       TextFormField(
                         initialValue: _vehicle.cruiseSpeed.toString(),
-                        decoration:
-                            const InputDecoration(labelText: 'Cruise Speed'),
+                        decoration: _buildInputDecoration(labelText: 'Cruise Speed', suffixText: 'kts'),
                         keyboardType: TextInputType.number,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
@@ -142,13 +152,12 @@ class _VehicleDetailsPageState extends State<VehicleDetailsPage> {
                           return null;
                         },
                         onSaved: (value) =>
-                            _vehicle.cruiseSpeed = num.parse(value!),
+                        _vehicle.cruiseSpeed = num.parse(value!),
                       ),
-                      const SizedBox(height: 10),
+                      const SizedBox(height: 18),
                       TextFormField(
-                        initialValue: _vehicle.cruiseAltitude.toString(),
-                        decoration:
-                            const InputDecoration(labelText: 'Cruise Altitude'),
+                        initialValue: _vehicle.cruiseSpeed.toString(),
+                        decoration: _buildInputDecoration(labelText: 'Cruise Speed', suffixText: 'ft'),
                         keyboardType: TextInputType.number,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
@@ -160,7 +169,7 @@ class _VehicleDetailsPageState extends State<VehicleDetailsPage> {
                           return null;
                         },
                         onSaved: (value) =>
-                            _vehicle.cruiseAltitude = num.parse(value!),
+                        _vehicle.cruiseSpeed = num.parse(value!),
                       ),
                       const SizedBox(height: 20),
                       Row(
