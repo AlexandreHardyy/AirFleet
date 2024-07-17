@@ -1,5 +1,8 @@
 {
   "common": {
+    "confirm": "Confirm",
+    "yes": "Yes",
+    "no": "No",
     "departure": "Departure",
     "arrival": "Arrival",
     "input": {
@@ -49,6 +52,9 @@
       "logout": "Logout"
     },
     "profile": {
+      "updateProfilePicture": {
+        "submit": "Are you sure you want to submit this photo?"
+      },
       "ratings": "Ratings",
       "flightList": {
         "status": {
@@ -62,6 +68,9 @@
         "more": "Show more",
         "less": "Show less"
       }
+    },
+    "vehicle_management": {
+      "add": "Add a vehicle"
     },
     "flight_management": {
       "create": {
