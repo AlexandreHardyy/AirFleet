@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_translate/flutter_translate.dart';
+import 'package:frontend/mobile/profile/user_flights_list.dart';
 import 'package:frontend/models/flight.dart';
 import 'package:frontend/models/rating.dart';
 import 'package:frontend/services/flight.dart';
 import 'package:frontend/services/rating.dart';
 import 'package:frontend/storage/user.dart';
+import 'package:intl/intl.dart';
 
 class FlightDetails extends StatefulWidget {
   static const routeName = '/flight-details';
@@ -32,10 +34,8 @@ class _FlightDetailsState extends State<FlightDetails> {
     _flight = FlightService.getFlight(widget.flightId);
 
     if (UserStore.user?.role == "ROLE_PILOT") {
-      _ratings = RatingService.getRatingsByPilotID(
-          UserStore.user!.id,
-          {"status": "reviewed", "flight_id": widget.flightId.toString()}
-      );
+      _ratings = RatingService.getRatingsByPilotID(UserStore.user!.id,
+          {"status": "reviewed", "flight_id": widget.flightId.toString()});
     } else {
       _ratings = Future.value([]);
     }
@@ -58,7 +58,9 @@ class _FlightDetailsState extends State<FlightDetails> {
                 } else if (snapshot.hasError) {
                   return Text('Error: ${snapshot.error}');
                 } else {
-                  return FlightInfoCard(flight: snapshot.data!);
+                  return SingleFlightList(
+                      flight: snapshot.data!,
+                      backgroundColor: Colors.grey[200]);
                 }
               },
             ),
@@ -72,13 +74,77 @@ class _FlightDetailsState extends State<FlightDetails> {
                     return Text('Error: ${snapshot.error}');
                   } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
                     return Center(
-                        child: Text(translate(
-                            "home.flight_management.flight_details.no_rating")));
+                      child: Text(
+                        translate(
+                            "home.flight_management.flight_details.no_rating"),
+                      ),
+                    );
                   } else {
-                    return Column(
-                      children: snapshot.data!.map((rating) {
-                        return RatingCard(rating: rating);
-                      }).toList(),
+                    final rating = snapshot.data!.first;
+                    return Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Card(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15.0),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  CircleAvatar(
+                                    radius: 20,
+                                    backgroundColor: Colors.black12,
+                                    child: Text(
+                                      rating.user.firstName[0].toUpperCase(),
+                                      style: const TextStyle(
+                                          color: Color(0xFF131141),
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 10),
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        '${rating.user.firstName} ${rating.user.lastName}',
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                      Text(
+                                        DateFormat('dd MMM yyyy').format(
+                                          DateTime.parse(rating.createdAt),
+                                        ),
+                                        style:
+                                            const TextStyle(color: Colors.grey),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 10),
+                              Row(
+                                children: List.generate(5, (starIndex) {
+                                  return Icon(
+                                    Icons.star,
+                                    color: starIndex < rating.rating!
+                                        ? Colors.amber
+                                        : Colors.grey,
+                                  );
+                                }),
+                              ),
+                              const SizedBox(height: 10),
+                              Text(rating.comment!),
+                            ],
+                          ),
+                        ),
+                      ),
                     );
                   }
                 },
@@ -104,12 +170,14 @@ class FlightInfoCard extends StatelessWidget {
           ListTile(
             title: Text(flight.departure.name),
             subtitle: Text(
-                translate("home.flight_management.flight_details.departure")),
+              translate("home.flight_management.flight_details.departure"),
+            ),
           ),
           ListTile(
             title: Text(flight.arrival.name),
             subtitle: Text(
-                translate("home.flight_management.flight_details.arrival")),
+              translate("home.flight_management.flight_details.arrival"),
+            ),
           ),
         ],
       ),
@@ -135,5 +203,19 @@ class RatingCard extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+class SingleFlightList extends StatelessWidget {
+  final Flight flight;
+  final Color? backgroundColor;
+
+  const SingleFlightList(
+      {super.key, required this.flight, this.backgroundColor});
+
+  @override
+  Widget build(BuildContext context) {
+    return ExpandableFlightList(
+        flights: [flight], backgroundColor: backgroundColor);
   }
 }

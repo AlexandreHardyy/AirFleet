@@ -119,26 +119,29 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  FutureBuilder<List<Vehicle>>(
-                    future: _userVehicles,
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const CircularProgressIndicator();
-                      } else if (snapshot.hasError) {
-                        return const Icon(Icons.error, color: Colors.red);
-                      } else {
-                        return TotalVehicleInfo(vehicles: snapshot.data!);
-                      }
-                    },
-                  ),
-                  const SizedBox(
-                    height: 30,
-                    child: VerticalDivider(
-                      width: 20,
-                      thickness: 1,
-                      color: Colors.grey,
+                  if (UserStore.user!.role == 'ROLE_PILOT')
+                    FutureBuilder<List<Vehicle>>(
+                      future: _userVehicles,
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const CircularProgressIndicator();
+                        } else if (snapshot.hasError) {
+                          return const Icon(Icons.error, color: Colors.red);
+                        } else {
+                          return TotalVehicleInfo(vehicles: snapshot.data!);
+                        }
+                      },
                     ),
-                  ),
+                  if (UserStore.user!.role == 'ROLE_PILOT')
+                    const SizedBox(
+                      height: 30,
+                      child: VerticalDivider(
+                        width: 20,
+                        thickness: 1,
+                        color: Colors.grey,
+                      ),
+                    ),
                   FutureBuilder<List<Flight>>(
                     future: _recentFlights,
                     builder: (context, snapshot) {
@@ -151,26 +154,29 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                       }
                     },
                   ),
-                  const SizedBox(
-                    height: 30,
-                    child: VerticalDivider(
-                      width: 20,
-                      thickness: 1,
-                      color: Colors.grey,
+                  if (UserStore.user!.role == 'ROLE_PILOT')
+                    const SizedBox(
+                      height: 30,
+                      child: VerticalDivider(
+                        width: 20,
+                        thickness: 1,
+                        color: Colors.grey,
+                      ),
                     ),
-                  ),
-                  FutureBuilder<List<Rating>>(
-                    future: _ratings,
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const CircularProgressIndicator();
-                      } else if (snapshot.hasError) {
-                        return const Icon(Icons.error, color: Colors.red);
-                      } else {
-                        return TotalRatingInfo(ratings: snapshot.data!);
-                      }
-                    },
-                  ),
+                  if (UserStore.user!.role == 'ROLE_PILOT')
+                    FutureBuilder<List<Rating>>(
+                      future: _ratings,
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const CircularProgressIndicator();
+                        } else if (snapshot.hasError) {
+                          return const Icon(Icons.error, color: Colors.red);
+                        } else {
+                          return TotalRatingInfo(ratings: snapshot.data!);
+                        }
+                      },
+                    ),
                 ],
               ),
             ),
@@ -183,7 +189,10 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                   } else if (snapshot.hasError) {
                     return Text('Error: ${snapshot.error}');
                   } else if (snapshot.data != null) {
-                    return ExpandableFlightList(flights: snapshot.data!);
+                    return Container(
+                      color: Colors.grey[300],
+                      child: ExpandableFlightList(flights: snapshot.data!),
+                    );
                   } else {
                     return const Text('No recent flights found.');
                   }
@@ -238,7 +247,7 @@ class TotalRevenueInfo extends StatelessWidget {
 
   double get totalRevenue => flights.fold(
       0,
-      (previousValue, flight) => flight.status == "finished"
+      (previousValue, flight) => flight.status == "finished" || flight.status == "in_progress" || flight.status == "waiting_takeoff"
           ? previousValue + flight.price!
           : previousValue);
 
@@ -246,7 +255,7 @@ class TotalRevenueInfo extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        const Icon(Icons.attach_money, color: Color(0xFFDCA200), size: 40),
+        const Icon(Icons.euro, color: Color(0xFFDCA200), size: 40),
         Text(
           '$totalRevenue',
           style: const TextStyle(

@@ -7,8 +7,13 @@ import 'package:intl/intl.dart';
 
 class ExpandableFlightList extends StatefulWidget {
   final List<Flight> flights;
+  final Color? backgroundColor;
 
-  const ExpandableFlightList({super.key, required this.flights});
+  const ExpandableFlightList({
+    super.key,
+    required this.flights,
+    this.backgroundColor,
+  });
 
   @override
   _ExpandableFlightListState createState() => _ExpandableFlightListState();
@@ -38,11 +43,10 @@ class _ExpandableFlightListState extends State<ExpandableFlightList> {
 
   @override
   Widget build(BuildContext context) {
-    final flightsToShow =
-        _isExpanded ? widget.flights : widget.flights.take(3).toList();
+    final flightsToShow = _isExpanded ? widget.flights : widget.flights.take(3).toList();
+    final backgroundColor = widget.backgroundColor ?? Colors.white;
 
     return Container(
-      color: Colors.grey[300],
       child: Column(
         children: [
           ListView.builder(
@@ -68,9 +72,9 @@ class _ExpandableFlightListState extends State<ExpandableFlightList> {
                   child: Column(
                     children: [
                       Container(
-                        decoration: const BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.only(
+                        decoration: BoxDecoration(
+                          color: backgroundColor,
+                          borderRadius: const BorderRadius.only(
                             topLeft: Radius.circular(16.0),
                             topRight: Radius.circular(16.0),
                             bottomLeft: Radius.circular(4.0),
@@ -120,7 +124,7 @@ class _ExpandableFlightListState extends State<ExpandableFlightList> {
                       const SizedBox(height: 2),
                       Container(
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: backgroundColor,
                           borderRadius: BorderRadius.circular(4.0),
                         ),
                         padding: const EdgeInsets.all(8.0),
@@ -147,9 +151,9 @@ class _ExpandableFlightListState extends State<ExpandableFlightList> {
                       ),
                       const SizedBox(height: 2),
                       Container(
-                        decoration: const BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.only(
+                        decoration: BoxDecoration(
+                          color: backgroundColor,
+                          borderRadius: const BorderRadius.only(
                             topLeft: Radius.circular(4.0),
                             topRight: Radius.circular(4.0),
                             bottomLeft: Radius.circular(16.0),

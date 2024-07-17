@@ -27,15 +27,11 @@ class HomeDrawer extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    ClipOval(
-                      child: Container(
-                          // decoration: const BoxDecoration(
-                          //   color: Color(0xFF131141),
-                          // ),
+                    const ClipOval(
+                      child: SizedBox(
                           width: 80,
                           height: 80,
-                          // padding: const EdgeInsets.all(12.0),
-                          child: const ProfileImage(),
+                          child: ProfileImage(),
                         ),
                     ),
                     const SizedBox(height: 16.0),

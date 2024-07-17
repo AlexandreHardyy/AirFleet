@@ -6,7 +6,8 @@ import 'package:intl/intl.dart';
 class UserRatingsScreen extends StatelessWidget {
   static const routeName = '/ratings';
 
-  static Future<void> navigateTo(BuildContext context, {required List<Rating> ratings}) {
+  static Future<void> navigateTo(BuildContext context,
+      {required List<Rating> ratings}) {
     return Navigator.of(context).pushNamed(routeName, arguments: ratings);
   }
 
@@ -38,13 +39,16 @@ class UserRatingsScreen extends StatelessWidget {
                     Row(
                       children: [
                         CircleAvatar(
-                        radius: 20,
-                        backgroundColor: Colors.black12,
-                        child: Text(
-                          rating.user.firstName[0].toUpperCase(),
-                          style: const TextStyle(color: Color(0xFF131141), fontSize: 20, fontWeight: FontWeight.bold),
+                          radius: 20,
+                          backgroundColor: Colors.black12,
+                          child: Text(
+                            rating.user.firstName[0].toUpperCase(),
+                            style: const TextStyle(
+                                color: Color(0xFF131141),
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold),
+                          ),
                         ),
-                      ),
                         const SizedBox(width: 10),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -57,7 +61,9 @@ class UserRatingsScreen extends StatelessWidget {
                               ),
                             ),
                             Text(
-                              DateFormat('dd MMM yyyy').format(DateTime.parse(rating.createdAt)),
+                              DateFormat('dd MMM yyyy').format(
+                                DateTime.parse(rating.createdAt),
+                              ),
                               style: const TextStyle(color: Colors.grey),
                             ),
                           ],
@@ -69,7 +75,9 @@ class UserRatingsScreen extends StatelessWidget {
                       children: List.generate(5, (starIndex) {
                         return Icon(
                           Icons.star,
-                          color: starIndex < rating.rating! ? Colors.amber : Colors.grey,
+                          color: starIndex < rating.rating!
+                              ? Colors.amber
+                              : Colors.grey,
                         );
                       }),
                     ),
