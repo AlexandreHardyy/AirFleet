@@ -1,11 +1,13 @@
 package handlers
 
 import (
+	"backend/customErrors"
 	"backend/inputs"
 	"backend/models"
 	"backend/repositories"
 	"backend/services"
 	"backend/utils/token"
+	"errors"
 	"net/http"
 	"strconv"
 
@@ -41,6 +43,7 @@ func newRatingHandler(ratingService services.RatingServiceInterface) *RatingHand
 // @Param			comment	body	object	false	"Comment"
 //
 // @Success		200				{object}	Response
+// @Failure 	403 			{object} 	Response
 // @Failure		400				{object}	Response
 // @Failure		500				{object}	Response
 //
@@ -75,7 +78,13 @@ func (h *RatingHandler) Update(c *gin.Context) {
 			Content: "[UpdateRating]: " + err.Error(),
 		})
 
-		c.JSON(500, gin.H{"error": err.Error()})
+		var customErr *customErrors.CustomError
+		if errors.As(err, &customErr) {
+			c.JSON(customErr.StatusCode, gin.H{"error": customErr.Message})
+			return
+		}
+
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -127,6 +136,7 @@ func (h *RatingHandler) GetRatingsByPilotID(c *gin.Context) {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
+
 	c.JSON(200, response)
 }
 
@@ -142,7 +152,7 @@ func (h *RatingHandler) GetRatingsByPilotID(c *gin.Context) {
 // @Param			status	query	string	false	"Status"
 //
 // @Success		200				{object}	[]responses.ResponseRating
-// @Failure		400				{object}	Response
+// @Failure		500				{object}	Response
 //
 // @Router			/ratings [get]
 //
@@ -158,7 +168,7 @@ func (h *RatingHandler) GetAllRatings(c *gin.Context) {
 
 	response, err := h.ratingService.GetAllRatings(filters)
 	if err != nil {
-		c.JSON(500, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 

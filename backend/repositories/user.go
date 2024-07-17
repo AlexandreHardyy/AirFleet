@@ -54,7 +54,7 @@ func (r *userRepository) Login(email string, password string) (string, error) {
 	err = utils.VerifyPassword(password, user.Password)
 
 	if err != nil && err == bcrypt.ErrMismatchedHashAndPassword {
-		return "", errors.New("credentials errors")
+		return "", errors.New("credentials customErrors")
 	}
 
 	if !user.IsVerified {

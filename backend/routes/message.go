@@ -12,6 +12,5 @@ func InitMessageRoutes(api *gin.RouterGroup) {
 
 	api = api.Group("/messages")
 
-	api.GET("", middlewares.IsAuth(), messageHandler.GetAll)
 	api.GET("/flight/:flightId", middlewares.IsAuth(), messageHandler.GetAllByFlightID)
 }

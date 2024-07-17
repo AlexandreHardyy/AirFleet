@@ -1,10 +1,11 @@
 package services
 
 import (
+	"backend/customErrors"
 	"backend/inputs"
 	"backend/repositories"
 	"backend/responses"
-	"errors"
+	"net/http"
 )
 
 type RatingServiceInterface interface {
@@ -29,11 +30,17 @@ func (s *RatingService) UpdateRating(ratingID int, rating inputs.InputUpdateRati
 	}
 
 	if ratingModel.UserID != userID {
-		return responses.ResponseRating{}, errors.New("you are not authorized to update this rating")
+		return responses.ResponseRating{}, &customErrors.CustomError{
+			StatusCode: http.StatusForbidden,
+			Message:    "you are not authorized to update this rating",
+		}
 	}
 
 	if ratingModel.Status != "waiting_for_review" {
-		return responses.ResponseRating{}, errors.New("you are not authorized to update this rating")
+		return responses.ResponseRating{}, &customErrors.CustomError{
+			StatusCode: http.StatusBadRequest,
+			Message:    "rating has already been reviewed",
+		}
 	}
 
 	if rating.Rating != nil && rating.Comment != nil {
