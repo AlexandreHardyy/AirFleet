@@ -123,6 +123,18 @@ class _CreateProposalViewState extends State<CreateProposalView> {
     });
   }
 
+  InputDecoration _buildInputDecoration({required String labelText, IconData? prefixIcon, String? suffixText, IconButton? suffixIcon}) {
+    return InputDecoration(
+      labelText: labelText,
+      prefixIcon: prefixIcon != null ? Icon(prefixIcon) : null,
+      suffixText: suffixText,
+      suffixIcon: suffixIcon,
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -132,9 +144,9 @@ class _CreateProposalViewState extends State<CreateProposalView> {
         child: SingleChildScrollView(
           child: Column(
             children: [
+              const SizedBox(height: 10),
               TextFormField(
-                decoration: InputDecoration(labelText: translate('proposal.seats_available')),
-                keyboardType: TextInputType.number,
+                decoration: _buildInputDecoration(labelText: translate('proposal.seats_available')),
                 onSaved: (value) => availableSeats = int.parse(value!),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -143,6 +155,7 @@ class _CreateProposalViewState extends State<CreateProposalView> {
                   return null;
                 },
               ),
+              const SizedBox(height: 18),
               TextFormField(
                 controller: _departureController,
                 focusNode: departureTextFieldFocusNode,
@@ -152,20 +165,18 @@ class _CreateProposalViewState extends State<CreateProposalView> {
                     _suggestions = suggestions;
                   });
                 },
-                decoration: InputDecoration(
-                  labelText: 'Search Departure Airport',
+                decoration: _buildInputDecoration(labelText: translate('proposal.form.departure'),
                   suffixIcon: _departureController.text.isNotEmpty
-                      ? IconButton(
-                          icon: const Icon(Icons.clear),
-                          onPressed: () {
-                            _departureController.clear();
-                            setState(() {
-                              _suggestions = [];
-                            });
-                          },
-                        )
-                      : null,
-                ),
+                    ? IconButton(
+                  icon: const Icon(Icons.clear),
+                  onPressed: () {
+                    _departureController.clear();
+                    setState(() {
+                      _suggestions = [];
+                    });
+                  },
+                )
+                    : null,),
               ),
               if (_suggestions.isNotEmpty &&
                   departureTextFieldFocusNode.hasFocus)
@@ -192,6 +203,7 @@ class _CreateProposalViewState extends State<CreateProposalView> {
                     },
                   ),
                 ),
+              const SizedBox(height: 18),
               TextFormField(
                 controller: _arrivalController,
                 focusNode: arrivalTextFieldFocusNode,
@@ -201,20 +213,18 @@ class _CreateProposalViewState extends State<CreateProposalView> {
                     _suggestions = suggestions;
                   });
                 },
-                decoration: InputDecoration(
-                  labelText: 'Search Arrival Airport',
+                decoration: _buildInputDecoration(labelText: translate('proposal.form.arrival'),
                   suffixIcon: _arrivalController.text.isNotEmpty
                       ? IconButton(
-                          icon: const Icon(Icons.clear),
-                          onPressed: () {
-                            _arrivalController.clear();
-                            setState(() {
-                              _suggestions = [];
-                            });
-                          },
-                        )
-                      : null,
-                ),
+                    icon: const Icon(Icons.clear),
+                    onPressed: () {
+                      _arrivalController.clear();
+                      setState(() {
+                        _suggestions = [];
+                      });
+                    },
+                  )
+                      : null,),
               ),
               if (_suggestions.isNotEmpty && arrivalTextFieldFocusNode.hasFocus)
                 SizedBox(
@@ -240,9 +250,10 @@ class _CreateProposalViewState extends State<CreateProposalView> {
                     },
                   ),
                 ),
+              const SizedBox(height: 18),
               FormBuilderDateTimePicker(
                 name: 'departureTime',
-                decoration: const InputDecoration(labelText: 'Departure Time'),
+                decoration: _buildInputDecoration(labelText: translate('proposal.form.departure_time')),
                 inputType: InputType.both,
                 onSaved: (value) => departureTime = value!,
                 validator: (value) {
@@ -252,8 +263,9 @@ class _CreateProposalViewState extends State<CreateProposalView> {
                   return null;
                 },
               ),
+              const SizedBox(height: 18),
               TextFormField(
-                decoration: const InputDecoration(labelText: 'Description'),
+                decoration: _buildInputDecoration(labelText: translate('proposal.form.description')),
                 onSaved: (value) => description = value!,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -262,8 +274,9 @@ class _CreateProposalViewState extends State<CreateProposalView> {
                   return null;
                 },
               ),
+              const SizedBox(height: 18),
               TextFormField(
-                decoration: const InputDecoration(labelText: 'Price'),
+                decoration: _buildInputDecoration(labelText: translate('proposal.form.price')),
                 keyboardType: TextInputType.number,
                 onSaved: (value) => price = double.parse(value!),
                 validator: (value) {
@@ -276,7 +289,7 @@ class _CreateProposalViewState extends State<CreateProposalView> {
               const SizedBox(height: 20),
               FormBuilderDropdown(
                 name: "vehicleId",
-                decoration: getInputDecoration(hintText: 'Select vehicle'),
+                decoration: getInputDecoration(hintText: translate('proposal.form.select_vehicle')),
                 items: _vehicleDropdownItems,
                 onChanged: (dynamic value) {
                   setState(() {
@@ -324,7 +337,7 @@ class _CreateProposalViewState extends State<CreateProposalView> {
                           }
                         }
                       },
-                      child: const Text('Submit'),
+                      child: Text(translate('common.input.submit')),
                     ),
                   ),
                 ],

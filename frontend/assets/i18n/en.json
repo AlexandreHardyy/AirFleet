@@ -35,7 +35,26 @@
     "seats_available": "Seats available",
     "proposed_by": "Proposed by",
     "people_in_flight": "People already in flight",
-    "porposal_details": "Proposal details"
+    "proposal_details": "Proposal details",
+    "start_proposal": "Start proposal",
+    "confirm_start_proposal": "Are you sure you want to start the proposal ?",
+    "confirm_leave_proposal": "Are you sure you want to leave the proposal ?",
+    "join_proposal": "Join proposal",
+    "leave_proposal": "Leave proposal",
+    "delete_proposal": "Delete proposal",
+    "welcome_on_board": "Welcome on board !",
+    "form": {
+        "departure": "Departure",
+        "arrival": "Arrival",
+        "departure_date": "Departure date",
+        "departure_time": "Departure time",
+        "arrival_date": "Arrival date",
+        "arrival_time": "Arrival time",
+        "price": "Price",
+        "seats": "Seats",
+        "description": "Description",
+        "select_vehicle": "Select vehicle"
+    }
   },
   "vehicle": {
     "create_vehicle": "Create vehicle",

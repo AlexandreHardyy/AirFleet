@@ -3,6 +3,7 @@ import 'package:frontend/mobile/proposal/proposal_detail.dart';
 import 'package:frontend/mobile/proposal/search_filter.dart';
 import 'package:frontend/models/proposal.dart';
 import 'package:frontend/services/proposal.dart';
+import 'package:frontend/widgets/profile_image.dart';
 import 'package:intl/intl.dart';
 
 class SearchView extends StatefulWidget {
@@ -106,10 +107,12 @@ class _SearchViewState extends State<SearchView> {
                                   const SizedBox(height: 8),
                                   Row(
                                     children: [
-                                      const CircleAvatar(
-                                        backgroundImage: AssetImage(
-                                            'assets/images/avatar.png'),
-                                        radius: 16,
+                                      const ClipOval(
+                                        child: SizedBox(
+                                          width: 45,
+                                          height: 45,
+                                          child: ProfileImage(),
+                                        ),
                                       ),
                                       const SizedBox(width: 8),
                                       Text(
