@@ -30,7 +30,7 @@ func (r *repository) Create(file models.File) (models.File, error) {
 func (r *repository) Update(path string, userId int) (models.File, error) {
 
 	var image models.File
-	err := r.db.Where(models.File{Type: "profile"}).Find(&image).Error
+	err := r.db.Where(models.File{Type: "profile", UserID: userId}).Find(&image).Error
 	if err != nil {
 		return image, err
 	}
