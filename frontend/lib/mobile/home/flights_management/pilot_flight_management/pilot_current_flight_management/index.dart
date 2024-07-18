@@ -70,29 +70,6 @@ class _CurrentPilotFlightManagementState
 
   @override
   Widget build(BuildContext context) {
-    if (context.read<SocketIoBloc>().state.status ==
-        SocketIoStatus.disconnected) {
-      final currentFlightState = context.read<CurrentFlightBloc>().state;
-
-      context.read<SocketIoBloc>().state.socket!.connect();
-      context
-          .read<SocketIoBloc>()
-          .add(SocketIoCreateSession(flightId: currentFlightState.flight!.id));
-      context.read<SocketIoBloc>().state.socket!.onReconnect((data) => {
-            print("Reconnected to socket.io server"),
-            context
-                .read<SocketIoBloc>()
-                .add(SocketIoCreateSession(flightId: currentFlightState.flight!.id))
-          });
-
-      context.read<SocketIoBloc>().add(SocketIoListenEvent(
-            eventId: "flightUpdated",
-            event: "flightUpdated",
-            callback: (_) {
-              context.read<CurrentFlightBloc>().add(CurrentFlightUpdated());
-            },
-          ));
-    }
     return Center(
       child: BlocConsumer<CurrentFlightBloc, CurrentFlightState>(
           listener: (context, state) {

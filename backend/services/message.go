@@ -125,7 +125,10 @@ func checkChatModuleAvailability() bool {
 
 	moduleRepository := repositories.NewModuleRepository(database.DB)
 
-	module, _ := moduleRepository.GetModule(filters)
+	module, err := moduleRepository.GetModule(filters)
+	if err != nil {
+		return true
+	}
 
 	return module.IsEnabled
 }
