@@ -1,9 +1,5 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
-import 'package:frontend/mobile/blocs/socket_io/socket_io_bloc.dart';
 import 'package:frontend/models/flight.dart';
 import 'package:frontend/services/payment.dart';
 import 'package:frontend/widgets/title.dart';
@@ -16,8 +12,9 @@ class PaymentScreen extends StatelessWidget {
   }
 
   final Flight flight;
+  final dynamic Function() callbackSuccess;
 
-  const PaymentScreen({super.key, required this.flight});
+  const PaymentScreen({super.key, required this.flight, required this.callbackSuccess});
 
   @override
   Widget build(BuildContext context) {
@@ -99,13 +96,7 @@ class PaymentScreen extends StatelessWidget {
     try {
       await Stripe.instance.presentPaymentSheet();
       await PaymentService.verifyPaymentIntent(flight.id, response['id']);
-      Navigator.of(context).pop();
-      context.read<SocketIoBloc>().state.socket!.emit(
-          "flightProposalChoice",
-          const JsonEncoder().convert({
-            "flightId": flight.id,
-            "choice": "accepted",
-          }));
+      callbackSuccess();
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Payment Failed: $e')),

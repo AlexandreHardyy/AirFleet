@@ -87,9 +87,6 @@ class CurrentFlightBloc extends Bloc<CurrentFlightEvent, CurrentFlightState> {
       LocalNotificationService().showNotification('An offer has been made !', 'A pilot has made an offer for your flight. Check it out !', jsonEncode(payload));
     }
 
-    print("previous flight: ${state.flight?.toJson()}");
-    print("Flight updated: ${flight.toJson()}");
-
     emit(state.copyWith(
       status: CurrentFlightStatus.loaded,
       flight: flight,
