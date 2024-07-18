@@ -1,7 +1,6 @@
 package services
 
 import (
-	"backend/data/roles"
 	"backend/inputs"
 	"backend/models"
 	"backend/repositories"
@@ -63,7 +62,7 @@ func (s *userService) Login(input inputs.LoginUser) (string, error) {
 
 func (s *userService) ValidateAccount(token string) error {
 
-	user, err := s.repository.FindOne(models.User{TokenVerify: token, Role: roles.ROLE_PILOT})
+	user, err := s.repository.FindOne(models.User{TokenVerify: token})
 	if err != nil {
 		return errors.New("wrong token email")
 	}
