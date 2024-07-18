@@ -700,8 +700,8 @@ func (h *FlightSocketHandler) StartAndCompleteFlight(s socketio.Conn, msg string
 	}
 
 	if flight.Status != flightStatus.IN_PROGRESS {
-		s.Emit("error", "Flight is not ready to take off")
-		log.Println("Flight is not ready to take off")
+		s.Emit("error", "Flight has not taken off yet")
+		log.Println("Flight has not taken off yet")
 		return nil
 	}
 
@@ -772,6 +772,56 @@ func (h *FlightSocketHandler) StartAndCompleteFlight(s socketio.Conn, msg string
 
 		s.Leave(strconv.Itoa(simulationRequest.FlightId))
 	}()
+
+	return nil
+}
+
+func (h *FlightSocketHandler) FlightSimulationStop(s socketio.Conn, msg string) error {
+	var simulationRequest inputs.InputSimulateFlight
+	err := json.Unmarshal([]byte(msg), &simulationRequest)
+	if err != nil {
+		s.Emit("error", err.Error())
+		log.Println("Error unmarshalling flight simulation request", err.Error())
+		return err
+	}
+
+	flight, err := h.flightService.GetFlight(simulationRequest.FlightId)
+	if err != nil {
+		s.Emit("error", err.Error())
+		return err
+	}
+
+	newPosition := inputs.InputPilotPositionUpdate{
+		FlightId:  simulationRequest.FlightId,
+		Latitude:  flight.Arrival.Latitude,
+		Longitude: flight.Arrival.Longitude,
+	}
+
+	response, err := h.flightService.PilotPositionUpdate(newPosition, simulationRequest.PilotId)
+	if err != nil {
+		s.Emit("error", err.Error())
+		return err
+	}
+
+	responseBytes, err := json.Marshal(response)
+	if err != nil {
+		log.Println("Error marshalling pilot position:", err)
+		return err
+	}
+
+	responseString := string(responseBytes)
+
+	h.socketIoServer.BroadcastToRoom("/flights", strconv.Itoa(simulationRequest.FlightId), "pilotPositionUpdated", responseString)
+	log.Println("Pilot position updated at the destination")
+
+	err = h.flightService.FlightLanding(simulationRequest.FlightId, simulationRequest.PilotId)
+	if err != nil {
+		s.Emit("error", err.Error())
+		return err
+	}
+	log.Println("Flight has landed")
+
+	s.Leave(strconv.Itoa(simulationRequest.FlightId))
 
 	return nil
 }
