@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_pannable_rating_bar/flutter_pannable_rating_bar.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 import 'package:frontend/mobile/blocs/current_flight/current_flight_bloc.dart';
+import 'package:frontend/mobile/blocs/pilot_status/pilot_status_bloc.dart';
 import 'package:frontend/mobile/home/flights_management/pilot_flight_management/pilot_current_flight_management/index.dart';
 import 'package:frontend/mobile/home/flights_management/pilot_flight_management/search_flights.dart';
 import 'package:frontend/mobile/proposal/search.dart';
@@ -191,6 +192,9 @@ class _FlightsManagementState extends State<FlightsManagement> {
 
   Future<void> _handleRefresh() async {
     context.read<CurrentFlightBloc>().add(CurrentFlightInitialized());
+    if (UserStore.user?.role == Roles.pilot) {
+      context.read<PilotStatusBloc>().add(PilotStatusInitialized());
+    }
   }
 }
 
