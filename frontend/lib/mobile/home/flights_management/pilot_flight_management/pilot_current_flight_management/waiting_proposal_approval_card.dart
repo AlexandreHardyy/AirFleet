@@ -19,30 +19,16 @@ class WaitingProposalApprovalCard extends StatefulWidget {
 
 class _WaitingProposalApprovalCardState
     extends State<WaitingProposalApprovalCard> {
-  String? estimatedFlightTime;
   late SocketIoBloc _socketIoBloc;
 
   @override
   void initState() {
     super.initState();
     _socketIoBloc = context.read<SocketIoBloc>();
-
-    _socketIoBloc.add(SocketIoListenEvent(
-      eventId: "flightTimeUpdated",
-      event: "flightTimeUpdated",
-      callback: (estimatedFlightTime) {
-        if (mounted) {
-          setState(() {
-            this.estimatedFlightTime = _formatFlightTime(estimatedFlightTime);
-          });
-        }
-      },
-    ));
   }
 
   @override
   void dispose() {
-    _socketIoBloc.add(SocketIoStopListeningEvent(eventId: 'flightTimeUpdated'));
     super.dispose();
   }
 
@@ -81,11 +67,4 @@ class _WaitingProposalApprovalCardState
           ],
         ));
   }
-}
-
-String _formatFlightTime(String estimatedFlightTimeStr) {
-  double hours = double.parse(estimatedFlightTimeStr);
-  int hh = hours.floor();
-  int mm = ((hours - hh) * 60).round();
-  return '${hh.toString().padLeft(2, '0')}h${mm.toString().padLeft(2, '0')}min';
 }

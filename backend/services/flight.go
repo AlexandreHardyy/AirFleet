@@ -44,6 +44,11 @@ func NewFlightService(r repositories.FlightRepositoryInterface) *FlightService {
 //REST
 
 func (s *FlightService) GetAllFlights(limit int, offset int) ([]responses.ResponseFlight, error) {
+	isModuleAvailable := CheckFlightModuleAvailability()
+	if !isModuleAvailable {
+		return nil, errors.New("flight module is not available")
+	}
+
 	flights, err := s.repository.GetAllFlights(limit, offset)
 	if err != nil {
 		return []responses.ResponseFlight{}, err
@@ -55,6 +60,11 @@ func (s *FlightService) GetAllFlights(limit int, offset int) ([]responses.Respon
 }
 
 func (s *FlightService) CreateFlight(input inputs.CreateFlight, userID int) (responses.ResponseFlight, error) {
+	isModuleAvailable := CheckFlightModuleAvailability()
+	if !isModuleAvailable {
+		return responses.ResponseFlight{}, errors.New("flight module is not available")
+	}
+
 	flight := models.Flight{
 		//TODO: Status can be different based on the user role
 		Status:             flightStatus.WAITING_PILOT,
@@ -90,6 +100,11 @@ func (s *FlightService) CreateFlight(input inputs.CreateFlight, userID int) (res
 }
 
 func (s *FlightService) GetFlight(flightID int) (responses.ResponseFlight, error) {
+	isModuleAvailable := CheckFlightModuleAvailability()
+	if !isModuleAvailable {
+		return responses.ResponseFlight{}, errors.New("flight module is not available")
+	}
+
 	flight, err := s.repository.GetFlightByID(flightID)
 	if err != nil {
 		return responses.ResponseFlight{}, err
@@ -101,6 +116,11 @@ func (s *FlightService) GetFlight(flightID int) (responses.ResponseFlight, error
 }
 
 func (s *FlightService) GetFlightsByUserID(userID int) ([]responses.ResponseFlight, error) {
+	isModuleAvailable := CheckFlightModuleAvailability()
+	if !isModuleAvailable {
+		return []responses.ResponseFlight{}, errors.New("flight module is not available")
+	}
+
 	flights, err := s.repository.GetFlightsByUserID(userID)
 	if err != nil {
 		return []responses.ResponseFlight{}, err
@@ -112,6 +132,11 @@ func (s *FlightService) GetFlightsByUserID(userID int) ([]responses.ResponseFlig
 }
 
 func (s *FlightService) GetCurrentFlight(userID int) (responses.ResponseFlight, error) {
+	isModuleAvailable := CheckFlightModuleAvailability()
+	if !isModuleAvailable {
+		return responses.ResponseFlight{}, errors.New("flight module is not available")
+	}
+
 	flight, err := s.repository.GetCurrentFlight(userID)
 	if err != nil {
 		return responses.ResponseFlight{}, err
@@ -123,6 +148,11 @@ func (s *FlightService) GetCurrentFlight(userID int) (responses.ResponseFlight, 
 }
 
 func (s *FlightService) GetFlightRequestNearBy(position utils.Position, kmRange float64) ([]responses.ResponseFlight, error) {
+	isModuleAvailable := CheckFlightModuleAvailability()
+	if !isModuleAvailable {
+		return []responses.ResponseFlight{}, errors.New("flight module is not available")
+	}
+
 	flights, err := s.repository.GetFlightRequests()
 
 	var formattedFlights []responses.ResponseFlight
@@ -474,4 +504,19 @@ func (s *FlightService) EstimateFlightTimeInHour(flightID int, pilotPosition uti
 	estimatedTimeInHour := distanceInNauticalMiles / aircraftSpeed
 
 	return math.Round(estimatedTimeInHour*100) / 100, nil
+}
+
+func CheckFlightModuleAvailability() bool {
+	filters := map[string]interface{}{
+		"name": "flight",
+	}
+
+	moduleRepository := repositories.NewModuleRepository(database.DB)
+
+	module, err := moduleRepository.GetModule(filters)
+	if err != nil {
+		return true
+	}
+
+	return module.IsEnabled
 }
