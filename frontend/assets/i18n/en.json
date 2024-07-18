@@ -39,10 +39,12 @@
     "start_proposal": "Start proposal",
     "confirm_start_proposal": "Are you sure you want to start the proposal ?",
     "confirm_leave_proposal": "Are you sure you want to leave the proposal ?",
+    "confirm_delete_proposal": "Are you sure you want to delete the proposal ?",
     "join_proposal": "Join proposal",
     "leave_proposal": "Leave proposal",
     "delete_proposal": "Delete proposal",
     "welcome_on_board": "Welcome on board !",
+    "empty_proposal": "No proposal available",
     "form": {
         "departure": "Departure",
         "arrival": "Arrival",

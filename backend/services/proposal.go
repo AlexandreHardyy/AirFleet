@@ -6,6 +6,7 @@ import (
 	"backend/models"
 	"backend/repositories"
 	"backend/responses"
+	"backend/utils"
 	"fmt"
 )
 
@@ -39,7 +40,23 @@ func (s *ProposalService) GetAllProposals(limit int, offset int, filter inputs.F
 		return []responses.ResponseProposal{}, err
 	}
 
-	responseProposals := formatProposals(proposals)
+	// Filter proposals by proximity for departure
+	var filteredProposals []models.Proposal
+	for _, proposal := range proposals {
+		if utils.NearBy(filter.DeparturePositionLat, filter.DeparturePositionLong, proposal.Flight.DepartureLatitude, proposal.Flight.DepartureLongitude, float64(filter.Proximity)) {
+			filteredProposals = append(filteredProposals, proposal)
+		}
+	}
+
+	// Filter proposals by proximity for arrival
+	var filteredProposalsFinal []models.Proposal
+	for _, proposal := range filteredProposals {
+		if utils.NearBy(filter.ArrivalPositionLat, filter.ArrivalPositionLong, proposal.Flight.ArrivalLatitude, proposal.Flight.ArrivalLongitude, float64(filter.Proximity)) {
+			filteredProposalsFinal = append(filteredProposalsFinal, proposal)
+		}
+	}
+
+	responseProposals := formatProposals(filteredProposalsFinal)
 
 	return responseProposals, nil
 }

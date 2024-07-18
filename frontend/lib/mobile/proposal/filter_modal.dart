@@ -48,7 +48,7 @@ class FilterModal extends StatelessWidget {
                 keyboardType: TextInputType.number,
                 onChanged: (value) => onMaxPriceChanged(double.tryParse(value)),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               TextField(
                 controller: minSeatsAvailableController,
                 decoration: InputDecoration(
@@ -62,7 +62,7 @@ class FilterModal extends StatelessWidget {
                 keyboardType: TextInputType.number,
                 onChanged: (value) => onMinSeatsChanged(int.tryParse(value)),
               ),
-              SizedBox(height: 24),
+              const SizedBox(height: 24),
               ElevatedButton(
                 onPressed: () {
                   refreshProposals();
@@ -74,7 +74,7 @@ class FilterModal extends StatelessWidget {
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
-                child: Text('Apply Filters'),
+                child: const Text('Apply Filters'),
               ),
             ],
           ),

@@ -4,7 +4,9 @@ import 'package:frontend/services/dio.dart';
 import 'package:frontend/storage/user.dart';
 
 class ProfileImage extends StatefulWidget {
-  const ProfileImage({super.key});
+  final String? profileID;
+
+  const ProfileImage({super.key, this.profileID});
 
   @override
   ProfileImageState createState() => ProfileImageState();
@@ -34,11 +36,13 @@ class ProfileImageState extends State<ProfileImage> {
       return const Center(child: CircularProgressIndicator());
     }
 
+    String? userId = widget.profileID ?? UserStore.user?.id.toString();
+
     return CircleAvatar(
       radius: 50,
       backgroundColor: const Color(0xFF131141),
       child: Image.network(
-        '$apiUrl/users/${UserStore.user?.id}/files/profile?time=$_time',
+        '$apiUrl/users/$userId/files/profile?time=$_time',
         headers: {
               'Authorization': 'Bearer $_token',
         },

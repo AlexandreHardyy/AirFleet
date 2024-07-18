@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"backend/auth"
 	"backend/inputs"
 	"backend/repositories"
 	"backend/responses"
@@ -41,6 +42,10 @@ func NewProposalHandler(proposalService services.ProposalServiceInterface) *Prop
 // @Param			offset					query	int		false	"Offset"
 // @Param			max_price				query	string	false	"Maximum price"
 // @Param			left_available_seats	query	string	false	"Left available seats"
+// @Param			departure_position_lat	query	string	false	"Departure position latitude"
+// @Param			departure_position_long	query	string	false	"Departure position longitude"
+// @Param			arrival_position_lat	query	string	false	"Arrival position latitude"
+// @Param			arrival_position_long	query	string	false	"Arrival position longitude"
 //
 // @Success		200				{object}	[]responses.ResponseProposal
 // @Failure		400				{object}	Response
@@ -53,13 +58,27 @@ func (h *ProposalHandler) GetAllProposal(c *gin.Context) {
 	offset, _ := strconv.Atoi(c.DefaultQuery("offset", "0"))
 	maxPrice := c.Query("max_price")
 	leftAvailableSeats := c.Query("left_available_seats")
+	departurePositionLat := c.Query("departure_position_lat")
+	departurePositionLong := c.Query("departure_position_long")
+	arrivalPositionLat := c.Query("arrival_position_lat")
+	arrivalPositionLong := c.Query("arrival_position_long")
 
 	newMaxPrice, err := strconv.ParseFloat(maxPrice, 64)
 	newLeftAvailableSeats, err := strconv.Atoi(leftAvailableSeats)
 
+	departurePositionLatFloat, err := strconv.ParseFloat(departurePositionLat, 64)
+	departurePositionLongFloat, err := strconv.ParseFloat(departurePositionLong, 64)
+	arrivalPositionLatFloat, err := strconv.ParseFloat(arrivalPositionLat, 64)
+	arrivalPositionLongFloat, err := strconv.ParseFloat(arrivalPositionLong, 64)
+
 	filter := inputs.FilterPropsal{
-		MaxPrice:           newMaxPrice,
-		LeftAvailableSeats: newLeftAvailableSeats,
+		MaxPrice:              newMaxPrice,
+		LeftAvailableSeats:    newLeftAvailableSeats,
+		DeparturePositionLat:  departurePositionLatFloat,
+		DeparturePositionLong: departurePositionLongFloat,
+		ArrivalPositionLat:    arrivalPositionLatFloat,
+		ArrivalPositionLong:   arrivalPositionLongFloat,
+		Proximity:             100,
 	}
 
 	proposals, err := h.proposalService.GetAllProposals(limit, offset, filter)
@@ -206,55 +225,6 @@ func (h *ProposalHandler) GetProposal(c *gin.Context) {
 	c.JSON(http.StatusOK, proposal)
 }
 
-// UpdateProposal godoc
-//
-// @Summary Update a proposal
-// @Schemes
-// @Description Update a proposal
-// @Tags proposals
-// @Accept			json
-// @Produce		json
-//
-// @Param			id	path	int	true	"ID"
-// @Param			proposal	body	inputs.InputUpdateProposal	true	"Proposal"
-//
-// @Success		200				{object}	responses.ResponseProposal
-// @Failure		400				{object}	Response
-//
-// @Router			/proposals/{id} [patch]
-//
-// @Security	BearerAuth
-func (h *ProposalHandler) UpdateProposal(c *gin.Context) {
-	idStr := c.Param("id")
-	id, err := strconv.Atoi(idStr)
-
-	if err != nil {
-		c.String(http.StatusBadRequest, "Invalid ID format")
-		return
-	}
-
-	var input inputs.InputUpdateProposal
-	err = c.ShouldBindJSON(&input)
-	if err != nil {
-		response := &Response{
-			Message: "Error: cannot extract JSON body",
-		}
-		c.JSON(http.StatusBadRequest, response)
-		return
-	}
-
-	updatedProposal, err := h.proposalService.UpdateProposal(id, input)
-	if err != nil {
-		response := &Response{
-			Message: err.Error(),
-		}
-		c.JSON(http.StatusBadRequest, response)
-		return
-	}
-
-	c.JSON(http.StatusOK, updatedProposal)
-}
-
 // DeleteProposal godoc
 //
 // @Summary Delete a proposal
@@ -275,9 +245,42 @@ func (h *ProposalHandler) UpdateProposal(c *gin.Context) {
 func (h *ProposalHandler) DeleteProposal(c *gin.Context) {
 	idStr := c.Param("id")
 	id, err := strconv.Atoi(idStr)
-
 	if err != nil {
 		c.String(http.StatusBadRequest, "Invalid ID format")
+		return
+	}
+
+	userID, err := token.ExtractTokenID(c)
+	if err != nil {
+		response := &Response{
+			Message: "Error: cannot extract user ID",
+		}
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	proposalToDelete, err := h.proposalService.GetProposal(id)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			c.Status(http.StatusNotFound)
+			return
+		}
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	isAdmin, err := auth.IsAdmin(userID)
+	if err != nil {
+		response := &Response{
+			Message: "Error: cannot extract user ID",
+		}
+		c.JSON(http.StatusBadRequest, response)
+		return
+
+	}
+
+	if proposalToDelete.Flight.Pilot.ID != userID && !isAdmin {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 		return
 	}
 

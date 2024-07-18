@@ -98,18 +98,6 @@ class ProposalService {
     }
   }
 
-  static Future<void> updateProposal(int id, Map<String, dynamic> data) async {
-    try {
-      await dioApi.patch('/proposals/$id', data: data);
-    } catch (error) {
-      if (error is DioException) {
-        throw Exception('Failed to update proposal: ${error.message}');
-      } else {
-        throw Exception('Unexpected error: $error');
-      }
-    }
-  }
-
   static Future<void> deleteProposal(int id) async {
     try {
       await dioApi.delete('/proposals/$id');

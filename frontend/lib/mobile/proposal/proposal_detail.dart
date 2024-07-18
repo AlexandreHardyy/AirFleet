@@ -156,11 +156,11 @@ class _ProposalDetailState extends State<ProposalDetail> {
                       const SizedBox(height: 10),
                       Row(
                         children: <Widget>[
-                          const ClipOval(
+                          ClipOval(
                             child: SizedBox(
                               width: 45,
                               height: 45,
-                              child: ProfileImage(),
+                              child: ProfileImage(profileID: proposal.flight.pilot?.id.toString()),
                             ),
                           ),
                           const SizedBox(width: 10),
@@ -187,11 +187,11 @@ class _ProposalDetailState extends State<ProposalDetail> {
                       itemBuilder: (context, index) {
                         final user = proposal.flight.users![index];
                         return ListTile(
-                          leading: const ClipOval(
+                          leading: ClipOval(
                             child: SizedBox(
                               width: 45,
                               height: 45,
-                              child: ProfileImage(),
+                              child: ProfileImage(profileID: proposal.flight.users![index].id.toString()),
                             ),
                           ),
                           title: Text('${user.firstName} ${user.lastName}'),
@@ -272,8 +272,8 @@ class _ProposalDetailState extends State<ProposalDetail> {
                             builder: (BuildContext context) {
                               return AlertDialog(
                                 title: Text(translate('common.confirm')),
-                                content: const Text(
-                                    'Are you sure you want to delete this proposal?'),
+                                content: Text(
+                                   translate('proposal.confirm_delete_proposal')),
                                 actions: <Widget>[
                                   TextButton(
                                     onPressed: () =>
@@ -377,7 +377,7 @@ class _ProposalDetailState extends State<ProposalDetail> {
               ),
             );
           } else {
-            return const Center(child: Text('No proposal found'));
+            return Center(child: Text(translate('proposal.empty_proposal')));
           }
         },
       ),

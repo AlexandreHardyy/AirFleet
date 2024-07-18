@@ -447,6 +447,10 @@ paths:
           description: Forbidden
           schema:
             $ref: '#/definitions/handlers.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.Response'
       security:
       - BearerAuth: []
       summary: Get flight
@@ -539,38 +543,6 @@ paths:
       summary: Get flight requests near by
       tags:
       - flight
-  /messages:
-    get:
-      consumes:
-      - application/json
-      description: Get all messages
-      parameters:
-      - description: Limit
-        in: query
-        name: limit
-        type: integer
-      - description: Offset
-        in: query
-        name: offset
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/responses.ResponseMessage'
-            type: array
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/handlers.Response'
-      security:
-      - BearerAuth: []
-      summary: Get all messages
-      tags:
-      - messages
   /messages/flight/{flightId}:
     get:
       consumes:
@@ -729,6 +701,14 @@ paths:
       - description: Left available seats
         in: query
         name: left_available_seats
+        type: string
+      - description: Departure position latitude
+        in: query
+        name: departure_position_lat
+        type: string
+      - description: Departure position longitude
+        in: query
+        name: departure_position_long
         type: string
       produces:
       - application/json
@@ -983,8 +963,8 @@ paths:
             items:
               $ref: '#/definitions/responses.ResponseRating'
             type: array
-        "400":
-          description: Bad Request
+        "500":
+          description: Internal Server Error
           schema:
             $ref: '#/definitions/handlers.Response'
       security:
@@ -1022,6 +1002,10 @@ paths:
             $ref: '#/definitions/handlers.Response'
         "400":
           description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.Response'
+        "403":
+          description: Forbidden
           schema:
             $ref: '#/definitions/handlers.Response'
         "500":

@@ -17,7 +17,6 @@ func InitProposalRoutes(api *gin.RouterGroup) {
 	api.GET("/me", middlewares.IsAuth(), proposalHandler.GetMyProposals)
 	api.GET("/:id", middlewares.IsAuth(), proposalHandler.GetProposal)
 	api.POST("", middlewares.IsPilotAuth(), proposalHandler.CreateProposal)
-	api.PATCH("/:id", middlewares.IsPilotAuth(), proposalHandler.UpdateProposal)
 	api.DELETE("/:id", middlewares.IsPilotAuth(), proposalHandler.DeleteProposal)
 	api.PATCH("/:id/join", middlewares.IsAuth(), proposalHandler.JoinProposal)
 	api.PATCH("/:id/leave", middlewares.IsAuth(), proposalHandler.LeaveProposal)

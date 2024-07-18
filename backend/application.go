@@ -6,16 +6,16 @@ import (
 	"backend/routes"
 	"backend/services/brevo"
 	"backend/websocket"
-	"log"
-	"os"
-
-	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	socketio "github.com/googollee/go-socket.io"
 	"github.com/joho/godotenv"
 	"github.com/stripe/stripe-go/v79"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
+	"log"
+	"os"
+
+	"github.com/gin-contrib/cors"
 )
 
 //	@title			Backend AirFleet
