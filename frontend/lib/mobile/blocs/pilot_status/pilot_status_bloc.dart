@@ -15,11 +15,11 @@ part 'pilot_status_state.dart';
 
 class PilotStatusBloc extends Bloc<PilotStatusEvent, PilotStatusState> {
   final Ticker _ticker = const Ticker();
-  StreamSubscription<int>? _tickerSubscription;
+  StreamSubscription<int>? tickerSubscription;
 
   @override
   Future<void> close() {
-    _tickerSubscription?.cancel();
+    tickerSubscription?.cancel();
     return super.close();
   }
 
@@ -48,8 +48,8 @@ class PilotStatusBloc extends Bloc<PilotStatusEvent, PilotStatusState> {
             vehicles.where((vehicle) => vehicle.isVerified == true).toList()));
 
     if (selectedVehicle != null) {
-      _tickerSubscription?.cancel();
-      _tickerSubscription = _ticker
+      tickerSubscription?.cancel();
+      tickerSubscription = _ticker
           .tick(interval: 10)
           .listen((duration) => add(PilotStatusFlightsRefresh()));
     }
@@ -66,7 +66,7 @@ class PilotStatusBloc extends Bloc<PilotStatusEvent, PilotStatusState> {
       await VehicleService.updateVehicle(selectedVehicle);
     }
 
-    _tickerSubscription?.cancel();
+    tickerSubscription?.cancel();
 
     emit(state.copyWith(
         status: CurrentPilotStatus.loaded,
@@ -95,8 +95,8 @@ class PilotStatusBloc extends Bloc<PilotStatusEvent, PilotStatusState> {
           flights: flightRequests,
           vehicles: state.vehicles),
     );
-    _tickerSubscription?.cancel();
-    _tickerSubscription = _ticker
+    tickerSubscription?.cancel();
+    tickerSubscription = _ticker
         .tick(interval: 4)
         .listen((duration) => add(PilotStatusFlightsRefresh()));
   }

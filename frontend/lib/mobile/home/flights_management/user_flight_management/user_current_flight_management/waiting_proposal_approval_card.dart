@@ -118,7 +118,15 @@ class _WaitingProposalApprovalCardState
             Expanded(
               child: ElevatedButton(
                 onPressed: () {
-                  PaymentScreen.navigateTo(context, flight: widget.flight);
+                  PaymentScreen.navigateTo(context, flight: widget.flight, callbackSuccess: () {
+                    Navigator.of(context).pop();
+                    context.read<SocketIoBloc>().state.socket!.emit(
+                        "flightProposalChoice",
+                        const JsonEncoder().convert({
+                          "flightId": widget.flight.id,
+                          "choice": "accepted",
+                        }));
+                  },);
                 },
                 child: Text(translate('common.input.accept_offer')),
               ),
