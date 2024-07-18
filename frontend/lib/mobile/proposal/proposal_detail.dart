@@ -246,6 +246,7 @@ class _ProposalDetailState extends State<ProposalDetail> {
                                     CurrentFlightLoaded(
                                         flight: proposalResult.flight));
                               }
+                              ProposalService.deleteProposal(proposal.id);
                               Navigator.of(context).pop();
                               Navigator.of(context).pop();
                             } on DioException catch (e) {

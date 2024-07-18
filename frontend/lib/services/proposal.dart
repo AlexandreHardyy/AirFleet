@@ -3,7 +3,15 @@ import 'package:frontend/models/proposal.dart';
 import 'package:frontend/services/dio.dart';
 
 class ProposalService {
-  static Future<List<Proposal>> getProposals({int? limit, int? offset, double? maxPrice, int? minSeatsAvailable}) async {
+  static Future<List<Proposal>> getProposals(
+      {int? limit,
+      int? offset,
+      double? maxPrice,
+      int? minSeatsAvailable,
+      double? departurePositionLat,
+      double? departurePositionLong,
+      double? arrivalPositionLat,
+      double? arrivalPositionLong}) async {
     var basePath = '/proposals';
     Map<String, dynamic> queryParams = {};
     if (maxPrice != null) {
@@ -12,9 +20,22 @@ class ProposalService {
     if (minSeatsAvailable != null) {
       queryParams['min_seats_available'] = minSeatsAvailable.toString();
     }
+    if (departurePositionLat != null) {
+      queryParams['departure_position_lat'] = departurePositionLat.toString();
+    }
+    if (departurePositionLong != null) {
+      queryParams['departure_position_long'] = departurePositionLong.toString();
+    }
+    if (arrivalPositionLat != null) {
+      queryParams['arrival_position_lat'] = arrivalPositionLat.toString();
+    }
+    if (arrivalPositionLong != null) {
+      queryParams['arrival_position_long'] = arrivalPositionLong.toString();
+    }
 
     String queryString = Uri(queryParameters: queryParams).query;
-    String finalPath = basePath + (queryString.isNotEmpty ? '?$queryString' : '');
+    String finalPath =
+        basePath + (queryString.isNotEmpty ? '?$queryString' : '');
 
     try {
       final response = await dioApi.get(

@@ -5,6 +5,7 @@
     "no": "No",
     "departure": "Departure",
     "arrival": "Arrival",
+    "success": "Success",
     "input": {
       "create_flight": "Create flight",
       "cancel_selection": "Cancel selection",
@@ -45,6 +46,11 @@
     "delete_proposal": "Delete proposal",
     "welcome_on_board": "Welcome on board !",
     "empty_proposal": "No proposal available",
+    "filter": {
+      "filter_available": "Filters available",
+      "reset": "Reset",
+      "apply": "Apply"
+    },
     "form": {
       "departure": "Departure",
       "arrival": "Arrival",

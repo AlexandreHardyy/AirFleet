@@ -42,21 +42,30 @@ func (s *ProposalService) GetAllProposals(limit int, offset int, filter inputs.F
 
 	// Filter proposals by proximity for departure
 	var filteredProposals []models.Proposal
-	for _, proposal := range proposals {
-		if utils.NearBy(filter.DeparturePositionLat, filter.DeparturePositionLong, proposal.Flight.DepartureLatitude, proposal.Flight.DepartureLongitude, float64(filter.Proximity)) {
-			filteredProposals = append(filteredProposals, proposal)
+	if filter.DeparturePositionLat != 0 && filter.DeparturePositionLong != 0 {
+		for _, proposal := range proposals {
+			if utils.NearBy(filter.DeparturePositionLat, filter.DeparturePositionLong, proposal.Flight.DepartureLatitude, proposal.Flight.DepartureLongitude, float64(filter.Proximity)) {
+				filteredProposals = append(filteredProposals, proposal)
+			}
 		}
+	} else {
+		filteredProposals = proposals
 	}
 
-	// Filter proposals by proximity for arrival
-	var filteredProposalsFinal []models.Proposal
-	for _, proposal := range filteredProposals {
-		if utils.NearBy(filter.ArrivalPositionLat, filter.ArrivalPositionLong, proposal.Flight.ArrivalLatitude, proposal.Flight.ArrivalLongitude, float64(filter.Proximity)) {
-			filteredProposalsFinal = append(filteredProposalsFinal, proposal)
+	var finalFilteredProposals []models.Proposal
+
+	// Filter proposals by arrival proximity if arrival positions are defined
+	if filter.ArrivalPositionLat != 0 && filter.ArrivalPositionLong != 0 {
+		for _, proposal := range filteredProposals {
+			if utils.NearBy(filter.ArrivalPositionLat, filter.ArrivalPositionLong, proposal.Flight.ArrivalLatitude, proposal.Flight.ArrivalLongitude, float64(filter.Proximity)) {
+				finalFilteredProposals = append(finalFilteredProposals, proposal)
+			}
 		}
+	} else {
+		finalFilteredProposals = filteredProposals
 	}
 
-	responseProposals := formatProposals(filteredProposalsFinal)
+	responseProposals := formatProposals(finalFilteredProposals)
 
 	return responseProposals, nil
 }

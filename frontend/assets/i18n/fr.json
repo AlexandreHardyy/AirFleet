@@ -5,6 +5,7 @@
     "no": "Non",
     "departure": "Départ",
     "arrival": "Arrivée",
+    "success": "Succès",
     "input": {
       "create_flight": "Créer un vol",
       "cancel_selection": "Annuler la sélection",
@@ -45,6 +46,11 @@
     "delete_proposal": "Supprimer la proposition",
     "welcome_on_board": "Bienvenue à bord !",
     "empty_proposal": "Aucune proposition disponible",
+    "filter": {
+      "filter_available": "Filtres disponible",
+      "reset": "Réinitialiser",
+      "apply": "Appliquer"
+    },
     "form": {
       "departure": "Départ",
       "arrival": "Arrivée",

@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:frontend/mobile/proposal/proposal_detail.dart';
 import 'package:frontend/mobile/proposal/search_filter.dart';
+import 'package:frontend/models/flight.dart';
 import 'package:frontend/models/proposal.dart';
 import 'package:frontend/services/proposal.dart';
 import 'package:frontend/widgets/profile_image.dart';
@@ -19,20 +20,39 @@ class _SearchViewState extends State<SearchView> {
   late Future<List<Proposal>> _proposalsFuture;
   double? maxPrice;
   int? minSeatsAvailable;
-  double? departureLatitude;
-  double? departureLongitude;
+  Airport? selectedDepartureAirport;
+  Airport? selectedArrivalAirport;
 
   @override
   void initState() {
     super.initState();
     _proposalsFuture = ProposalService.getProposals(
-        maxPrice: maxPrice, minSeatsAvailable: minSeatsAvailable);
+        maxPrice: maxPrice,
+        minSeatsAvailable: minSeatsAvailable,
+        departurePositionLat: selectedDepartureAirport?.latitude,
+        departurePositionLong: selectedDepartureAirport?.longitude,
+        arrivalPositionLat: selectedArrivalAirport?.latitude,
+        arrivalPositionLong: selectedArrivalAirport?.longitude);
   }
 
   void refreshProposals() {
     setState(() {
       _proposalsFuture = ProposalService.getProposals(
-          maxPrice: maxPrice, minSeatsAvailable: minSeatsAvailable);
+          maxPrice: maxPrice,
+          minSeatsAvailable: minSeatsAvailable,
+          departurePositionLat: selectedDepartureAirport?.latitude,
+          departurePositionLong: selectedDepartureAirport?.longitude,
+          arrivalPositionLat: selectedArrivalAirport?.latitude,
+          arrivalPositionLong: selectedArrivalAirport?.longitude);
+    });
+  }
+
+  void resetFilters() {
+    setState(() {
+      maxPrice = null;
+      minSeatsAvailable = null;
+      selectedDepartureAirport = null;
+      selectedArrivalAirport = null;
     });
   }
 
@@ -48,10 +68,15 @@ class _SearchViewState extends State<SearchView> {
     });
   }
 
-  void onDepartureLocationChanged(double? latitude, double? longitude) {
+  void onDepartureLocationChanged(Airport? airport) {
     setState(() {
-      departureLatitude = latitude;
-      departureLongitude = longitude;
+      selectedDepartureAirport = airport;
+    });
+  }
+
+  void onArrivalLocationChanged(Airport? airport) {
+    setState(() {
+      selectedArrivalAirport = airport;
     });
   }
 
@@ -66,8 +91,13 @@ class _SearchViewState extends State<SearchView> {
               onMaxPriceChanged: onMaxPriceChanged,
               onMinSeatsChanged: onMinSeatsChanged,
               refreshProposals: refreshProposals,
+              onDepartureLocationChanged: onDepartureLocationChanged,
+              onArrivalLocationChanged: onArrivalLocationChanged,
               maxPrice: maxPrice ?? 0,
               minSeatsAvailable: minSeatsAvailable ?? 0,
+              departureLocation: selectedDepartureAirport,
+              arrivalLocation: selectedArrivalAirport,
+              resetFilters: resetFilters,
             ),
           )
         ];
@@ -132,8 +162,10 @@ class _SearchViewState extends State<SearchView> {
                                     ],
                                   ),
                                   Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
                                     children: [
                                       Text(
                                           'Seats available: ${proposal.flight.users?.length ?? 0} / ${proposal.availableSeats}',

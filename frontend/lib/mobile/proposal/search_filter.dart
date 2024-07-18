@@ -1,20 +1,31 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/mobile/proposal/filter_modal.dart';
+import 'package:frontend/mobile/proposal/filter_view.dart';
+import 'package:frontend/models/flight.dart';
 
 class SearchFilterWidget extends StatefulWidget {
   final Function(double?) onMaxPriceChanged;
   final Function(int?) onMinSeatsChanged;
+  final Function(Airport?) onDepartureLocationChanged;
+  final Function(Airport?) onArrivalLocationChanged;
   final Function refreshProposals;
   final double? maxPrice;
   final int? minSeatsAvailable;
+  final Airport? departureLocation;
+  final Airport? arrivalLocation;
+  final Function resetFilters;
 
   const SearchFilterWidget({
     super.key,
     required this.onMaxPriceChanged,
     required this.onMinSeatsChanged,
+    required this.onDepartureLocationChanged,
+    required this.onArrivalLocationChanged,
     required this.refreshProposals,
     required this.maxPrice,
     required this.minSeatsAvailable,
+    required this.departureLocation,
+    required this.arrivalLocation,
+    required this.resetFilters,
   });
 
   @override
@@ -26,23 +37,21 @@ class _SearchFilterWidgetState extends State<SearchFilterWidget> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => showModalBottomSheet(
-        context: context,
-        isScrollControlled: true,
-        builder: (BuildContext context) {
-          double modalHeight = MediaQuery.of(context).size.height * 0.7;
-          return SizedBox(
-            height: modalHeight,
-            child: FilterModal(
-              onMaxPriceChanged: (price) => widget.onMaxPriceChanged(price),
-              onMinSeatsChanged: (seats) => widget.onMinSeatsChanged(seats),
-              refreshProposals: () => widget.refreshProposals(),
+      onTap: () =>
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => FilterView(
+              onMaxPriceChanged: widget.onMaxPriceChanged,
+              onMinSeatsChanged: widget.onMinSeatsChanged,
+              onDepartureLocationChanged: widget.onDepartureLocationChanged,
+              onArrivalLocationChanged: widget.onArrivalLocationChanged,
+              refreshProposals: widget.refreshProposals,
               maxPrice: widget.maxPrice,
               minSeatsAvailable: widget.minSeatsAvailable,
+              resetFilters: widget.resetFilters,
             ),
-          );
-        },
-      ),
+          ),
+        ),
       child: Padding(
         padding: const EdgeInsets.all(14),
         child: Container(
