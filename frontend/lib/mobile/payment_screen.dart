@@ -7,8 +7,8 @@ import 'package:frontend/widgets/title.dart';
 class PaymentScreen extends StatelessWidget {
    static const routeName = '/payment';
 
-  static Future<void> navigateTo(BuildContext context, {required Flight flight}) async {
-    await Navigator.of(context).pushNamed(routeName, arguments: flight);
+  static Future<void> navigateTo(BuildContext context, {required Flight flight, required dynamic Function() callbackSuccess}) async {
+    await Navigator.of(context).pushNamed(routeName, arguments: {'flight': flight, 'callbackSuccess': callbackSuccess});
   }
 
   final Flight flight;
