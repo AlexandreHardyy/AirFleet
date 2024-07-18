@@ -10,6 +10,14 @@ import (
 
 var brevoClient *brevo.APIClient
 
+type EmailService interface {
+    SendEmailToVerify(email string, name string, token string)
+	SendEmailPilotAccountValidate(email string, name string)
+}
+
+type BrevoEmailService struct{}
+
+
 func InitBrevoClient() {
 	var ctx context.Context
 	conf := brevo.NewConfiguration()
@@ -23,7 +31,7 @@ func InitBrevoClient() {
 	}
 }
 
-func SendEmailToVerify(email string, name string, token string) {
+func (s *BrevoEmailService) SendEmailToVerify(email string, name string, token string) {
 	var ctx context.Context
 
 	brevoClient.TransactionalEmailsApi.SendTransacEmail(ctx, brevo.SendSmtpEmail{
@@ -45,7 +53,7 @@ func SendEmailToVerify(email string, name string, token string) {
 	})
 }
 
-func SendEmailPilotAccountValidate(email string, name string) {
+func (s *BrevoEmailService) SendEmailPilotAccountValidate(email string, name string) {
 	var ctx context.Context
 
 	brevoClient.TransactionalEmailsApi.SendTransacEmail(ctx, brevo.SendSmtpEmail{

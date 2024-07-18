@@ -4,9 +4,10 @@ import (
 	"backend/models"
 	"backend/services"
 	"backend/utils"
-	"github.com/stretchr/testify/mock"
 	"math"
 	"testing"
+
+	"github.com/stretchr/testify/mock"
 )
 
 type FlightRepositoryInterface struct {

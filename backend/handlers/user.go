@@ -21,18 +21,19 @@ import (
 )
 
 type UserHandler struct {
-	userService services.UserService
+	userService  services.UserService
+	emailService brevo.EmailService
 }
 
 func GetUser(db *gorm.DB) (userHandler *UserHandler) {
 	userRepository := repositories.NewUserRepository(db)
 	userService := services.NewUserService(userRepository)
-	userHandler = NewUserHandler(userService)
+	userHandler = NewUserHandler(userService, &brevo.BrevoEmailService{})
 	return userHandler
 }
 
-func NewUserHandler(userService services.UserService) *UserHandler {
-	return &UserHandler{userService}
+func NewUserHandler(userService services.UserService, emailService brevo.EmailService) *UserHandler {
+	return &UserHandler{userService, emailService}
 }
 
 // Register godoc
@@ -75,7 +76,7 @@ func (th *UserHandler) Register(c *gin.Context) {
 		return
 	}
 
-	brevo.SendEmailToVerify(newUser.Email, newUser.FirstName+" "+newUser.LastName, tokenVerify)
+	th.emailService.SendEmailToVerify(newUser.Email, newUser.FirstName+" "+newUser.LastName, tokenVerify)
 
 	c.JSON(http.StatusCreated, newUser)
 }
@@ -157,7 +158,7 @@ func (th *UserHandler) RegisterPilot(c *gin.Context) {
 		Content: "[RegisterPilot]: " + input.Email,
 	})
 
-	brevo.SendEmailToVerify(newUser.Email, newUser.FirstName+" "+newUser.LastName, tokenVerify)
+	th.emailService.SendEmailToVerify(newUser.Email, newUser.FirstName+" "+newUser.LastName, tokenVerify)
 
 	c.JSON(http.StatusCreated, newUser)
 }
@@ -292,10 +293,6 @@ func (th *UserHandler) Update(c *gin.Context) {
 
 	user, err := th.userService.Update(id, input)
 	if err != nil {
-		repositories.CreateMonitoringLog(models.MonitoringLog{
-			Type:    "error",
-			Content: "[UpdateUser]: " + err.Error(),
-		})
 		c.JSON(http.StatusBadRequest, &Response{
 			Message: "Wrong id parameter",
 		})
@@ -344,7 +341,7 @@ func (th *UserHandler) ValidatePilotAccount(c *gin.Context) {
 		Content: "[ValidatePilotAccount]: " + user.Email,
 	})
 
-	brevo.SendEmailPilotAccountValidate(user.Email, user.FirstName)
+	th.emailService.SendEmailPilotAccountValidate(user.Email, user.FirstName)
 
 	c.JSON(http.StatusOK, user)
 }
