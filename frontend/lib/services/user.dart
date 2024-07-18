@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend/blocs/auth/auth_bloc.dart';
 import 'package:frontend/mobile/blocs/pilot_status/pilot_status_bloc.dart';
+import 'package:frontend/mobile/blocs/socket_io/socket_io_bloc.dart';
 import 'package:frontend/models/user.dart';
 import 'package:frontend/services/dio.dart';
 import 'package:frontend/storage/user.dart';
@@ -118,6 +119,7 @@ class UserService {
     Navigator.of(context).popUntil((route) => route.isFirst);
     await UserStore.removeToken();
     UserStore.user = null;
+    context.read<SocketIoBloc>().tickerSubscription?.cancel();
     context.read<PilotStatusBloc>().tickerSubscription?.cancel();
     context.read<AuthBloc>().add(AuthLogOut());
   }

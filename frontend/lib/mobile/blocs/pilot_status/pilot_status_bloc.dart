@@ -38,6 +38,17 @@ class PilotStatusBloc extends Bloc<PilotStatusEvent, PilotStatusState> {
     final vehicles = await VehicleService.getVehiclesForMe();
     final selectedVehicle =
         vehicles.firstWhereOrNull((vehicle) => vehicle.isSelected == true);
+
+    if (selectedVehicle == null) {
+      emit(
+        state.copyWith(
+            status: CurrentPilotStatus.loaded,
+            vehicles: vehicles
+                .where((vehicle) => vehicle.isVerified == true)
+                .toList()),
+      );
+    }
+
     final flightRequests = await FlightService.getCurrentFlightRequests();
 
     emit(state.copyWith(
@@ -107,15 +118,13 @@ class PilotStatusBloc extends Bloc<PilotStatusEvent, PilotStatusState> {
 
     if (flightRequests?.isNotEmpty == true &&
         flightRequests?.length != state.flights?.length) {
-      LocalNotificationService().showNotification(
-          'New flight request !', 'A new fight requests was made by a client', null);
+      LocalNotificationService().showNotification('New flight request !',
+          'A new fight requests was made by a client', null);
     }
 
     emit(
       state.copyWith(
-        status: CurrentPilotStatus.loaded,
-        flights: flightRequests
-        ),
+          status: CurrentPilotStatus.loaded, flights: flightRequests),
     );
   }
 }
