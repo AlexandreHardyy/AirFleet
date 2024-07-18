@@ -164,6 +164,7 @@
   "web": {
     "login": {
       "title": "Connexion",
+      "subtitle": "Bienvenue à bord ! Veuillez vous connecter pour continuer.",
       "email": "Email",
       "password": "Mot de passe",
       "submit": "Connexion",

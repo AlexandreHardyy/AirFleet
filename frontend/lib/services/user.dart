@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend/blocs/auth/auth_bloc.dart';
@@ -119,8 +120,10 @@ class UserService {
     Navigator.of(context).popUntil((route) => route.isFirst);
     await UserStore.removeToken();
     UserStore.user = null;
-    context.read<SocketIoBloc>().tickerSubscription?.cancel();
-    context.read<PilotStatusBloc>().tickerSubscription?.cancel();
+    if (!kIsWeb) {
+      context.read<SocketIoBloc>().tickerSubscription?.cancel();
+      context.read<PilotStatusBloc>().tickerSubscription?.cancel();
+    }
     context.read<AuthBloc>().add(AuthLogOut());
   }
 
@@ -132,7 +135,6 @@ class UserService {
         options: Options(
           headers: {
             'Content-Type': 'application/json; charset=UTF-8',
-            // 'Access-Control-Allow-Origin': '*',
           },
         ),
       );

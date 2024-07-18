@@ -199,13 +199,17 @@ class _NavigationWebState extends State<NavigationWeb> {
             ),
           ),
           ListTile(
+            tileColor: Colors.red.shade100,
             leading: const Icon(
-              Icons.logout,
-              color: Color(0xFFDCA200),
+              FontAwesomeIcons.rightFromBracket,
+              color: Colors.red,
             ),
             title: Text(
               translate("web.navigation.logout"),
-              style: const TextStyle(color: Colors.white),
+              style: const TextStyle(
+                color: Colors.red,
+                fontWeight: FontWeight.bold,
+              ),
             ),
             onTap: () async {
               await UserService.logOut(context);
