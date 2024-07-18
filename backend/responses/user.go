@@ -7,6 +7,7 @@ import (
 
 type Login struct {
 	Token string `json:"token"`
+	Role  string `json:"role"`
 }
 
 type User struct {

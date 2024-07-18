@@ -20,3 +20,8 @@ type User struct {
 	Vehicles        []Vehicle `json:"vehicles" gorm:"foreignkey:UserID"`
 	Flights         []Flight  `json:"flights" gorm:"many2many:flight_users;"`
 }
+
+type UserLoginResponse struct {
+	Token string `json:"token"`
+	Role  string `json:"role"`
+}

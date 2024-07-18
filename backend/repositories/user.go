@@ -15,7 +15,7 @@ import (
 
 type UserRepository interface {
 	Create(user models.User) (models.User, error)
-	Login(email string, password string) (string, error)
+	Login(email string, password string) (models.UserLoginResponse, error)
 	GetById(id int) (models.User, error)
 	FindAll() ([]responses.ListUser, error)
 	FindOne(user models.User) (models.User, error)
@@ -44,29 +44,29 @@ func (r *userRepository) Create(user models.User) (models.User, error) {
 	return user, nil
 }
 
-func (r *userRepository) Login(email string, password string) (string, error) {
+func (r *userRepository) Login(email string, password string) (models.UserLoginResponse, error) {
 	user := models.User{}
 	err := r.db.Where(&models.User{Email: email}).First(&user).Error
 	if err != nil {
-		return "", err
+		return models.UserLoginResponse{}, errors.New("credentials customErrors")
 	}
 
 	err = utils.VerifyPassword(password, user.Password)
 
 	if err != nil && err == bcrypt.ErrMismatchedHashAndPassword {
-		return "", errors.New("credentials customErrors")
+		return models.UserLoginResponse{}, errors.New("credentials customErrors")
 	}
 
 	if !user.IsVerified {
-		return "", errors.New("account not validate")
+		return models.UserLoginResponse{}, errors.New("your account is not validate yet")
 	}
 
 	if !user.IsPilotVerified && user.Role == roles.ROLE_PILOT {
-		return "", errors.New("your pilot account is not validate yet")
+		return models.UserLoginResponse{}, errors.New("your pilot account is not validate yet")
 	}
+	tkn, _ := token.GenerateToken(user.ID)
 
-	token, _ := token.GenerateToken(user.ID)
-	return token, nil
+	return models.UserLoginResponse{Token: tkn, Role: user.Role}, nil
 }
 
 func (r *userRepository) GetById(id int) (models.User, error) {

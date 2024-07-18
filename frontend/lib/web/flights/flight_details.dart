@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/models/flight.dart';
+import 'package:frontend/widgets/navigation_web.dart';
+import 'package:frontend/widgets/title.dart';
 
 class FlightDetailsScreen extends StatelessWidget {
   static const routeName = '/flight-details';
@@ -15,40 +17,38 @@ class FlightDetailsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Flight Details'),
-        backgroundColor: const Color(0xFF131141),
-      ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'Flight Information',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 10),
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Departure: ${flight.departure.name}', style: const TextStyle(fontSize: 18)),
-                      Text('Arrival: ${flight.arrival.name}', style: const TextStyle(fontSize: 18)),
-                      Text('Price: ${flight.price.toString()} €', style: const TextStyle(fontSize: 18)),
-                      Text('Status: ${flight.status}', style: const TextStyle(fontSize: 18)),
-                      Text('Pilot: ${flight.pilot?.firstName} ${flight.pilot?.lastName}', style: const TextStyle(fontSize: 18)),
-                      Text('Vehicle: ${flight.vehicle?.modelName ?? 'N/A'}', style: const TextStyle(fontSize: 18)),
-                    ],
+      body: Row(
+        children: [
+          const NavigationWeb(),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const MainTitle(content: 'Flight Details'),
+                  const SizedBox(height: 10),
+                  Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Departure: ${flight.departure.name}', style: const TextStyle(fontSize: 18)),
+                          Text('Arrival: ${flight.arrival.name}', style: const TextStyle(fontSize: 18)),
+                          Text('Price: ${flight.price.toString()} €', style: const TextStyle(fontSize: 18)),
+                          Text('Status: ${flight.status}', style: const TextStyle(fontSize: 18)),
+                          Text('Pilot: ${flight.pilot?.firstName} ${flight.pilot?.lastName}', style: const TextStyle(fontSize: 18)),
+                          Text('Vehicle: ${flight.vehicle?.modelName ?? 'N/A'}', style: const TextStyle(fontSize: 18)),
+                        ],
+                      ),
+                    ),
                   ),
-                ),
+                ],
               ),
-            ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }

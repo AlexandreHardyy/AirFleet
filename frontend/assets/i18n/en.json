@@ -120,7 +120,6 @@
           "title": "Flight in progress"
         }
       },
-
       "pilot_current_flight_management": {
         "waiting_proposal_approval": {
           "subtitle": "Waiting confirmation from client",
@@ -134,7 +133,6 @@
           "button": "Finish the flight"
         }
       },
-
       "search_flights": {
         "no_vehicle": "No vehicle available",
         "select_vehicle": "Select your vehicle to find flights",
@@ -160,5 +158,22 @@
     "module_disabled": "Chat module is disabled",
     "text_field_label": "Type a message",
     "send_button": "Send"
+  },
+  "web": {
+    "login": {
+      "title": "Login",
+      "email": "Email",
+      "password": "Password",
+      "submit": "Login",
+      "login": "Login",
+      "register": "No account yet? Register here",
+      "success": "Login successful",
+      "error": {
+        "unknown": "An error occurred",
+        "not_admin": "You are not an admin",
+        "invalid_credentials": "Invalid credentials",
+        "server_error": "Server error"
+      }
+    }
   }
 }
