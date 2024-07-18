@@ -41,6 +41,10 @@ func NewProposalHandler(proposalService services.ProposalServiceInterface) *Prop
 // @Param			offset					query	int		false	"Offset"
 // @Param			max_price				query	string	false	"Maximum price"
 // @Param			left_available_seats	query	string	false	"Left available seats"
+// @Param			departure_position_lat	query	string	false	"Departure position latitude"
+// @Param			departure_position_long	query	string	false	"Departure position longitude"
+// @Param			arrival_position_lat	query	string	false	"Arrival position latitude"
+// @Param			arrival_position_long	query	string	false	"Arrival position longitude"
 //
 // @Success		200				{object}	[]responses.ResponseProposal
 // @Failure		400				{object}	Response
@@ -53,13 +57,27 @@ func (h *ProposalHandler) GetAllProposal(c *gin.Context) {
 	offset, _ := strconv.Atoi(c.DefaultQuery("offset", "0"))
 	maxPrice := c.Query("max_price")
 	leftAvailableSeats := c.Query("left_available_seats")
+	departurePositionLat := c.Query("departure_position_lat")
+	departurePositionLong := c.Query("departure_position_long")
+	arrivalPositionLat := c.Query("arrival_position_lat")
+	arrivalPositionLong := c.Query("arrival_position_long")
 
 	newMaxPrice, err := strconv.ParseFloat(maxPrice, 64)
 	newLeftAvailableSeats, err := strconv.Atoi(leftAvailableSeats)
 
+	departurePositionLatFloat, err := strconv.ParseFloat(departurePositionLat, 64)
+	departurePositionLongFloat, err := strconv.ParseFloat(departurePositionLong, 64)
+	arrivalPositionLatFloat, err := strconv.ParseFloat(arrivalPositionLat, 64)
+	arrivalPositionLongFloat, err := strconv.ParseFloat(arrivalPositionLong, 64)
+
 	filter := inputs.FilterPropsal{
-		MaxPrice:           newMaxPrice,
-		LeftAvailableSeats: newLeftAvailableSeats,
+		MaxPrice:              newMaxPrice,
+		LeftAvailableSeats:    newLeftAvailableSeats,
+		DeparturePositionLat:  departurePositionLatFloat,
+		DeparturePositionLong: departurePositionLongFloat,
+		ArrivalPositionLat:    arrivalPositionLatFloat,
+		ArrivalPositionLong:   arrivalPositionLongFloat,
+		Proximity:             100,
 	}
 
 	proposals, err := h.proposalService.GetAllProposals(limit, offset, filter)

@@ -60,3 +60,8 @@ func CalculateDistance(lat1, lon1, lat2, lon2 float64) float64 {
 
 	return distance
 }
+
+func NearBy(myLat, myLon, targetLat, targetLon, radius float64) bool {
+	distance := CalculateDistance(myLat, myLon, targetLat, targetLon)
+	return distance <= radius
+}

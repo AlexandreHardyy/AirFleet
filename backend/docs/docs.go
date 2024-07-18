@@ -298,54 +298,9 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/handlers.Response"
                         }
-                    }
-                }
-            }
-        },
-        "/messages": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Get all messages",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "messages"
-                ],
-                "summary": "Get all messages",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Limit",
-                        "name": "limit",
-                        "in": "query"
                     },
-                    {
-                        "type": "integer",
-                        "description": "Offset",
-                        "name": "offset",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/responses.ResponseMessage"
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
+                    "404": {
+                        "description": "Not Found",
                         "schema": {
                             "$ref": "#/definitions/handlers.Response"
                         }
@@ -610,6 +565,18 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Left available seats",
                         "name": "left_available_seats",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Departure position latitude",
+                        "name": "departure_position_lat",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Departure position longitude",
+                        "name": "departure_position_long",
                         "in": "query"
                     }
                 ],
@@ -1011,8 +978,8 @@ const docTemplate = `{
                             }
                         }
                     },
-                    "400": {
-                        "description": "Bad Request",
+                    "500": {
+                        "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/handlers.Response"
                         }
@@ -1170,6 +1137,12 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Response"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
                         "schema": {
                             "$ref": "#/definitions/handlers.Response"
                         }

@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:frontend/mobile/proposal/proposal_detail.dart';
 import 'package:frontend/mobile/proposal/search_filter.dart';
@@ -17,6 +19,8 @@ class _SearchViewState extends State<SearchView> {
   late Future<List<Proposal>> _proposalsFuture;
   double? maxPrice;
   int? minSeatsAvailable;
+  double? departureLatitude;
+  double? departureLongitude;
 
   @override
   void initState() {
@@ -41,6 +45,13 @@ class _SearchViewState extends State<SearchView> {
   void onMinSeatsChanged(int? seats) {
     setState(() {
       minSeatsAvailable = seats;
+    });
+  }
+
+  void onDepartureLocationChanged(double? latitude, double? longitude) {
+    setState(() {
+      departureLatitude = latitude;
+      departureLongitude = longitude;
     });
   }
 
