@@ -328,6 +328,8 @@ definitions:
         type: string
       updated_at:
         type: string
+      user_id:
+        type: integer
     type: object
   responses.User:
     properties:
@@ -1424,7 +1426,7 @@ paths:
       summary: get vehicle by id
       tags:
       - vehicle
-    put:
+    patch:
       consumes:
       - application/json
       description: update vehicle by id

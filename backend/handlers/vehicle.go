@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"backend/auth"
 	"backend/inputs"
 	"backend/repositories"
 	"backend/services"
@@ -163,16 +164,7 @@ func (th *VehicleHandler) VehicleById(c *gin.Context) {
 		return
 	}
 
-	userID, err := token.ExtractTokenID(c)
-	if err != nil {
-		response := &Response{
-			Message: "Error: cannot extract user ID",
-		}
-		c.JSON(http.StatusBadRequest, response)
-		return
-	}
-
-	vehicles, err := th.vehicleService.GetById(id, userID)
+	vehicles, err := th.vehicleService.GetById(id)
 
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -205,9 +197,38 @@ func (th *VehicleHandler) VehicleById(c *gin.Context) {
 func (th *VehicleHandler) DeleteVehicle(c *gin.Context) {
 	idStr := c.Param("id")
 	id, err := strconv.Atoi(idStr)
-
 	if err != nil {
 		c.String(http.StatusBadRequest, "Invalid ID format")
+		return
+	}
+
+	userID, err := token.ExtractTokenID(c)
+	if err != nil {
+		response := &Response{
+			Message: "Error: cannot extract user ID",
+		}
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	vehicle, err := th.vehicleService.GetById(id)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	isAdmin, err := auth.IsAdmin(userID)
+	if err != nil {
+		response := &Response{
+			Message: "Error: cannot extract user ID",
+		}
+		c.JSON(http.StatusBadRequest, response)
+		return
+
+	}
+
+	if vehicle.UserID != userID && !isAdmin {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 		return
 	}
 
@@ -239,7 +260,7 @@ func (th *VehicleHandler) DeleteVehicle(c *gin.Context) {
 //	@Success	200			{object}	responses.ResponseVehicle
 //	@Failure	404			{object}	Response
 //
-// @Router /vehicles/{id} [put]
+// @Router /vehicles/{id} [patch]
 //
 // @Security BearerAuth
 func (th *VehicleHandler) UpdateVehicle(c *gin.Context) {
@@ -258,6 +279,36 @@ func (th *VehicleHandler) UpdateVehicle(c *gin.Context) {
 			Message: err.Error(),
 		}
 		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	userID, err := token.ExtractTokenID(c)
+	if err != nil {
+		response := &Response{
+			Message: "Error: cannot extract user ID",
+		}
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	vehicleToUpdate, err := th.vehicleService.GetById(id)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	isAdmin, err := auth.IsAdmin(userID)
+	if err != nil {
+		response := &Response{
+			Message: "Error: cannot extract user ID",
+		}
+		c.JSON(http.StatusBadRequest, response)
+		return
+
+	}
+
+	if vehicleToUpdate.UserID != userID && !isAdmin {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 		return
 	}
 

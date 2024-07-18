@@ -16,4 +16,5 @@ type ResponseVehicle struct {
 	CreatedAt      time.Time `json:"created_at"`
 	UpdatedAt      time.Time `json:"updated_at"`
 	IsSelected     bool      `json:"is_selected"`
+	UserID         int       `json:"user_id"`
 }

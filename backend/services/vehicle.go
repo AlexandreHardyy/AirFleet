@@ -11,7 +11,7 @@ type IVehicleService interface {
 	Create(vehicle inputs.CreateVehicle, userID int) (responses.ResponseVehicle, error)
 	GetAll() ([]responses.ResponseVehicle, error)
 	GetAllMe(userID int) ([]responses.ResponseVehicle, error)
-	GetById(id int, userID int) (responses.ResponseVehicle, error)
+	GetById(id int) (responses.ResponseVehicle, error)
 	Delete(id int) error
 	Update(id int, vehicle inputs.UpdateVehicle) (responses.ResponseVehicle, error)
 }
@@ -73,7 +73,7 @@ func (s *VehicleService) GetAllMe(userID int) ([]responses.ResponseVehicle, erro
 
 }
 
-func (s *VehicleService) GetById(id int, userID int) (responses.ResponseVehicle, error) {
+func (s *VehicleService) GetById(id int) (responses.ResponseVehicle, error) {
 	vehicle, err := s.repository.GetById(id)
 	if err != nil {
 		return responses.ResponseVehicle{}, err
@@ -110,6 +110,11 @@ func (s *VehicleService) Update(id int, input inputs.UpdateVehicle) (responses.R
 }
 
 func formatVehicle(vehicle models.Vehicle) responses.ResponseVehicle {
+	isSelected := false
+	if vehicle.IsSelected != nil {
+		isSelected = *vehicle.IsSelected
+	}
+
 	return responses.ResponseVehicle{
 		ID:             vehicle.ID,
 		ModelName:      vehicle.ModelName,
@@ -119,9 +124,10 @@ func formatVehicle(vehicle models.Vehicle) responses.ResponseVehicle {
 		CruiseSpeed:    vehicle.CruiseSpeed,
 		CruiseAltitude: vehicle.CruiseAltitude,
 		IsVerified:     vehicle.IsVerified,
-		IsSelected:     *vehicle.IsSelected,
+		IsSelected:     isSelected,
 		CreatedAt:      vehicle.CreatedAt,
 		UpdatedAt:      vehicle.UpdatedAt,
+		UserID:         vehicle.UserID,
 	}
 }
 
