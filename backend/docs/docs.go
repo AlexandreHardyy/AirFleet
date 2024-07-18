@@ -1697,7 +1697,48 @@ const docTemplate = `{
                     }
                 }
             },
-            "put": {
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "delete vehicle by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "vehicle"
+                ],
+                "summary": "delete vehicle by id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Vehicle ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Response"
+                        }
+                    }
+                }
+            },
+            "patch": {
                 "security": [
                     {
                         "BearerAuth": []
@@ -1737,47 +1778,6 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/responses.ResponseVehicle"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/handlers.Response"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "delete vehicle by id",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "vehicle"
-                ],
-                "summary": "delete vehicle by id",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Vehicle ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/handlers.Response"
                         }
                     },
                     "404": {
@@ -2282,6 +2282,9 @@ const docTemplate = `{
                 },
                 "updated_at": {
                     "type": "string"
+                },
+                "user_id": {
+                    "type": "integer"
                 }
             }
         },
