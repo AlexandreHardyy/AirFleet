@@ -249,6 +249,7 @@ class _CreateProposalViewState extends State<CreateProposalView> {
                     },
                   ),
                 ),
+              Text(_suggestions?.length.toString() ?? 'empty'),
               const SizedBox(height: 18),
               FormBuilderDateTimePicker(
                 name: 'departureTime',
