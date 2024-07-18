@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_translate/flutter_translate.dart';
@@ -109,7 +111,18 @@ class MobileLayout extends StatelessWidget {
                   case PaymentScreen.routeName:
                     return MaterialPageRoute(
                       builder: (context) {
-                        return PaymentScreen(flight: args as Flight);
+                        return PaymentScreen(
+                          flight: args as Flight,
+                          callbackSuccess: () {
+                            Navigator.of(context).pop();
+                            context.read<SocketIoBloc>().state.socket!.emit(
+                                "flightProposalChoice",
+                                const JsonEncoder().convert({
+                                  "flightId": args.id,
+                                  "choice": "accepted",
+                                }));
+                          },
+                        );
                       },
                     );
                 }
