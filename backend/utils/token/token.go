@@ -93,8 +93,6 @@ func ExtractTokenID(c *gin.Context) (int, error) {
 	return claims.ID, err
 }
 
-//TODO Big caca
-
 func ExtractTokenIDFromToken(tokenString string) (int, error) {
 	claims := &Claims{}
 

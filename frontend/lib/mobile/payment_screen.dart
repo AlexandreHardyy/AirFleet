@@ -5,16 +5,20 @@ import 'package:frontend/services/payment.dart';
 import 'package:frontend/widgets/title.dart';
 
 class PaymentScreen extends StatelessWidget {
-   static const routeName = '/payment';
+  static const routeName = '/payment';
 
-  static Future<void> navigateTo(BuildContext context, {required Flight flight, required dynamic Function() callbackSuccess}) async {
-    await Navigator.of(context).pushNamed(routeName, arguments: {'flight': flight, 'callbackSuccess': callbackSuccess});
+  static Future<void> navigateTo(BuildContext context,
+      {required Flight flight,
+      required dynamic Function() callbackSuccess}) async {
+    await Navigator.of(context).pushNamed(routeName,
+        arguments: {'flight': flight, 'callbackSuccess': callbackSuccess});
   }
 
   final Flight flight;
   final dynamic Function() callbackSuccess;
 
-  const PaymentScreen({super.key, required this.flight, required this.callbackSuccess});
+  const PaymentScreen(
+      {super.key, required this.flight, required this.callbackSuccess});
 
   @override
   Widget build(BuildContext context) {

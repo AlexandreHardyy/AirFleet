@@ -9,11 +9,13 @@ class RetrieveResponse {
     required this.attribution,
   });
 
-  factory RetrieveResponse.fromJson(Map<String, dynamic> json) => RetrieveResponse(
-    type: json['type'],
-    features: List<Feature>.from(json['features'].map((x) => Feature.fromJson(x))),
-    attribution: json['attribution'],
-  );
+  factory RetrieveResponse.fromJson(Map<String, dynamic> json) =>
+      RetrieveResponse(
+        type: json['type'],
+        features: List<Feature>.from(
+            json['features'].map((x) => Feature.fromJson(x))),
+        attribution: json['attribution'],
+      );
 }
 
 class Feature {
@@ -28,10 +30,10 @@ class Feature {
   });
 
   factory Feature.fromJson(Map<String, dynamic> json) => Feature(
-    type: json['type'],
-    geometry: Geometry.fromJson(json['geometry']),
-    properties: Properties.fromJson(json['properties']),
-  );
+        type: json['type'],
+        geometry: Geometry.fromJson(json['geometry']),
+        properties: Properties.fromJson(json['properties']),
+      );
 }
 
 class Geometry {
@@ -44,9 +46,10 @@ class Geometry {
   });
 
   factory Geometry.fromJson(Map<String, dynamic> json) => Geometry(
-    coordinates: List<double>.from(json['coordinates'].map((x) => x.toDouble())),
-    type: json['type'],
-  );
+        coordinates:
+            List<double>.from(json['coordinates'].map((x) => x.toDouble())),
+        type: json['type'],
+      );
 }
 
 class Properties {
@@ -85,22 +88,31 @@ class Properties {
   });
 
   factory Properties.fromJson(Map<String, dynamic> json) => Properties(
-    name: json['name'],
-    mapboxId: json['mapbox_id'],
-    featureType: json['feature_type'],
-    address: json['address'],
-    fullAddress: json['full_address'],
-    placeFormatted: json['place_formatted'],
-    context: json['context'] != null ? Context.fromJson(json['context']) : null,
-    coordinates: Coordinates.fromJson(json['coordinates']),
-    language: json['language'],
-    maki: json['maki'],
-    poiCategory: json['poi_category'] != null ? List<String>.from(json['poi_category'].map((x) => x)) : null,
-    poiCategoryIds: json['poi_category_ids'] != null ? List<String>.from(json['poi_category_ids'].map((x) => x)) : null,
-    externalIds: json['external_ids'] != null ? ExternalIds.fromJson(json['external_ids']) : null,
-    metadata: json['metadata'] != null ? Metadata.fromJson(json['metadata']) : null,
-    operationalStatus: json['operational_status'],
-  );
+        name: json['name'],
+        mapboxId: json['mapbox_id'],
+        featureType: json['feature_type'],
+        address: json['address'],
+        fullAddress: json['full_address'],
+        placeFormatted: json['place_formatted'],
+        context:
+            json['context'] != null ? Context.fromJson(json['context']) : null,
+        coordinates: Coordinates.fromJson(json['coordinates']),
+        language: json['language'],
+        maki: json['maki'],
+        poiCategory: json['poi_category'] != null
+            ? List<String>.from(json['poi_category'].map((x) => x))
+            : null,
+        poiCategoryIds: json['poi_category_ids'] != null
+            ? List<String>.from(json['poi_category_ids'].map((x) => x))
+            : null,
+        externalIds: json['external_ids'] != null
+            ? ExternalIds.fromJson(json['external_ids'])
+            : null,
+        metadata: json['metadata'] != null
+            ? Metadata.fromJson(json['metadata'])
+            : null,
+        operationalStatus: json['operational_status'],
+      );
 }
 
 class Context {
@@ -121,13 +133,19 @@ class Context {
   });
 
   factory Context.fromJson(Map<String, dynamic> json) => Context(
-    country: json['country'] != null ? Country.fromJson(json['country']) : null,
-    postcode: json['postcode'] != null ? Postcode.fromJson(json['postcode']) : null,
-    place: json['place'] != null ? Place.fromJson(json['place']) : null,
-    neighborhood: json['neighborhood'] != null ? Neighborhood.fromJson(json['neighborhood']) : null,
-    address: json['address'] != null ? Address.fromJson(json['address']) : null,
-    street: json['street'] != null ? Street.fromJson(json['street']) : null,
-  );
+        country:
+            json['country'] != null ? Country.fromJson(json['country']) : null,
+        postcode: json['postcode'] != null
+            ? Postcode.fromJson(json['postcode'])
+            : null,
+        place: json['place'] != null ? Place.fromJson(json['place']) : null,
+        neighborhood: json['neighborhood'] != null
+            ? Neighborhood.fromJson(json['neighborhood'])
+            : null,
+        address:
+            json['address'] != null ? Address.fromJson(json['address']) : null,
+        street: json['street'] != null ? Street.fromJson(json['street']) : null,
+      );
 }
 
 class Country {
@@ -144,11 +162,11 @@ class Country {
   });
 
   factory Country.fromJson(Map<String, dynamic> json) => Country(
-    id: json['id'],
-    name: json['name'],
-    countryCode: json['country_code'],
-    countryCodeAlpha3: json['country_code_alpha_3'],
-  );
+        id: json['id'],
+        name: json['name'],
+        countryCode: json['country_code'],
+        countryCodeAlpha3: json['country_code_alpha_3'],
+      );
 }
 
 class Postcode {
@@ -161,9 +179,9 @@ class Postcode {
   });
 
   factory Postcode.fromJson(Map<String, dynamic> json) => Postcode(
-    id: json['id'],
-    name: json['name'],
-  );
+        id: json['id'],
+        name: json['name'],
+      );
 }
 
 class Place {
@@ -176,9 +194,9 @@ class Place {
   });
 
   factory Place.fromJson(Map<String, dynamic> json) => Place(
-    id: json['id'],
-    name: json['name'],
-  );
+        id: json['id'],
+        name: json['name'],
+      );
 }
 
 class Neighborhood {
@@ -191,9 +209,9 @@ class Neighborhood {
   });
 
   factory Neighborhood.fromJson(Map<String, dynamic> json) => Neighborhood(
-    id: json['id'],
-    name: json['name'],
-  );
+        id: json['id'],
+        name: json['name'],
+      );
 }
 
 class Address {
@@ -210,11 +228,11 @@ class Address {
   });
 
   factory Address.fromJson(Map<String, dynamic> json) => Address(
-    id: json['id'],
-    name: json['name'],
-    addressNumber: json['address_number'],
-    streetName: json['street_name'],
-  );
+        id: json['id'],
+        name: json['name'],
+        addressNumber: json['address_number'],
+        streetName: json['street_name'],
+      );
 }
 
 class Street {
@@ -227,9 +245,9 @@ class Street {
   });
 
   factory Street.fromJson(Map<String, dynamic> json) => Street(
-    id: json['id'],
-    name: json['name'],
-  );
+        id: json['id'],
+        name: json['name'],
+      );
 }
 
 class Coordinates {
@@ -244,10 +262,13 @@ class Coordinates {
   });
 
   factory Coordinates.fromJson(Map<String, dynamic> json) => Coordinates(
-    latitude: json['latitude'],
-    longitude: json['longitude'],
-    routablePoints: json['routable_points'] != null ? List<RoutablePoint>.from(json['routable_points'].map((x) => RoutablePoint.fromJson(x))) : null,
-  );
+        latitude: json['latitude'],
+        longitude: json['longitude'],
+        routablePoints: json['routable_points'] != null
+            ? List<RoutablePoint>.from(
+                json['routable_points'].map((x) => RoutablePoint.fromJson(x)))
+            : null,
+      );
 }
 
 class RoutablePoint {
@@ -262,10 +283,10 @@ class RoutablePoint {
   });
 
   factory RoutablePoint.fromJson(Map<String, dynamic> json) => RoutablePoint(
-    name: json['name'],
-    latitude: json['latitude'],
-    longitude: json['longitude'],
-  );
+        name: json['name'],
+        latitude: json['latitude'],
+        longitude: json['longitude'],
+      );
 }
 
 class ExternalIds {
@@ -276,8 +297,8 @@ class ExternalIds {
   });
 
   factory ExternalIds.fromJson(Map<String, dynamic> json) => ExternalIds(
-    foursquare: json['foursquare'],
-  );
+        foursquare: json['foursquare'],
+      );
 }
 
 class Metadata {
@@ -288,6 +309,6 @@ class Metadata {
   });
 
   factory Metadata.fromJson(Map<String, dynamic> json) => Metadata(
-    primaryPhoto: json['primary_photo'],
-  );
+        primaryPhoto: json['primary_photo'],
+      );
 }

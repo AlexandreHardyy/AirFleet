@@ -209,7 +209,6 @@ func (h *RatingHandler) GetRatingByUserIDAndStatus(c *gin.Context) {
 			Content: "[GetRatingByUserIDAndStatus]: " + err.Error(),
 		})
 
-		//TODO status can be different
 		c.JSON(http.StatusNotFound, response)
 		return
 	}

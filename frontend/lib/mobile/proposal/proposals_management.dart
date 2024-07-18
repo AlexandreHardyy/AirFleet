@@ -17,7 +17,8 @@ class ProposalsManagementScreen extends StatefulWidget {
   const ProposalsManagementScreen({super.key});
 
   @override
-  _ProposalsManagementScreenState createState() => _ProposalsManagementScreenState();
+  _ProposalsManagementScreenState createState() =>
+      _ProposalsManagementScreenState();
 }
 
 class _ProposalsManagementScreenState extends State<ProposalsManagementScreen> {
@@ -79,5 +80,3 @@ class _ProposalsManagementScreenState extends State<ProposalsManagementScreen> {
     }
   }
 }
-
-

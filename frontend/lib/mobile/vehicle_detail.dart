@@ -308,7 +308,6 @@ class _VehicleDetailsPageState extends State<VehicleDetailsPage> {
                                     ),
                                   ),
                                   const SizedBox(width: 10),
-                                  // Spacing between buttons
                                   Expanded(
                                     child: ElevatedButton(
                                       onPressed: () async {

@@ -7,11 +7,11 @@ class PilotFlightRequests extends StatelessWidget {
   final CurrentPilotStatus status;
   final List<Flight>? flights;
 
-  const PilotFlightRequests({super.key, required this.status, required this.flights});
+  const PilotFlightRequests(
+      {super.key, required this.status, required this.flights});
 
   @override
   Widget build(BuildContext context) {
-
     if (flights?.isNotEmpty == true) {
       return ListView.builder(
         itemCount: flights!.length,

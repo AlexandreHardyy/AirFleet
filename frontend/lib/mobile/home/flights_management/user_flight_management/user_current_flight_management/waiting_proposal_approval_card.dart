@@ -29,7 +29,6 @@ class _WaitingProposalApprovalCardState
     super.initState();
     _socketIoBloc = context.read<SocketIoBloc>();
 
-    //TODO: Optimization to reproduce
     _socketIoBloc.add(SocketIoListenEvent(
       eventId: "flightTimeUpdated",
       event: "flightTimeUpdated",
@@ -118,15 +117,19 @@ class _WaitingProposalApprovalCardState
             Expanded(
               child: ElevatedButton(
                 onPressed: () {
-                  PaymentScreen.navigateTo(context, flight: widget.flight, callbackSuccess: () {
-                    Navigator.of(context).pop();
-                    context.read<SocketIoBloc>().state.socket!.emit(
-                        "flightProposalChoice",
-                        const JsonEncoder().convert({
-                          "flightId": widget.flight.id,
-                          "choice": "accepted",
-                        }));
-                  },);
+                  PaymentScreen.navigateTo(
+                    context,
+                    flight: widget.flight,
+                    callbackSuccess: () {
+                      Navigator.of(context).pop();
+                      context.read<SocketIoBloc>().state.socket!.emit(
+                          "flightProposalChoice",
+                          const JsonEncoder().convert({
+                            "flightId": widget.flight.id,
+                            "choice": "accepted",
+                          }));
+                    },
+                  );
                 },
                 child: Text(translate('common.input.accept_offer')),
               ),

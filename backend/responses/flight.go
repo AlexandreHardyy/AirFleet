@@ -26,12 +26,6 @@ type ResponseFlight struct {
 
 // WEBSOCKET
 
-// DEPRECATED
-type ResponsePilotPosition struct {
-	Latitude  float64 `json:"latitude"`
-	Longitude float64 `json:"longitude"`
-}
-
 type ResponsePilotPositionUpdate struct {
 	Latitude            float64 `json:"latitude"`
 	Longitude           float64 `json:"longitude"`

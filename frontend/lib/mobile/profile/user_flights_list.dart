@@ -33,7 +33,8 @@ class _ExpandableFlightListState extends State<ExpandableFlightList> {
     final dLat = lat2Rad - lat1Rad;
     final dLon = lon2Rad - lon1Rad;
 
-    final a = sin(dLat / 2) * sin(dLat / 2) + cos(lat1Rad) * cos(lat2Rad) * sin(dLon / 2) * sin(dLon / 2);
+    final a = sin(dLat / 2) * sin(dLat / 2) +
+        cos(lat1Rad) * cos(lat2Rad) * sin(dLon / 2) * sin(dLon / 2);
     final c = 2 * atan2(sqrt(a), sqrt(1 - a));
 
     final distance = R * c;
@@ -43,7 +44,8 @@ class _ExpandableFlightListState extends State<ExpandableFlightList> {
 
   @override
   Widget build(BuildContext context) {
-    final flightsToShow = _isExpanded ? widget.flights : widget.flights.take(3).toList();
+    final flightsToShow =
+        _isExpanded ? widget.flights : widget.flights.take(3).toList();
     final backgroundColor = widget.backgroundColor ?? Colors.white;
 
     return Container(
@@ -56,11 +58,17 @@ class _ExpandableFlightListState extends State<ExpandableFlightList> {
             itemBuilder: (context, index) {
               final flight = flightsToShow[index];
 
-              final totalDistance = calculateDistance(flight.departure.latitude, flight.departure.longitude, flight.arrival.latitude, flight.arrival.longitude);
-              final cruiseSpeedKmH = flight.vehicle!.cruiseSpeed * 1.852; // Convert knots to km/h
+              final totalDistance = calculateDistance(
+                  flight.departure.latitude,
+                  flight.departure.longitude,
+                  flight.arrival.latitude,
+                  flight.arrival.longitude);
+              final cruiseSpeedKmH =
+                  flight.vehicle!.cruiseSpeed * 1.852;
               final estimatedTime = totalDistance / cruiseSpeedKmH;
               final estimatedTimeInHours = estimatedTime.floor();
-              final estimatedTimeInMinutes = ((estimatedTime - estimatedTimeInHours) * 60).floor();
+              final estimatedTimeInMinutes =
+                  ((estimatedTime - estimatedTimeInHours) * 60).floor();
 
               return GestureDetector(
                 onTap: () {
@@ -136,14 +144,16 @@ class _ExpandableFlightListState extends State<ExpandableFlightList> {
                             Expanded(
                               child: Text(
                                 'Flight Time: ${estimatedTimeInHours}h ${estimatedTimeInMinutes}m',
-                                style: const TextStyle(color: Color(0xFF131141)),
+                                style:
+                                    const TextStyle(color: Color(0xFF131141)),
                               ),
                             ),
                             Expanded(
                               child: Text(
                                 '${flight.price?.toStringAsFixed(2)} €',
                                 textAlign: TextAlign.right,
-                                style: const TextStyle(color: Color(0xFF131141)),
+                                style:
+                                    const TextStyle(color: Color(0xFF131141)),
                               ),
                             ),
                           ],
@@ -175,7 +185,8 @@ class _ExpandableFlightListState extends State<ExpandableFlightList> {
                                   DateTime.parse(flight.updatedAt!),
                                 ),
                                 textAlign: TextAlign.right,
-                                style: const TextStyle(color: Color(0xFF131141)),
+                                style:
+                                    const TextStyle(color: Color(0xFF131141)),
                               ),
                             ),
                           ],

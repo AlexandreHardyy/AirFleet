@@ -29,9 +29,12 @@ class _WaitingPilotCardState extends State<WaitingPilotCard> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(translate('home.flight_management.user_current_flight_management.waiting_pilot.subtitle')),
+                Text(translate(
+                    'home.flight_management.user_current_flight_management.waiting_pilot.subtitle')),
                 const SizedBox(height: 10),
-                const LinearProgressIndicator(color: Color(0xFF131141),),
+                const LinearProgressIndicator(
+                  color: Color(0xFF131141),
+                ),
               ],
             ),
           ),
@@ -40,7 +43,6 @@ class _WaitingPilotCardState extends State<WaitingPilotCard> {
         ElevatedButton(
           style: dangerButtonStyle,
           onPressed: () {
-            // SocketProvider.of(context)!.socket.emit("cancelFlight", "${state.flight!.id}");
             context
                 .read<SocketIoBloc>()
                 .state

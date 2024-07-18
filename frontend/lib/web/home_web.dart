@@ -244,7 +244,7 @@ class _HomeWebState extends State<HomeWeb> {
         const SizedBox(height: 8),
         Expanded(
           child: AspectRatio(
-            aspectRatio: 2.5, // Adjust the aspect ratio to fit more charts
+            aspectRatio: 2.5,
             child: chart,
           ),
         ),

@@ -76,7 +76,6 @@ class SocketIoBloc extends Bloc<SocketIoEvent, SocketIoState> {
       });
 
       emit(state.copyWith(
-        // We set the status to disconnected because the socket is not connected yet
         status: SocketIoStatus.disconnected,
         socket: socket,
       ));

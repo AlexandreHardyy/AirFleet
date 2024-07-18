@@ -34,24 +34,20 @@ class MobileLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var localizationDelegate = LocalizedApp
-        .of(context)
-        .delegate;
+    var localizationDelegate = LocalizedApp.of(context).delegate;
 
     return MultiBlocProvider(
         providers: [
           BlocProvider<PilotStatusBloc>(
             create: (context) =>
-            PilotStatusBloc()
-              ..add(PilotStatusInitialized()),
+                PilotStatusBloc()..add(PilotStatusInitialized()),
           ),
           BlocProvider<SocketIoBloc>(
             create: (context) => SocketIoBloc(),
           ),
           BlocProvider<CurrentFlightBloc>(
             create: (context) =>
-            CurrentFlightBloc()
-              ..add(CurrentFlightInitialized()),
+                CurrentFlightBloc()..add(CurrentFlightInitialized()),
           ),
           BlocProvider<MessageBloc>(
             create: (context) =>
@@ -59,9 +55,7 @@ class MobileLayout extends StatelessWidget {
           ),
         ],
         child: LocalizationProvider(
-          state: LocalizationProvider
-              .of(context)
-              .state,
+          state: LocalizationProvider.of(context).state,
           child: ToastificationWrapper(
             child: MaterialApp(
               routes: {
@@ -71,9 +65,9 @@ class MobileLayout extends StatelessWidget {
                 '/register-pilot': (context) => const RegisterPilotScreen(),
                 '/profile': (context) => const UserProfileScreen(),
                 '/vehicles-management': (context) =>
-                const VehiclesManagementScreen(),
+                    const VehiclesManagementScreen(),
                 '/proposals-management': (context) =>
-                const ProposalsManagementScreen(),
+                    const ProposalsManagementScreen(),
               },
               onGenerateRoute: (settings) {
                 final args = settings.arguments;
@@ -118,12 +112,11 @@ class MobileLayout extends StatelessWidget {
                     return MaterialPageRoute(
                       builder: (context) {
                         final Map<String, dynamic>? arguments =
-                        args as Map<String, dynamic>?;
+                            args as Map<String, dynamic>?;
                         return PaymentScreen(
                             flight: arguments!['flight'] as Flight,
-                            callbackSuccess: arguments['callbackSuccess']
-                            as Function()
-                        );
+                            callbackSuccess:
+                                arguments['callbackSuccess'] as Function());
                       },
                     );
                 }
@@ -147,25 +140,21 @@ class MobileLayout extends StatelessWidget {
                 colorSchemeSeed: const Color(0xFF0D003B),
                 textTheme: TextTheme(
                     displayLarge: GoogleFonts.prostoOne(
-                      color: const Color(0xFFDCA200),
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                    )),
+                  color: const Color(0xFFDCA200),
+                  fontSize: 32,
+                  fontWeight: FontWeight.bold,
+                )),
                 elevatedButtonTheme: ElevatedButtonThemeData(
                   style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFDCA200),
-                      foregroundColor: Colors.white,
-                      textStyle: const TextStyle(
-                          fontSize: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius:
-                        BorderRadius.circular(8.0),
-                      ),
-                      padding: const EdgeInsets.all(14),
+                    backgroundColor: const Color(0xFFDCA200),
+                    foregroundColor: Colors.white,
+                    textStyle: const TextStyle(fontSize: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.0),
                     ),
+                    padding: const EdgeInsets.all(14),
+                  ),
                 ),
-                // ALTERNATIVE
-                /*textTheme: GoogleFonts.prostoOneTextTheme(),*/
               ),
             ),
           ),

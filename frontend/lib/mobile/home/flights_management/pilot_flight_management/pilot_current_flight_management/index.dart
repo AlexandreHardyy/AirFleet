@@ -11,7 +11,6 @@ import 'package:frontend/mobile/home/flights_management/pilot_flight_management/
 import 'package:frontend/models/message.dart';
 import 'package:socket_io_client/socket_io_client.dart';
 
-
 class CurrentPilotFlightManagement extends StatefulWidget {
   const CurrentPilotFlightManagement({super.key});
 
@@ -34,11 +33,13 @@ class _CurrentPilotFlightManagementState
       final currentFlightState = context.read<CurrentFlightBloc>().state;
 
       _socketIoBloc.state.socket!.connect();
-      _socketIoBloc.add(SocketIoCreateSession(flightId: currentFlightState.flight!.id));
+      _socketIoBloc
+          .add(SocketIoCreateSession(flightId: currentFlightState.flight!.id));
       _socketIoBloc.state.socket!.onReconnect((data) => {
-        print("Reconnected to socket.io server"),
-        _socketIoBloc.add(SocketIoCreateSession(flightId: currentFlightState.flight!.id))
-      });
+            print("Reconnected to socket.io server"),
+            _socketIoBloc.add(
+                SocketIoCreateSession(flightId: currentFlightState.flight!.id))
+          });
 
       _socketIoBloc.add(SocketIoListenEvent(
         eventId: "flightUpdated",
@@ -55,7 +56,9 @@ class _CurrentPilotFlightManagementState
           Map<String, dynamic> messageMap = jsonDecode(message);
           Message convertedMessage = Message.fromJson(messageMap);
 
-          context.read<MessageBloc>().add(NewMessage(message: convertedMessage));
+          context
+              .read<MessageBloc>()
+              .add(NewMessage(message: convertedMessage));
         },
       ));
     }

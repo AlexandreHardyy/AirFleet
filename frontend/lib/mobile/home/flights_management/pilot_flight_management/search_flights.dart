@@ -84,9 +84,9 @@ class SearchFlights extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                   SecondaryTitle(
+                  SecondaryTitle(
                     content: translate(
-                            "home.flight_management.search_flights.select_vehicle"),
+                        "home.flight_management.search_flights.select_vehicle"),
                   ),
                   const SizedBox(height: 24),
                   FormBuilderDropdown(

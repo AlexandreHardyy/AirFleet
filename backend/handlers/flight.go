@@ -395,7 +395,6 @@ func (h *FlightSocketHandler) MakeFlightPriceProposal(s socketio.Conn, msg strin
 	s.Join(strconv.Itoa(flightProposalRequest.FlightId))
 
 	go func() {
-		//TODO: The time sleep is really dirty, we need to find a better way to do this
 		time.Sleep(2 * time.Second)
 
 		err := estimateAndBroadcastFlightTime(s, flightProposalRequest.FlightId, h.flightService, h.socketIoServer)
@@ -544,7 +543,6 @@ func estimateAndBroadcastFlightTime(s socketio.Conn, flightId int, flightService
 		return err
 	}
 
-	//TODO: This is temporary, we need to get the pilot's real position
 	pilotPosition := utils.Position{
 		Latitude:  flight.Departure.Latitude,
 		Longitude: flight.Departure.Longitude,
@@ -603,65 +601,6 @@ func (h *FlightSocketHandler) PilotPositionUpdate(s socketio.Conn, msg string) e
 	h.socketIoServer.BroadcastToRoom("/flights", strconv.Itoa(pilotPositionUpdate.FlightId), "pilotPositionUpdated", responseString)
 
 	return nil
-}
-
-// DEPRECATED
-func (h *FlightSocketHandler) startPilotPositionUpdate(s socketio.Conn, flightId string) {
-	if oldStopChan, ok := h.stopChans[s.ID()]; ok {
-		log.Println("Stopping old goroutine")
-		close(oldStopChan)
-	}
-
-	stopChan := make(chan struct{})
-	h.stopChans[s.ID()] = stopChan
-
-	convertedFlightId, err := strconv.Atoi(flightId)
-	if err != nil {
-		s.Emit("error", err.Error())
-		log.Println("Error extracting flight ID", err.Error())
-		return
-	}
-
-	flight, err := h.flightService.GetFlight(convertedFlightId)
-	if err != nil {
-		repositories.CreateMonitoringLog(models.MonitoringLog{
-			Type:    "error",
-			Content: "[GetFlight]: " + err.Error(),
-		})
-		s.Emit("error", err.Error())
-		log.Println("Error getting flight", err.Error())
-		return
-	}
-
-	//TODO: This is temporary, we need to get the pilot's real position
-	pilotPosition := responses.ResponsePilotPosition{
-		Latitude:  flight.Departure.Latitude,
-		Longitude: flight.Departure.Longitude,
-	}
-
-	pilotPositionBytes, err := json.Marshal(pilotPosition)
-	if err != nil {
-		log.Println("Error marshalling pilot position:", err)
-		return
-	}
-
-	pilotPositionString := string(pilotPositionBytes)
-
-	h.socketIoServer.BroadcastToRoom("/flights", flightId, "pilotPositionUpdate", pilotPositionString)
-	go func() {
-		ticker := time.NewTicker(30 * time.Second)
-		defer ticker.Stop()
-
-		for {
-			select {
-			case <-ticker.C:
-				h.socketIoServer.BroadcastToRoom("/flights", flightId, "pilotPositionUpdate", pilotPositionString)
-				log.Println("sent pilot position update")
-			case <-stopChan:
-				return
-			}
-		}
-	}()
 }
 
 func (h *FlightSocketHandler) StopGoroutine(chanId string) {

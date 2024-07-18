@@ -11,6 +11,7 @@ import 'package:frontend/services/vehicle.dart';
 import 'package:frontend/utils/ticker.dart';
 
 part 'pilot_status_event.dart';
+
 part 'pilot_status_state.dart';
 
 class PilotStatusBloc extends Bloc<PilotStatusEvent, PilotStatusState> {
