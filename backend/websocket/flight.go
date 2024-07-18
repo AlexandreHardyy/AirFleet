@@ -29,6 +29,8 @@ func InitFlightSession(socketIoServer *socketio.Server) {
 
 	socketIoServer.OnEvent("/flights", "flightSimulation", flightSocketHandler.StartAndCompleteFlight)
 
+	socketIoServer.OnEvent("/flights", "flightSimulationStop", flightSocketHandler.FlightSimulationStop)
+
 	socketIoServer.OnEvent("/flights", "bye", func(s socketio.Conn) {
 		err := s.Close()
 		if err != nil {
