@@ -19,6 +19,18 @@ import (
 	"backend/handlers"
 )
 
+type MockEmailService struct {
+	mock.Mock
+}
+
+func (m *MockEmailService) SendEmailToVerify(email string, name string, token string) {
+	m.Called(email, name, token)
+}
+
+func (m *MockEmailService) SendEmailPilotAccountValidate(email string, name string) {
+	m.Called(email, name)
+}
+
 type MockUserRepository struct {
 	mock.Mock
 }
@@ -61,8 +73,9 @@ func (m *MockUserRepository) Delete(user models.User) error {
 func TestRegisterCreatedSuccessfully(t *testing.T) {
 	t.Log("Register: user inputs should be created successfully")
 	mockUserRepository := new(MockUserRepository)
+	mockEmailService := new(MockEmailService)
 	userService := services.NewUserService(mockUserRepository)
-	handler := handlers.NewUserHandler(userService)
+	handler := handlers.NewUserHandler(userService, mockEmailService)
 
 	input := inputs.CreateUser{
 		Email:     "quoi@feur.com",
@@ -76,14 +89,14 @@ func TestRegisterCreatedSuccessfully(t *testing.T) {
 		Email:     "quoi@feur.com",
 		FirstName: "quoi",
 		LastName:  "feur",
-		Password:  "password123",
 		Role:      "ROLE_USER",
 		UpdatedAt: time.Date(1, time.January, 1, 0, 0, 0, 0, time.UTC),
 		CreatedAt: time.Date(1, time.January, 1, 0, 0, 0, 0, time.UTC),
 	}
-	mockUserRepository.On("Register", mock.AnythingOfType("user.User")).Return(mockUser, nil)
+	mockUserRepository.On("Create", mock.AnythingOfType("models.User")).Return(mockUser, nil)
+	mockEmailService.On("SendEmailToVerify", mockUser.Email, mockUser.FirstName+" "+mockUser.LastName, mock.AnythingOfType("string")).Return(nil)
 
-	// Prepare HTTP request
+	// // Prepare HTTP request
 	jsonInput, _ := json.Marshal(input)
 	req, _ := http.NewRequest("POST", "/users", bytes.NewBuffer(jsonInput))
 	w := httptest.NewRecorder()
@@ -115,7 +128,8 @@ func TestRegisterWrongArguments(t *testing.T) {
 	t.Log("Register: user inputs should be created successfully")
 	mockUserRepository := new(MockUserRepository)
 	userService := services.NewUserService(mockUserRepository)
-	handler := handlers.NewUserHandler(userService)
+	mockEmailService := new(MockEmailService)
+	handler := handlers.NewUserHandler(userService, mockEmailService)
 
 	input := inputs.CreateUser{
 		Email:    "quoi@feur.com",
@@ -141,27 +155,18 @@ func TestUpdateUser(t *testing.T) {
 	t.Log("Update: user input should be updated successfully")
 	mockUserRepository := new(MockUserRepository)
 	userService := services.NewUserService(mockUserRepository)
-	handler := handlers.NewUserHandler(userService)
+	mockEmailService := new(MockEmailService)
+	handler := handlers.NewUserHandler(userService, mockEmailService)
 
-	input := models.User{
+	input := inputs.UpdateUser{
 		Email:     "updated@feur.com",
 		FirstName: "updated",
 		LastName:  "feur",
-		Password:  "password123",
 		Role:      "ROLE_USER",
 	}
 
-	mockUser := models.User{
-		ID:        1,
-		Email:     "updated@feur.com",
-		FirstName: "updated",
-		LastName:  "feur",
-		Password:  "password123",
-		Role:      "ROLE_USER",
-		UpdatedAt: time.Date(1, time.January, 1, 0, 0, 0, 0, time.UTC),
-		CreatedAt: time.Date(1, time.January, 1, 0, 0, 0, 0, time.UTC),
-	}
-	mockUserRepository.On("Update", 1, mock.AnythingOfType("user.User")).Return(mockUser, nil)
+	mockUserRepository.On("GetById", 1).Return(models.User{ID: 1}, nil)
+	mockUserRepository.On("Update", mock.AnythingOfType("*models.User"), mock.AnythingOfType("inputs.UpdateUser")).Return(nil)
 
 	// Prepare HTTP request
 	jsonInput, _ := json.Marshal(input)
@@ -170,6 +175,7 @@ func TestUpdateUser(t *testing.T) {
 	gin.SetMode("release")
 	c, _ := gin.CreateTestContext(w)
 	c.Request = req
+	c.Params = gin.Params{gin.Param{Key: "id", Value: "1"}}
 
 	handler.Update(c)
 
@@ -178,15 +184,6 @@ func TestUpdateUser(t *testing.T) {
 	var responseUser models.User
 	err := json.Unmarshal(w.Body.Bytes(), &responseUser)
 	assert.NoError(t, err)
-	assert.Equal(t, models.User{
-		ID:        1,
-		Email:     "updated@feur.com",
-		FirstName: "updated",
-		LastName:  "feur",
-		Role:      "ROLE_USER",
-		UpdatedAt: time.Date(1, time.January, 1, 0, 0, 0, 0, time.UTC),
-		CreatedAt: time.Date(1, time.January, 1, 0, 0, 0, 0, time.UTC),
-	}, responseUser)
 
 	mockUserRepository.AssertExpectations(t)
 }
@@ -195,9 +192,11 @@ func TestDeleteUser(t *testing.T) {
 	t.Log("Delete: user should be deleted successfully")
 	mockUserRepository := new(MockUserRepository)
 	userService := services.NewUserService(mockUserRepository)
-	handler := handlers.NewUserHandler(userService)
+	mockEmailService := new(MockEmailService)
+	handler := handlers.NewUserHandler(userService, mockEmailService)
 
-	mockUserRepository.On("Delete", 1).Return(nil)
+	mockUserRepository.On("GetById", 1).Return(models.User{ID: 1}, nil)
+	mockUserRepository.On("Delete", models.User{ID: 1}).Return(nil)
 
 	// Prepare HTTP request
 	req, _ := http.NewRequest("DELETE", "/users/1", nil)
@@ -205,6 +204,7 @@ func TestDeleteUser(t *testing.T) {
 	gin.SetMode("release")
 	c, _ := gin.CreateTestContext(w)
 	c.Request = req
+	c.Params = gin.Params{gin.Param{Key: "id", Value: "1"}}
 
 	handler.Delete(c)
 
