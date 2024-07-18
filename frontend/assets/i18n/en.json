@@ -46,16 +46,16 @@
     "welcome_on_board": "Welcome on board !",
     "empty_proposal": "No proposal available",
     "form": {
-        "departure": "Departure",
-        "arrival": "Arrival",
-        "departure_date": "Departure date",
-        "departure_time": "Departure time",
-        "arrival_date": "Arrival date",
-        "arrival_time": "Arrival time",
-        "price": "Price",
-        "seats": "Seats",
-        "description": "Description",
-        "select_vehicle": "Select vehicle"
+      "departure": "Departure",
+      "arrival": "Arrival",
+      "departure_date": "Departure date",
+      "departure_time": "Departure time",
+      "arrival_date": "Arrival date",
+      "arrival_time": "Arrival time",
+      "price": "Price",
+      "seats": "Seats",
+      "description": "Description",
+      "select_vehicle": "Select vehicle"
     }
   },
   "vehicle": {
@@ -176,6 +176,28 @@
         "invalid_credentials": "Invalid credentials",
         "server_error": "Server error"
       }
+    },
+    "users": {
+      "title": "Users details",
+      "firstName": "First name",
+      "lastName": "Last name",
+      "email": "Email",
+      "role": "Role",
+      "actions": "Actions",
+      "createUser": "Create a new user"
+    },
+    "vehicles": {
+      "title": "Vehicles details",
+      "modelName": "Model name",
+      "matriculation": "Matriculation",
+      "seat": "Seat",
+      "cruiseSpeed": "Cruise speed",
+      "cruiseAltitude": "Cruise altitude",
+      "type": "Type",
+      "isVerified": "Is verified",
+      "isSelected": "Is selected",
+      "actions": "Actions",
+      "createVehicle": "Create a new vehicle"
     }
   }
 }
