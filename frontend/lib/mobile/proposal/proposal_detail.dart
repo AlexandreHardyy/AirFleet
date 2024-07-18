@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 import 'package:frontend/mobile/blocs/current_flight/current_flight_bloc.dart';
+import 'package:frontend/mobile/payment_screen.dart';
 import 'package:frontend/mobile/proposal/confirm_animation.dart';
 import 'package:frontend/models/proposal.dart';
 import 'package:frontend/services/proposal.dart';
@@ -39,16 +40,19 @@ class _ProposalDetailState extends State<ProposalDetail> {
     _proposal = ProposalService.getProposalById(widget.proposalId);
   }
 
-  void _joinProposal({required int id}) async {
+  void _joinProposal({required Proposal proposal}) async {
     try {
-      _showConfirmation(context);
-      await ProposalService.joinProposal(id);
-      final updatedProposal =
-          await ProposalService.getProposalById(widget.proposalId);
-      setState(() {
-        _proposal = Future.value(updatedProposal);
-        _isUserInProposal = true;
-      });
+      PaymentScreen.navigateTo(context, flight: proposal.flight, callbackSuccess: () async {
+        Navigator.of(context).pop();
+        _showConfirmation(context);
+        await ProposalService.joinProposal(proposal.id);
+        final updatedProposal =
+            await ProposalService.getProposalById(widget.proposalId);
+        setState(() {
+          _proposal = Future.value(updatedProposal);
+          _isUserInProposal = true;
+        });
+      },);
     } catch (e) {
       toastification.show(
         title: const Text('Error, could not join proposal'),
@@ -315,7 +319,7 @@ class _ProposalDetailState extends State<ProposalDetail> {
                         width: double.infinity,
                         child: ElevatedButton(
                           onPressed: () => {
-                            _joinProposal(id: proposal.id),
+                            _joinProposal(proposal: proposal),
                           },
                           child: Text(translate('proposal.join_proposal')),
                         ),
