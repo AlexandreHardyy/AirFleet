@@ -160,9 +160,9 @@ class _VehicleDetailsPageState extends State<VehicleDetailsPage> {
                       ),
                       const SizedBox(height: 18),
                       TextFormField(
-                        initialValue: _vehicle.cruiseSpeed.toString(),
+                        initialValue: _vehicle.cruiseAltitude.toString(),
                         decoration: _buildInputDecoration(
-                            labelText: 'Cruise Speed', suffixText: 'ft'),
+                            labelText: 'Cruise Altitude', suffixText: 'ft'),
                         keyboardType: TextInputType.number,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
@@ -174,7 +174,7 @@ class _VehicleDetailsPageState extends State<VehicleDetailsPage> {
                           return null;
                         },
                         onSaved: (value) =>
-                            _vehicle.cruiseSpeed = num.parse(value!),
+                            _vehicle.cruiseAltitude = num.parse(value!),
                       ),
                       const SizedBox(height: 20),
                       Row(
