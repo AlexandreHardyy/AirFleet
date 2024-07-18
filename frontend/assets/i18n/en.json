@@ -177,6 +177,19 @@
         "server_error": "Server error"
       }
     },
+    "navigation": {
+      "title": "Admin Menu",
+      "dashboard": "Dashboard",
+      "users": "Users",
+      "vehicles": "Vehicles",
+      "flights": "Flights",
+      "monitoringLogs": "Monitoring logs",
+      "modules": "Modules",
+      "logout": "Logout"
+    },
+    "modules": {
+      "title": "Modules"
+    },
     "users": {
       "title": "Users details",
       "firstName": "First name",

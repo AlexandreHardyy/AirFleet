@@ -13,7 +13,6 @@ import 'package:frontend/web/charts/pie_chart_vehicles.dart';
 import 'package:frontend/web/charts/pie_chart_ratings.dart';
 import 'package:frontend/web/charts/bar_chart_payments.dart';
 import 'package:frontend/web/flights/flight.dart';
-import 'package:frontend/web/module/module.dart';
 import 'package:frontend/web/monitoring-logs/index.dart';
 import 'package:frontend/web/user/user.dart';
 import 'package:frontend/web/vehicle/vehicle.dart';
