@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 import 'package:frontend/mobile/home/flights_management/user_flight_management/create_flight.dart';
@@ -46,6 +47,11 @@ class _CreateProposalViewState extends State<CreateProposalView> {
     _loadVehicles();
   }
 
+  final String mapboxAccessToken =
+  const String.fromEnvironment("PUBLIC_ACCESS_TOKEN") != ""
+      ? const String.fromEnvironment("PUBLIC_ACCESS_TOKEN")
+      : dotenv.get("PUBLIC_ACCESS_TOKEN_MAPBOX");
+
   void _loadVehicles() async {
     try {
       List<Vehicle> vehicles = await VehicleService.getVehiclesForMe();
@@ -72,7 +78,7 @@ class _CreateProposalViewState extends State<CreateProposalView> {
           'language': 'en',
           'poi_category': 'airport',
           'types': "poi",
-          'access_token': const String.fromEnvironment("PUBLIC_ACCESS_TOKEN"),
+          'access_token': mapboxAccessToken,
           'session_token': mapboxSessionToken,
         },
       );
@@ -249,7 +255,6 @@ class _CreateProposalViewState extends State<CreateProposalView> {
                     },
                   ),
                 ),
-              Text(_suggestions?.length.toString() ?? 'empty'),
               const SizedBox(height: 18),
               FormBuilderDateTimePicker(
                 name: 'departureTime',
