@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_translate/flutter_translate.dart';
 import 'package:frontend/models/user.dart';
 import 'package:frontend/services/user.dart';
 import 'package:frontend/web/user/create_user_form.dart';
@@ -68,16 +69,17 @@ class _UserScreenState extends State<UserScreen> {
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 children: [
-                const MainTitle(content: 'Users Details'),
+                  MainTitle(content: translate("web.users.title")),
                   const SizedBox(height: 20),
                   ElevatedButton(
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const CreateUserForm()),
+                        MaterialPageRoute(
+                            builder: (context) => const CreateUserForm()),
                       );
                     },
-                    child: const Text('Create a new User'),
+                    child: Text(translate("web.users.createUser")),
                   ),
                   const SizedBox(height: 20),
                   Expanded(
@@ -88,21 +90,52 @@ class _UserScreenState extends State<UserScreen> {
                           child: SingleChildScrollView(
                             scrollDirection: Axis.horizontal,
                             child: ConstrainedBox(
-                              constraints: BoxConstraints(minWidth: constraints.maxWidth),
+                              constraints: BoxConstraints(
+                                  minWidth: constraints.maxWidth),
                               child: DataTable(
                                 columnSpacing: 0,
-                                columns: const [
-                                  DataColumn(label: Text('First Name', style: TextStyle(fontWeight: FontWeight.bold))),
-                                  DataColumn(label: Text('Last Name', style: TextStyle(fontWeight: FontWeight.bold))),
-                                  DataColumn(label: Text('Email', style: TextStyle(fontWeight: FontWeight.bold))),
-                                  DataColumn(label: Text('Role', style: TextStyle(fontWeight: FontWeight.bold))),
+                                columns: [
+                                  DataColumn(
+                                    label: Text(
+                                      translate("web.users.firstName"),
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                  DataColumn(
+                                    label: Text(
+                                      translate("web.users.lastName"),
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                  DataColumn(
+                                    label: Text(
+                                        translate("web.users.email"),
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                  DataColumn(
+                                    label: Text(
+                                      translate("web.users.role"),
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
                                   DataColumn(
                                     label: Expanded(
                                       child: Padding(
-                                        padding: EdgeInsets.only(right: 28.0),
+                                        padding: const EdgeInsets.only(right: 28.0),
                                         child: Text(
-                                          'Actions',
-                                          style: TextStyle(fontWeight: FontWeight.bold),
+                                          translate("web.users.actions"),
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                          ),
                                           textAlign: TextAlign.end,
                                         ),
                                       ),
@@ -112,28 +145,48 @@ class _UserScreenState extends State<UserScreen> {
                                 rows: _users.map((user) {
                                   return DataRow(
                                     cells: [
-                                      DataCell(Text(user.firstName)),
-                                      DataCell(Text(user.lastName)),
-                                      DataCell(Text(user.email)),
-                                      DataCell(Text(user.role)),
                                       DataCell(
-                                        Expanded(
-                                          child: Padding(
-                                            padding: const EdgeInsets.only(right: 16.0),
-                                            child: Row(
-                                              mainAxisAlignment: MainAxisAlignment.end,
-                                              children: [
-                                                IconButton(
-                                                  icon: const Icon(Icons.edit, color: Color(0xFFDCA200)),
-                                                  onPressed: () => _editUser(user),
-                                                ),
-                                                IconButton(
-                                                  icon: const Icon(Icons.delete, color: Color(0xFFDCA200)),
-                                                  onPressed: () => _deleteUser(user.id),
-                                                ),
-                                              ],
+                                        Text(
+                                          user.firstName,
+                                        ),
+                                      ),
+                                      DataCell(
+                                        Text(
+                                          user.lastName,
+                                        ),
+                                      ),
+                                      DataCell(
+                                        Text(
+                                          user.email,
+                                        ),
+                                      ),
+                                      DataCell(
+                                        Text(
+                                          user.role,
+                                        ),
+                                      ),
+                                      DataCell(
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.end,
+                                          children: [
+                                            IconButton(
+                                              icon: const Icon(
+                                                Icons.edit,
+                                                color: Color(0xFFDCA200),
+                                              ),
+                                              onPressed: () =>
+                                                  _editUser(user),
                                             ),
-                                          ),
+                                            IconButton(
+                                              icon: const Icon(
+                                                Icons.delete,
+                                                color: Color(0xFFDCA200),
+                                              ),
+                                              onPressed: () =>
+                                                  _deleteUser(user.id),
+                                            ),
+                                          ],
                                         ),
                                       ),
                                     ],

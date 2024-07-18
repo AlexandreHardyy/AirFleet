@@ -57,7 +57,8 @@ class _FlightsWebScreenState extends State<FlightsWebScreen> {
                           child: SingleChildScrollView(
                             scrollDirection: Axis.horizontal,
                             child: ConstrainedBox(
-                              constraints: BoxConstraints(minWidth: constraints.maxWidth),
+                              constraints: BoxConstraints(
+                                  minWidth: constraints.maxWidth),
                               child: DataTable(
                                 columnSpacing: 0,
                                 columns: const [
@@ -113,16 +114,41 @@ class _FlightsWebScreenState extends State<FlightsWebScreen> {
                                 rows: _flights.map((flight) {
                                   return DataRow(
                                     cells: [
-                                      DataCell(Text(flight.departure.name)),
-                                      DataCell(Text(flight.arrival.name)),
-                                      DataCell(Text('${flight.price.toString()} €')),
-                                      DataCell(Text(flight.status)),
-                                      DataCell(Text('${flight.pilot?.firstName} ${flight.pilot?.lastName}')),
-                                      DataCell(Text(flight.vehicle?.modelName ?? '')),
+                                      DataCell(
+                                        Text(
+                                          flight.departure.name,
+                                        ),
+                                      ),
+                                      DataCell(
+                                        Text(
+                                          flight.arrival.name,
+                                        ),
+                                      ),
+                                      DataCell(
+                                        Text(
+                                          '${flight.price.toString()} €',
+                                        ),
+                                      ),
+                                      DataCell(
+                                        Text(
+                                          flight.status,
+                                        ),
+                                      ),
+                                      DataCell(
+                                        Text(
+                                          '${flight.pilot?.firstName} ${flight.pilot?.lastName}',
+                                        ),
+                                      ),
+                                      DataCell(
+                                        Text(
+                                          flight.vehicle?.modelName ?? '',
+                                        ),
+                                      ),
                                     ],
-                                    onSelectChanged : (isSelected) {
+                                    onSelectChanged: (isSelected) {
                                       if (isSelected!) {
-                                        FlightDetailsScreen.navigateTo(context, flight: flight);
+                                        FlightDetailsScreen.navigateTo(context,
+                                            flight: flight);
                                       }
                                     },
                                   );

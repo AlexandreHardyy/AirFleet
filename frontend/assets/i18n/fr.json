@@ -35,7 +35,28 @@
     "seats_available": "Places disponibles",
     "proposed_by": "Proposé par",
     "people_in_flight": "Personnes déjà en vol",
-    "porposal_details": "Détails de la proposition"
+    "proposal_details": "Détails de la proposition",
+    "start_proposal": "Démarrer la proposition",
+    "confirm_start_proposal": "Êtes-vous sûr de vouloir démarrer la proposition ?",
+    "confirm_leave_proposal": "Êtes-vous sûr de vouloir quitter la proposition ?",
+    "confirm_delete_proposal": "Êtes-vous sûr de vouloir supprimer la proposition ?",
+    "join_proposal": "Rejoindre la proposition",
+    "leave_proposal": "Quitter la proposition",
+    "delete_proposal": "Supprimer la proposition",
+    "welcome_on_board": "Bienvenue à bord !",
+    "empty_proposal": "Aucune proposition disponible",
+    "form": {
+      "departure": "Départ",
+      "arrival": "Arrivée",
+      "departure_date": "Date de départ",
+      "departure_time": "Heure de départ",
+      "arrival_date": "Date d'arrivée",
+      "arrival_time": "Heure d'arrivée",
+      "price": "Prix",
+      "seats": "Sièges",
+      "description": "Description",
+      "select_vehicle": "Sélectionner un véhicule"
+    }
   },
   "vehicle": {
     "create_vehicle": "Créer un véhicule",
@@ -155,6 +176,28 @@
         "invalid_credentials": "Informations d'identification invalides",
         "server_error": "Erreur serveur"
       }
+    },
+    "users": {
+      "title": "Utilisateurs",
+      "firstName": "Prénom",
+      "lastName": "Nom de famille",
+      "email": "Email",
+      "role": "Rôle",
+      "actions": "Actions",
+      "createUser": "Créer un nouvel utilisateur"
+    },
+    "vehicles": {
+      "title": "Véhicules",
+      "modelName": "Nom du modèle",
+      "matriculation": "Immatriculation",
+      "seat": "Siège",
+      "cruiseSpeed": "Vitesse de croisière",
+      "cruiseAltitude": "Altitude de croisière",
+      "type": "Type",
+      "isVerified": "Est vérifié",
+      "isSelected": "Est sélectionné",
+      "actions": "Actions",
+      "createVehicle": "Créer un nouveau véhicule"
     }
   }
 }
