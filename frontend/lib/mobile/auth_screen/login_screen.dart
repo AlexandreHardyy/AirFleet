@@ -6,6 +6,7 @@ import 'package:frontend/blocs/auth/auth_bloc.dart';
 import 'package:frontend/mobile/auth_screen/register_screen.dart';
 import 'package:frontend/services/user.dart';
 import 'package:frontend/storage/user.dart';
+import 'package:frontend/widgets/info_box.dart';
 import 'package:frontend/widgets/input.dart';
 import 'package:frontend/widgets/title.dart';
 
@@ -25,6 +26,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormBuilderState>();
   final _emailFieldKey = GlobalKey<FormBuilderState>();
   var _apiMessage = "";
+  var _isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -69,7 +71,16 @@ class _LoginScreenState extends State<LoginScreen> {
 
                   state.saveAndValidate();
 
-                  state.validate();
+                  final isValid = state.validate();
+
+                  if (!isValid) {
+                    return;
+                  }
+
+                  setState(() {
+                    _isLoading = true;
+                  });
+
                   final formValues = state.instantValue;
                   final result = await UserService.login(
                       formValues['email'], formValues['password']);
@@ -88,11 +99,24 @@ class _LoginScreenState extends State<LoginScreen> {
                     } else {
                       _apiMessage = 'An error occurred';
                     }
+                    _isLoading = false;
                   });
                 },
-                child: const Text('Login'),
+                child: _isLoading
+                    ? const SizedBox(
+                        height: 15.0,
+                        width: 15.0,
+                        child: Center(
+                            child: CircularProgressIndicator(
+                          color: Colors.white,
+                          strokeWidth: 2,
+                        )),
+                      )
+                    : const Text('Login'),
               ),
-              Text(_apiMessage),
+              const SizedBox(height: 24),
+              InfoBox(content: _apiMessage),
+              const SizedBox(height: 24),
               MaterialButton(
                   onPressed: () {
                     RegisterScreen.navigateTo(context);
