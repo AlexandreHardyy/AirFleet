@@ -1,6 +1,7 @@
 package services
 
 import (
+	"backend/customErrors"
 	"backend/database"
 	"backend/inputs"
 	"backend/models"
@@ -8,6 +9,7 @@ import (
 	"backend/responses"
 	"backend/utils"
 	"errors"
+	"net/http"
 )
 
 type MessageServiceInterface interface {
@@ -52,7 +54,10 @@ func (s *MessageService) GetAllMessagesByFlightID(flightID int, userID int, limi
 	}
 
 	if utils.NotContainsUser(flight.Users, userID) && (flight.PilotID != nil && *flight.PilotID != userID) {
-		return nil, errors.New("you are not authorized to view this flight's messages")
+		return nil, &customErrors.CustomError{
+			StatusCode: http.StatusForbidden,
+			Message:    "you are not authorized to view this flight's messages",
+		}
 	}
 
 	messages, err := s.repository.GetAllMessagesByFlightID(flightID, limit, offset)

@@ -1,12 +1,14 @@
 package handlers
 
 import (
+	"backend/customErrors"
 	"backend/inputs"
 	"backend/models"
 	"backend/repositories"
 	"backend/services"
 	"backend/utils/token"
 	"encoding/json"
+	"errors"
 	"log"
 	"net/http"
 	"strconv"
@@ -30,37 +32,6 @@ func GetMessageHandler(db *gorm.DB) *MessageHandler {
 
 func newMessageHandler(messageService services.MessageServiceInterface) *MessageHandler {
 	return &MessageHandler{messageService}
-}
-
-// GetAll godoc
-//
-// @Summary Get all messages
-// @Schemes
-// @Description Get all messages
-// @Tags messages
-// @Accept			json
-// @Produce		json
-//
-// @Param			limit	query	int		false	"Limit"
-// @Param			offset	query	int		false	"Offset"
-//
-// @Success		200				{object}	[]responses.ResponseMessage
-// @Failure		400				{object}	Response
-//
-// @Router			/messages [get]
-//
-// @Security	BearerAuth
-func (h *MessageHandler) GetAll(c *gin.Context) {
-	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "100"))
-	offset, _ := strconv.Atoi(c.DefaultQuery("offset", "0"))
-
-	messages, err := h.messageService.GetAllMessages(limit, offset)
-	if err != nil {
-		c.JSON(500, gin.H{"error": err.Error()})
-		return
-	}
-
-	c.JSON(200, messages)
 }
 
 // GetAllByFlightID godoc
@@ -102,6 +73,11 @@ func (h *MessageHandler) GetAllByFlightID(c *gin.Context) {
 			Type:    "error",
 			Content: "[GetAllMessagesByFlightID]: " + err.Error(),
 		})
+		var customErr *customErrors.CustomError
+		if errors.As(err, &customErr) {
+			c.JSON(customErr.StatusCode, gin.H{"error": customErr.Message})
+			return
+		}
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}

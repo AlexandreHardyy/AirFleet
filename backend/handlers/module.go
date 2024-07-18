@@ -2,9 +2,11 @@ package handlers
 
 import (
 	"backend/inputs"
+	"backend/models"
 	"backend/repositories"
 	"backend/responses"
 	"backend/services"
+	"errors"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 	"net/http"
@@ -137,17 +139,20 @@ func (h *ModuleHandler) GetModuleByName(c *gin.Context) {
 
 	module, err := h.moduleService.GetModule(filters)
 	if err != nil {
-		c.JSON(500, Response{
-			Message: err.Error(),
-		})
-		return
-	}
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			c.JSON(http.StatusNotFound, Response{
+				Message: "module not found",
+			})
+		} else {
+			repositories.CreateMonitoringLog(models.MonitoringLog{
+				Type:    "error",
+				Content: "[GetModule]: " + err.Error(),
+			})
 
-	if module.ID == 0 {
-		c.JSON(404, Response{
-			Message: "Module not found",
-		})
-		return
+			c.JSON(http.StatusInternalServerError, Response{
+				Message: err.Error(),
+			})
+		}
 	}
 
 	c.JSON(200, module)
