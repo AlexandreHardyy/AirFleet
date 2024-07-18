@@ -10,11 +10,9 @@ class LocalNotificationService {
   FlutterLocalNotificationsPlugin();
 
   Future<void> init() async {
-    // Initialize native android notification
     const AndroidInitializationSettings initializationSettingsAndroid =
     AndroidInitializationSettings('@mipmap/ic_launcher');
 
-    // Initialize native Ios Notifications
     const DarwinInitializationSettings initializationSettingsIOS =
     DarwinInitializationSettings();
 
@@ -67,14 +65,8 @@ class LocalNotificationService {
   void showNotificationIos(String title, String value, String? route) async {
     const DarwinNotificationDetails iOSPlatformChannelSpecifics =
     DarwinNotificationDetails(
-        presentAlert: true,  // Present an alert when the notification is displayed and the application is in the foreground (only from iOS 10 onwards)
-        //presentBadge: true,  // Present the badge number when the notification is displayed and the application is in the foreground (only from iOS 10 onwards)
-        presentSound: false,  // Play a sound when the notification is displayed and the application is in the foreground (only from iOS 10 onwards)
-        //sound: String?,  // Specifics the file path to play (only from iOS 10 onwards)
-        //badgeNumber: int?, // The application's icon badge number
-        //attachments: List<IOSNotificationAttachment>?, (only from iOS 10 onwards)
-        //subtitle: String?, //Secondary description  (only from iOS 10 onwards)
-        //threadIdentifier: String? (only from iOS 10 onwards)
+        presentAlert: true,
+        presentSound: false,
     );
 
     int notificationId = 1;

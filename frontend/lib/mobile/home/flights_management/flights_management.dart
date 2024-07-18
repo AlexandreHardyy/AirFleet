@@ -154,30 +154,32 @@ class _FlightsManagementState extends State<FlightsManagement> {
                         return UserStore.user?.role == Roles.pilot
                             ? SearchFlights()
                             : DefaultTabController(
-                          length: 3,
-                          child: Scaffold(
-                            appBar: AppBar(
-                              toolbarHeight: 0,
-                              bottom: TabBar(
-                                tabs: [
-                                  Text(translate('home.flight_management.list.create')),
-                                  Text(translate('home.flight_management.list.search')),
-                                ],
-                              ),
-                            ),
-                            body: TabBarView(
-                              children: [
-                                CreateFlightWidget(
-                                  departureTextFieldFocusNode:
-                                  departureTextFieldFocusNode,
-                                  arrivalTextFieldFocusNode:
-                                  arrivalTextFieldFocusNode,
+                                length: 3,
+                                child: Scaffold(
+                                  appBar: AppBar(
+                                    toolbarHeight: 0,
+                                    bottom: TabBar(
+                                      tabs: [
+                                        Text(translate(
+                                            'home.flight_management.list.create')),
+                                        Text(translate(
+                                            'home.flight_management.list.search')),
+                                      ],
+                                    ),
+                                  ),
+                                  body: TabBarView(
+                                    children: [
+                                      CreateFlightWidget(
+                                        departureTextFieldFocusNode:
+                                            departureTextFieldFocusNode,
+                                        arrivalTextFieldFocusNode:
+                                            arrivalTextFieldFocusNode,
+                                      ),
+                                      const SearchView(),
+                                    ],
+                                  ),
                                 ),
-                                const SearchView(),
-                              ],
-                            ),
-                          ),
-                        );
+                              );
                       },
                     ),
                   ),

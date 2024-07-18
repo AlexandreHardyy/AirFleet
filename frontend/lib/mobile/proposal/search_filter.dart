@@ -33,7 +33,6 @@ class SearchFilterWidget extends StatefulWidget {
 }
 
 class _SearchFilterWidgetState extends State<SearchFilterWidget> {
-
   @override
   Widget build(BuildContext context) {
     return GestureDetector(

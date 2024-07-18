@@ -174,7 +174,10 @@ class AirFleetMapState extends State<AirFleetMap> {
   }
 
   void _clearMap(String? flightStatus) {
-    if (flightStatus != null && flightStatus == "in_progress" && _departureAnnotation != null && _arrivalAnnotation != null) {
+    if (flightStatus != null &&
+        flightStatus == "in_progress" &&
+        _departureAnnotation != null &&
+        _arrivalAnnotation != null) {
       _pointAnnotationManager?.delete(_departureAnnotation!);
       _pointAnnotationManager?.delete(_arrivalAnnotation!);
     } else {
@@ -187,7 +190,6 @@ class AirFleetMapState extends State<AirFleetMap> {
   Widget build(BuildContext context) {
     return BlocListener<CurrentFlightBloc, CurrentFlightState>(
       listener: (context, state) {
-        //TODO Remove duplicated code
         if (state.status == CurrentFlightStatus.loaded) {
           final flight = state.flight;
           if (flight != null) {
@@ -203,14 +205,15 @@ class AirFleetMapState extends State<AirFleetMap> {
             });
           }
 
-          if (context.read<SocketIoBloc>().state.socket != null && state.flight?.status == "in_progress") {
+          if (context.read<SocketIoBloc>().state.socket != null &&
+              state.flight?.status == "in_progress") {
             context.read<SocketIoBloc>().add(SocketIoListenEvent(
                 eventId: "pilotPositionUpdated",
                 event: "pilotPositionUpdated",
                 callback: (data) {
                   Map<String, dynamic> jsonData = jsonDecode(data);
                   final position =
-                  Position(jsonData['longitude'], jsonData['latitude']);
+                      Position(jsonData['longitude'], jsonData['latitude']);
                   _createPilotPositionOnMap(position);
                 }));
           }
@@ -232,7 +235,6 @@ class AirFleetMapState extends State<AirFleetMap> {
         }
       },
       child: Scaffold(
-          //TODO Improve this
           floatingActionButton: Padding(
             padding: const EdgeInsets.only(bottom: 50),
             child: FloatingActionButton(

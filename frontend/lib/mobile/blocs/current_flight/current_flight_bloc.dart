@@ -52,8 +52,6 @@ class CurrentFlightBloc extends Bloc<CurrentFlightEvent, CurrentFlightState> {
       flight: flight,
       isModuleEnabled: module.isEnabled,
     ));
-
-    //TODO handle error
   }
 
   void _onCurrentFlightSelected(CurrentFlightSelected event, Emitter<CurrentFlightState> emit) {

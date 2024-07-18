@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:flutter_translate/flutter_translate.dart';
 import 'package:frontend/mobile/proposal/proposal_detail.dart';
 import 'package:frontend/models/proposal.dart';
 import 'package:frontend/services/proposal.dart';
@@ -46,8 +45,10 @@ class _MyProposalViewState extends State<MyProposalView> {
               itemCount: snapshot.data!.length,
               itemBuilder: (context, index) {
                 Proposal proposal = snapshot.data![index];
-                DateTime parsedDepartureTime = DateTime.parse(proposal.departureTime);
-                String formattedDepartureTime = DateFormat('dd/MM/yyyy HH:mm').format(parsedDepartureTime);
+                DateTime parsedDepartureTime =
+                    DateTime.parse(proposal.departureTime);
+                String formattedDepartureTime =
+                    DateFormat('dd/MM/yyyy HH:mm').format(parsedDepartureTime);
                 return Padding(
                   padding: const EdgeInsets.all(14.0),
                   child: Container(
@@ -63,9 +64,11 @@ class _MyProposalViewState extends State<MyProposalView> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(proposal.flight.departure.name,
-                              style: const TextStyle(fontWeight: FontWeight.bold)),
+                              style:
+                                  const TextStyle(fontWeight: FontWeight.bold)),
                           Text(proposal.flight.arrival.name,
-                              style: const TextStyle(fontWeight: FontWeight.bold)),
+                              style:
+                                  const TextStyle(fontWeight: FontWeight.bold)),
                           Divider(color: Colors.grey[400]), // Separator
                           Padding(
                             padding: const EdgeInsets.only(top: 4.0),
@@ -80,7 +83,10 @@ class _MyProposalViewState extends State<MyProposalView> {
                         ],
                       ),
                       onTap: () async {
-                        await ProposalDetail.navigateTo(context, proposalId: proposal.id);
+                        await ProposalDetail.navigateTo(
+                          context,
+                          proposalId: proposal.id,
+                        );
                         refreshProposals();
                       },
                     ),
@@ -105,7 +111,8 @@ class _MyProposalViewState extends State<MyProposalView> {
                     padding: EdgeInsets.only(top: 8.0),
                     child: Text(
                       'You are not part of any proposal',
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                     ),
                   ),
                 ],
@@ -117,5 +124,3 @@ class _MyProposalViewState extends State<MyProposalView> {
     );
   }
 }
-
-

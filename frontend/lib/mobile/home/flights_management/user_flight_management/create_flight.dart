@@ -70,9 +70,9 @@ class _CreateFlightWidgetState extends State<CreateFlightWidget> {
     Response response;
 
     final String mapboxAccessToken =
-      const String.fromEnvironment("PUBLIC_ACCESS_TOKEN") != ""
-          ? const String.fromEnvironment("PUBLIC_ACCESS_TOKEN")
-          : dotenv.get("PUBLIC_ACCESS_TOKEN_MAPBOX");
+        const String.fromEnvironment("PUBLIC_ACCESS_TOKEN") != ""
+            ? const String.fromEnvironment("PUBLIC_ACCESS_TOKEN")
+            : dotenv.get("PUBLIC_ACCESS_TOKEN_MAPBOX");
 
     try {
       response = await dioMapbox.get(
@@ -98,9 +98,9 @@ class _CreateFlightWidgetState extends State<CreateFlightWidget> {
     Response response;
 
     final String mapboxAccessToken =
-      const String.fromEnvironment("PUBLIC_ACCESS_TOKEN") != ""
-          ? const String.fromEnvironment("PUBLIC_ACCESS_TOKEN")
-          : dotenv.get("PUBLIC_ACCESS_TOKEN_MAPBOX");
+        const String.fromEnvironment("PUBLIC_ACCESS_TOKEN") != ""
+            ? const String.fromEnvironment("PUBLIC_ACCESS_TOKEN")
+            : dotenv.get("PUBLIC_ACCESS_TOKEN_MAPBOX");
 
     try {
       response = await dioMapbox.get(
@@ -144,70 +144,74 @@ class _CreateFlightWidgetState extends State<CreateFlightWidget> {
   Widget build(BuildContext context) {
     return departure == null || arrival == null
         ? Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(left: 8, right: 8, top: 16),
-              child: Column(
-                children: [
-                  TextField(
-                    focusNode: widget.departureTextFieldFocusNode,
-                    controller: departureController,
-                    decoration: getInputDecoration(hintText: translate('common.departure')),
-                    onChanged: (value) async {
-                      final suggestions = await _retrieveNearbyAirport(value);
-                      setState(() {
-                        searchResults = suggestions;
-                      });
-                    },
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  TextField(
-                    focusNode: widget.arrivalTextFieldFocusNode,
-                    controller: arrivalController,
-                    decoration: getInputDecoration(hintText: translate('common.arrival')),
-                    onChanged: (value) async {
-                      final suggestions = await _retrieveNearbyAirport(value);
-                      setState(() {
-                        searchResults = suggestions;
-                      });
-                    },
-                  ),
-                ],
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(left: 8, right: 8, top: 16),
+                child: Column(
+                  children: [
+                    TextField(
+                      focusNode: widget.departureTextFieldFocusNode,
+                      controller: departureController,
+                      decoration: getInputDecoration(
+                          hintText: translate('common.departure')),
+                      onChanged: (value) async {
+                        final suggestions = await _retrieveNearbyAirport(value);
+                        setState(() {
+                          searchResults = suggestions;
+                        });
+                      },
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    TextField(
+                      focusNode: widget.arrivalTextFieldFocusNode,
+                      controller: arrivalController,
+                      decoration: getInputDecoration(
+                          hintText: translate('common.arrival')),
+                      onChanged: (value) async {
+                        final suggestions = await _retrieveNearbyAirport(value);
+                        setState(() {
+                          searchResults = suggestions;
+                        });
+                      },
+                    ),
+                  ],
+                ),
               ),
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            Expanded(
-              child: searchResults != null
-                  ? ListView.builder(
-                      itemCount: searchResults?.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        final airportSuggestion = searchResults![index];
+              const SizedBox(
+                height: 10,
+              ),
+              Expanded(
+                child: searchResults != null
+                    ? ListView.builder(
+                        itemCount: searchResults?.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          final airportSuggestion = searchResults![index];
 
-                        return GestureDetector(
-                          onTap: () => _onSelectAirport(airportSuggestion),
-                          child: Container(
-                            decoration: const BoxDecoration(
-                              border: Border(
-                                top: BorderSide(width: 1.0, color: Colors.grey),
+                          return GestureDetector(
+                            onTap: () => _onSelectAirport(airportSuggestion),
+                            child: Container(
+                              decoration: const BoxDecoration(
+                                border: Border(
+                                  top: BorderSide(
+                                      width: 1.0, color: Colors.grey),
+                                ),
+                              ),
+                              child: ListTile(
+                                title: Text(airportSuggestion.name),
+                                subtitle:
+                                    Text(airportSuggestion.fullAddress ?? ""),
                               ),
                             ),
-                            child: ListTile(
-                              title: Text(airportSuggestion.name),
-                              subtitle:
-                                  Text(airportSuggestion.fullAddress ?? ""),
-                            ),
-                          ),
-                        );
-                      },
-                    )
-                  : Text(translate('home.flight_management.create.idle_label')),
-            ),
-          ],
-        )
+                          );
+                        },
+                      )
+                    : Text(
+                        translate('home.flight_management.create.idle_label')),
+              ),
+            ],
+          )
         : Row(mainAxisAlignment: MainAxisAlignment.center, children: [
             ElevatedButton(
               onPressed: () async {

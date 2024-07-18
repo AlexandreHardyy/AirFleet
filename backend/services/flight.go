@@ -66,7 +66,6 @@ func (s *FlightService) CreateFlight(input inputs.CreateFlight, userID int) (res
 	}
 
 	flight := models.Flight{
-		//TODO: Status can be different based on the user role
 		Status:             flightStatus.WAITING_PILOT,
 		DepartureName:      input.Departure.Name,
 		DepartureAddress:   input.Departure.Address,

@@ -9,6 +9,7 @@ import 'package:frontend/widgets/departure_to_arrival.dart';
 
 class WaitingForTakeoff extends StatelessWidget {
   final Flight flight;
+
   const WaitingForTakeoff({super.key, required this.flight});
 
   @override

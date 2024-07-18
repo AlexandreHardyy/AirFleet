@@ -144,7 +144,6 @@ class _RegisterPilotScreenState extends State<RegisterPilotScreen> {
               ),
               const SizedBox(height: 10),
               ElevatedButton(
-                // : Theme.of(context).colorScheme.secondary,
                 onPressed: () async {
                   final state = _formKey.currentState;
                   if (state == null) {

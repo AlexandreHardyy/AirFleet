@@ -9,9 +9,9 @@ const MainTitle({ super.key, required this.content });
     return Text(
         content,
         style: const TextStyle(
-          fontSize: 28, // Taille de la police
-          fontWeight: FontWeight.bold, // Gras
-          color: Colors.black, // Couleur du texte
+          fontSize: 28,
+          fontWeight: FontWeight.bold,
+          color: Colors.black,
         ));
   }
 }
@@ -25,9 +25,9 @@ const SecondaryTitle({ super.key, required this.content });
     return Text(
         content,
         style: const TextStyle(
-          fontSize: 20, // Taille de la police
-          fontWeight: FontWeight.w500, // Gras
-          color: Colors.black, // Couleur du texte
+          fontSize: 20,
+          fontWeight: FontWeight.w500,
+          color: Colors.black,
         ));
   }
 }

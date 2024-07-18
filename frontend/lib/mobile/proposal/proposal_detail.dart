@@ -42,17 +42,21 @@ class _ProposalDetailState extends State<ProposalDetail> {
 
   void _joinProposal({required Proposal proposal}) async {
     try {
-      PaymentScreen.navigateTo(context, flight: proposal.flight, callbackSuccess: () async {
-        Navigator.of(context).pop();
-        _showConfirmation(context);
-        await ProposalService.joinProposal(proposal.id);
-        final updatedProposal =
-            await ProposalService.getProposalById(widget.proposalId);
-        setState(() {
-          _proposal = Future.value(updatedProposal);
-          _isUserInProposal = true;
-        });
-      },);
+      PaymentScreen.navigateTo(
+        context,
+        flight: proposal.flight,
+        callbackSuccess: () async {
+          Navigator.of(context).pop();
+          _showConfirmation(context);
+          await ProposalService.joinProposal(proposal.id);
+          final updatedProposal =
+              await ProposalService.getProposalById(widget.proposalId);
+          setState(() {
+            _proposal = Future.value(updatedProposal);
+            _isUserInProposal = true;
+          });
+        },
+      );
     } catch (e) {
       toastification.show(
         title: const Text('Error, could not join proposal'),
@@ -160,7 +164,9 @@ class _ProposalDetailState extends State<ProposalDetail> {
                             child: SizedBox(
                               width: 45,
                               height: 45,
-                              child: ProfileImage(profileID: proposal.flight.pilot?.id.toString()),
+                              child: ProfileImage(
+                                  profileID:
+                                      proposal.flight.pilot?.id.toString()),
                             ),
                           ),
                           const SizedBox(width: 10),
@@ -191,7 +197,9 @@ class _ProposalDetailState extends State<ProposalDetail> {
                             child: SizedBox(
                               width: 45,
                               height: 45,
-                              child: ProfileImage(profileID: proposal.flight.users![index].id.toString()),
+                              child: ProfileImage(
+                                  profileID: proposal.flight.users![index].id
+                                      .toString()),
                             ),
                           ),
                           title: Text('${user.firstName} ${user.lastName}'),
@@ -273,8 +281,8 @@ class _ProposalDetailState extends State<ProposalDetail> {
                             builder: (BuildContext context) {
                               return AlertDialog(
                                 title: Text(translate('common.confirm')),
-                                content: Text(
-                                   translate('proposal.confirm_delete_proposal')),
+                                content: Text(translate(
+                                    'proposal.confirm_delete_proposal')),
                                 actions: <Widget>[
                                   TextButton(
                                     onPressed: () =>
@@ -315,7 +323,6 @@ class _ProposalDetailState extends State<ProposalDetail> {
                   if (!_isUserInProposal && !_isPilot)
                     Padding(
                       padding: const EdgeInsets.only(bottom: 20.0),
-                      // Add padding at the bottom
                       child: SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(

@@ -27,7 +27,6 @@ class _WaitingTakeoffState extends State<WaitingTakeoff> {
     super.initState();
     _socketIoBloc = context.read<SocketIoBloc>();
 
-    // TODO: I think this is not used
     _socketIoBloc.add(SocketIoListenEvent(
       eventId: "flightTimeUpdated",
       event: "flightTimeUpdated",
@@ -52,13 +51,18 @@ class _WaitingTakeoffState extends State<WaitingTakeoff> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        SecondaryTitle(content: translate('home.flight_management.user_current_flight_management.waiting_takeoff.title')),
+        SecondaryTitle(
+            content: translate(
+                'home.flight_management.user_current_flight_management.waiting_takeoff.title')),
         const SizedBox(height: 10),
         DepartureToArrivalWidget(flight: widget.flight),
         const SizedBox(height: 24),
-        Text(translate('home.flight_management.user_current_flight_management.waiting_takeoff.subtitle')),
+        Text(translate(
+            'home.flight_management.user_current_flight_management.waiting_takeoff.subtitle')),
         const SizedBox(height: 8),
-        const LinearProgressIndicator(color: Color(0xFF131141),),
+        const LinearProgressIndicator(
+          color: Color(0xFF131141),
+        ),
         const SizedBox(
           height: 24,
         ),

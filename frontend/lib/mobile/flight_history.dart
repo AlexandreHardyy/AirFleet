@@ -44,11 +44,6 @@ class _FlightHistoryScreenState extends State<FlightHistoryScreen> {
       appBar: AppBar(
         title: const Text("Flight History"),
       ),
-      // body: Center(
-      //   child: Text(
-      //     message ?? 'Loading...'
-      //   ),
-      // ),
       body: FutureBuilder<String>(
           future: message,
           builder: (BuildContext context, AsyncSnapshot<String> snapshot) {

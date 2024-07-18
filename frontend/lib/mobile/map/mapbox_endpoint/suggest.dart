@@ -6,9 +6,10 @@ class SuggestionResponse {
 
   factory SuggestionResponse.fromJson(Map<String, dynamic> json) {
     return SuggestionResponse(
-      suggestions: (json['suggestions'] as List).map((i) => Suggestion.fromJson(i)).toList(),
-      attribution: json['attribution']
-    );
+        suggestions: (json['suggestions'] as List)
+            .map((i) => Suggestion.fromJson(i))
+            .toList(),
+        attribution: json['attribution']);
   }
 }
 
@@ -61,8 +62,12 @@ class Suggestion {
       context: Context.fromJson(json['context']),
       language: json['language'],
       maki: json['maki'],
-      poiCategory: json['poi_category'] != null ? List<String>.from(json['poi_category']) : null,
-      poiCategoryIds: json['poi_category_ids'] != null ? List<String>.from(json['poi_category_ids']) : null,
+      poiCategory: json['poi_category'] != null
+          ? List<String>.from(json['poi_category'])
+          : null,
+      poiCategoryIds: json['poi_category_ids'] != null
+          ? List<String>.from(json['poi_category_ids'])
+          : null,
       externalIds: json['external_ids'],
       metadata: json['metadata'],
       operationalStatus: json['operational_status'],
@@ -94,14 +99,20 @@ class Context {
 
   factory Context.fromJson(Map<String, dynamic> json) {
     return Context(
-      country: json['country'] != null ? Country.fromJson(json['country']) : null,
-      postcode: json['postcode'] != null ? Postcode.fromJson(json['postcode']) : null,
+      country:
+          json['country'] != null ? Country.fromJson(json['country']) : null,
+      postcode:
+          json['postcode'] != null ? Postcode.fromJson(json['postcode']) : null,
       place: json['place'] != null ? Place.fromJson(json['place']) : null,
-      neighborhood: json['neighborhood'] != null ? Neighborhood.fromJson(json['neighborhood']) : null,
-      address: json['address'] != null ? Address.fromJson(json['address']) : null,
+      neighborhood: json['neighborhood'] != null
+          ? Neighborhood.fromJson(json['neighborhood'])
+          : null,
+      address:
+          json['address'] != null ? Address.fromJson(json['address']) : null,
       street: json['street'] != null ? Street.fromJson(json['street']) : null,
       region: json['region'] != null ? Region.fromJson(json['region']) : null,
-      district: json['district'] != null ? District.fromJson(json['district']) : null,
+      district:
+          json['district'] != null ? District.fromJson(json['district']) : null,
     );
   }
 }

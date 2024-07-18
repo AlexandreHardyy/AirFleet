@@ -9,22 +9,30 @@ import 'package:frontend/services/module.dart';
 import 'package:frontend/storage/user.dart';
 
 part 'message_event.dart';
+
 part 'message_state.dart';
 
 class MessageBloc extends Bloc<MessageEvent, MessageState> {
-  MessageBloc() : super(MessageState(status: MessageStatus.initial, messages: [], isModuleEnabled: true)) {
+  MessageBloc()
+      : super(MessageState(
+          status: MessageStatus.initial,
+          messages: [],
+          isModuleEnabled: true,
+        )) {
     on<MessageInitialized>(_onMessageInitialized);
     on<MessageLoading>(_onMessageLoading);
     on<MessageLoaded>(_onMessageLoaded);
     on<NewMessage>(_onNewMessage);
   }
 
-  Future<void> _onMessageInitialized(MessageInitialized event, Emitter<MessageState> emit) async {
+  Future<void> _onMessageInitialized(
+      MessageInitialized event, Emitter<MessageState> emit) async {
     emit(state.copyWith(status: MessageStatus.loading));
 
     final module = await ModuleService.getModuleByName("chat");
     if (!module.isEnabled) {
-      emit(state.copyWith(status: MessageStatus.loaded, isModuleEnabled: false));
+      emit(
+          state.copyWith(status: MessageStatus.loaded, isModuleEnabled: false));
       return;
     }
 
@@ -56,7 +64,8 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
         'routeName': '/flight-chat',
         'arguments': event.message.flightId,
       };
-      LocalNotificationService().showNotification('New message !', 'You have received a new message !', jsonEncode(payload));
+      LocalNotificationService().showNotification('New message !',
+          'You have received a new message !', jsonEncode(payload));
     }
 
     emit(state.copyWith(

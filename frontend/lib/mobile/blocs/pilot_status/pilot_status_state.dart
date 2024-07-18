@@ -18,18 +18,20 @@ class PilotStatusState {
     required this.status,
     this.selectedVehicle,
     this.vehicles,
-    this.flights
+    this.flights,
   });
 
-  PilotStatusState copyWith(
-      {CurrentPilotStatus? status, List<Vehicle>? vehicles, Vehicle? selectedVehicle, List<Flight>? flights }) {
+  PilotStatusState copyWith({
+    CurrentPilotStatus? status,
+    List<Vehicle>? vehicles,
+    Vehicle? selectedVehicle,
+    List<Flight>? flights,
+  }) {
     return PilotStatusState(
       status: status ?? this.status,
       vehicles: vehicles ?? this.vehicles,
       selectedVehicle: selectedVehicle ?? this.selectedVehicle,
-      flights: flights ?? this.flights
+      flights: flights ?? this.flights,
     );
   }
-
-  
 }

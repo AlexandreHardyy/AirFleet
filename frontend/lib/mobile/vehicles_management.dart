@@ -44,7 +44,8 @@ class _VehiclesManagementScreenState extends State<VehiclesManagementScreen> {
         children: [
           FutureBuilder<List<Vehicle>>(
             future: _vehiclesFuture,
-            builder: (BuildContext context, AsyncSnapshot<List<Vehicle>> snapshot) {
+            builder:
+                (BuildContext context, AsyncSnapshot<List<Vehicle>> snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());
               } else if (snapshot.hasError) {
@@ -65,7 +66,8 @@ class _VehiclesManagementScreenState extends State<VehiclesManagementScreen> {
                           padding: EdgeInsets.only(top: 8.0),
                           child: Text(
                             'You are not part of any proposal',
-                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 20),
                           ),
                         ),
                       ],
@@ -85,9 +87,11 @@ class _VehiclesManagementScreenState extends State<VehiclesManagementScreen> {
                         margin: const EdgeInsets.all(8.0),
                         child: ListTile(
                           title: Text(vehicle.modelName),
-                          subtitle: Text('Matriculation: ${vehicle.matriculation}'),
+                          subtitle:
+                              Text('Matriculation: ${vehicle.matriculation}'),
                           leading: vehicle.isVerified!
-                              ? const Icon(Icons.check_circle, color: Colors.green)
+                              ? const Icon(Icons.check_circle,
+                                  color: Colors.green)
                               : const Icon(Icons.cancel, color: Colors.red),
                           onTap: () async {
                             await VehicleDetailsPage.navigateTo(context,
@@ -122,11 +126,14 @@ class _VehiclesManagementScreenState extends State<VehiclesManagementScreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.add, color: Theme.of(context).textTheme.displayLarge?.color),
+                    Icon(Icons.add,
+                        color: Theme.of(context).textTheme.displayLarge?.color),
                     const SizedBox(width: 8),
                     Text(
                       translate("home.vehicle_management.add"),
-                      style: TextStyle(color: Theme.of(context).textTheme.displayLarge?.color),
+                      style: TextStyle(
+                          color:
+                              Theme.of(context).textTheme.displayLarge?.color),
                     ),
                   ],
                 ),

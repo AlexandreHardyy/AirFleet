@@ -1,4 +1,3 @@
-// lib/web/flights/flight.dart
 import 'package:flutter/material.dart';
 import 'package:frontend/models/flight.dart';
 import 'package:frontend/services/flight.dart';

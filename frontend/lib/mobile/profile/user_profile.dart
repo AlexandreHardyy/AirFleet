@@ -244,7 +244,9 @@ class TotalRevenueInfo extends StatelessWidget {
 
   double get totalRevenue => flights.fold(
       0,
-      (previousValue, flight) => flight.status == "finished" || flight.status == "in_progress" || flight.status == "waiting_takeoff"
+      (previousValue, flight) => flight.status == "finished" ||
+              flight.status == "in_progress" ||
+              flight.status == "waiting_takeoff"
           ? previousValue + flight.price!
           : previousValue);
 

@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import 'package:frontend/mobile/proposal/proposal_detail.dart';
 import 'package:frontend/mobile/proposal/search_filter.dart';
@@ -136,7 +134,7 @@ class _SearchViewState extends State<SearchView> {
                             Text(proposal.flight.arrival.name,
                                 style: const TextStyle(
                                     fontWeight: FontWeight.bold)),
-                            Divider(color: Colors.grey[400]), // Separator
+                            Divider(color: Colors.grey[400]),
                             Padding(
                               padding: const EdgeInsets.only(top: 4.0),
                               child: Column(

@@ -9,6 +9,7 @@ import 'package:frontend/widgets/departure_to_arrival.dart';
 
 class FlightInProgress extends StatelessWidget {
   final Flight flight;
+
   const FlightInProgress({super.key, required this.flight});
 
   @override

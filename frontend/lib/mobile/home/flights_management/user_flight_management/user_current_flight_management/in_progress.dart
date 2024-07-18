@@ -66,7 +66,9 @@ class _InProgressFlightCardState extends State<InProgressFlightCard> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        SecondaryTitle(content: translate('home.flight_management.user_current_flight_management.in_progress.title')),
+        SecondaryTitle(
+            content: translate(
+                'home.flight_management.user_current_flight_management.in_progress.title')),
         const SizedBox(height: 24),
         DepartureToArrivalWidget(flight: widget.flight),
         const SizedBox(height: 10),
@@ -79,7 +81,8 @@ class _InProgressFlightCardState extends State<InProgressFlightCard> {
                 const SizedBox(width: 5),
                 Skeletonizer(
                   enabled: remainingTime == null,
-                  child: Text(remainingTime == null ? "Loading" : remainingTime!),
+                  child:
+                      Text(remainingTime == null ? "Loading" : remainingTime!),
                 )
               ],
             ),
@@ -89,7 +92,9 @@ class _InProgressFlightCardState extends State<InProgressFlightCard> {
                 const SizedBox(width: 5),
                 Skeletonizer(
                   enabled: remainingDistance == null,
-                  child: Text(remainingDistance == null ? "Loading" : "$remainingDistance nm"),
+                  child: Text(remainingDistance == null
+                      ? "Loading"
+                      : "$remainingDistance nm"),
                 )
               ],
             ),
