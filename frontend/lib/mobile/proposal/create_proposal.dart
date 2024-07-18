@@ -33,7 +33,7 @@ class _CreateProposalViewState extends State<CreateProposalView> {
   Airport? selectedDepartureAirport;
   Airport? selectedArrivalAirport;
 
-  List<Suggestion>? _suggestions = [];
+  List<Suggestion> _suggestions = [];
 
   FocusNode departureTextFieldFocusNode = FocusNode();
   FocusNode arrivalTextFieldFocusNode = FocusNode();
@@ -46,11 +46,6 @@ class _CreateProposalViewState extends State<CreateProposalView> {
     super.initState();
     _loadVehicles();
   }
-
-  final String mapboxAccessToken =
-  const String.fromEnvironment("PUBLIC_ACCESS_TOKEN") != ""
-      ? const String.fromEnvironment("PUBLIC_ACCESS_TOKEN")
-      : dotenv.get("PUBLIC_ACCESS_TOKEN_MAPBOX");
 
   void _loadVehicles() async {
     try {
@@ -67,6 +62,11 @@ class _CreateProposalViewState extends State<CreateProposalView> {
       // Handle error
     }
   }
+
+  final String mapboxAccessToken =
+  const String.fromEnvironment("PUBLIC_ACCESS_TOKEN") != ""
+      ? const String.fromEnvironment("PUBLIC_ACCESS_TOKEN")
+      : dotenv.get("PUBLIC_ACCESS_TOKEN_MAPBOX");
 
   Future<List<Suggestion>> _retrieveAirport(String searchValue) async {
     Response response;
@@ -95,7 +95,7 @@ class _CreateProposalViewState extends State<CreateProposalView> {
       response = await dioMapbox.get(
         "search/searchbox/v1/retrieve/$mapboxId",
         queryParameters: {
-          'access_token': const String.fromEnvironment("PUBLIC_ACCESS_TOKEN"),
+          'access_token': mapboxAccessToken,
           'session_token': mapboxSessionToken,
         },
       );
@@ -118,7 +118,7 @@ class _CreateProposalViewState extends State<CreateProposalView> {
     );
 
     setState(() {
-      _suggestions = null;
+      _suggestions = [];
       if (departureTextFieldFocusNode.hasFocus) {
         selectedDepartureAirport = airport;
         _departureController.text = selectedDepartureAirport!.name;
@@ -178,19 +178,20 @@ class _CreateProposalViewState extends State<CreateProposalView> {
                   onPressed: () {
                     _departureController.clear();
                     setState(() {
-                      _suggestions = null;
+                      _suggestions = [];
                     });
                   },
                 )
                     : null,),
               ),
-              if (_suggestions != null && departureTextFieldFocusNode.hasFocus)
+              if (_suggestions.isNotEmpty &&
+                  departureTextFieldFocusNode.hasFocus)
                 SizedBox(
                   height: 200,
                   child: ListView.builder(
-                    itemCount: _suggestions?.length,
+                    itemCount: _suggestions.length,
                     itemBuilder: (BuildContext context, int index) {
-                      final airportSuggestion = _suggestions![index];
+                      final airportSuggestion = _suggestions[index];
                       return GestureDetector(
                         onTap: () => _onSelectAirport(airportSuggestion),
                         child: Container(
@@ -225,19 +226,19 @@ class _CreateProposalViewState extends State<CreateProposalView> {
                     onPressed: () {
                       _arrivalController.clear();
                       setState(() {
-                        _suggestions = null;
+                        _suggestions = [];
                       });
                     },
                   )
                       : null,),
               ),
-              if (_suggestions != null && arrivalTextFieldFocusNode.hasFocus)
+              if (_suggestions.isNotEmpty && arrivalTextFieldFocusNode.hasFocus)
                 SizedBox(
                   height: 200,
                   child: ListView.builder(
-                    itemCount: _suggestions?.length,
+                    itemCount: _suggestions.length,
                     itemBuilder: (BuildContext context, int index) {
-                      final airportSuggestion = _suggestions![index];
+                      final airportSuggestion = _suggestions[index];
                       return GestureDetector(
                         onTap: () => _onSelectAirport(airportSuggestion),
                         child: Container(
