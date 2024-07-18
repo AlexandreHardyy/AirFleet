@@ -70,6 +70,8 @@ class UserService {
 
   static Future<Map<String, dynamic>> login(
       String email, String password) async {
+
+    print("test envoie de requete");
     try {
       final response = await dioApi.post(
         '/users/login',
@@ -86,6 +88,7 @@ class UserService {
 
       return response.data;
     } catch (error) {
+      print("test error");
       if (error is DioException) {
         return error.response?.data;
       } else {

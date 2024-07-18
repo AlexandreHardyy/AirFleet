@@ -1,5 +1,8 @@
 {
   "common": {
+    "confirm": "Confirmer",
+    "yes": "Oui",
+    "no": "Non",
     "departure": "Départ",
     "arrival": "Arrivée",
     "input": {
@@ -15,6 +18,12 @@
       "price": "Prix",
       "submit": "Soumettre",
       "ignore": "Ignorer"
+    },
+    "role": {
+      "user": "Utilisateur",
+      "pilot": "Pilote",
+      "admin": "Administrateur",
+      "unknown": "Rôle inconnu"
     },
     "plane": "Avion",
     "helicopter": "Hélicoptère"
@@ -41,6 +50,27 @@
       "vehicle": "Véhicule",
       "offerFlight": "Proposition de vol",
       "logout": "Déconnexion"
+    },
+    "profile": {
+      "updateProfilePicture": {
+        "submit": "Êtes-vous sûr de vouloir soumettre cette photo ?"
+      },
+      "ratings": "Évaluations",
+      "flightList": {
+        "status": {
+          "waitingTakeoff": "En attente de décollage",
+          "inProgress": "En cours",
+          "finished": "Terminé",
+          "cancelled": "Annulé"
+        }
+      },
+      "show": {
+        "more": "Afficher plus",
+        "less": "Afficher moins"
+      }
+    },
+    "vehicle_management": {
+      "add": "Ajouter un véhicule"
     },
     "flight_management": {
       "list": {
@@ -84,7 +114,6 @@
           "button": "Terminer le vol"
         }
       },
-
       "search_flights": {
         "no_vehicle": "Aucun véhicule disponible",
         "select_vehicle": "Sélectionnez votre véhicule pour trouver des vols",
@@ -110,5 +139,22 @@
     "module_disabled": "Module de chat désactivé",
     "text_field_label": "Tapez un message",
     "send_button": "Envoyer"
+  },
+  "web": {
+    "login": {
+      "title": "Connexion",
+      "email": "Email",
+      "password": "Mot de passe",
+      "submit": "Connexion",
+      "login": "Connexion",
+      "register": "Pas encore de compte ? Inscrivez-vous ici",
+      "success": "Connexion réussie",
+      "error": {
+        "unknown": "Erreur inconnue",
+        "not_admin": "Vous n'êtes pas un administrateur",
+        "invalid_credentials": "Informations d'identification invalides",
+        "server_error": "Erreur serveur"
+      }
+    }
   }
 }

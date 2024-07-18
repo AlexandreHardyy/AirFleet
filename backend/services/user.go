@@ -11,7 +11,7 @@ import (
 
 type UserService interface {
 	Register(user models.User) (responses.User, error)
-	Login(input inputs.LoginUser) (string, error)
+	Login(input inputs.LoginUser) (models.UserLoginResponse, error)
 	ValidateAccount(token string) error
 	GetById(id int) (models.User, error)
 	GetAll() ([]responses.ListUser, error)
@@ -50,14 +50,14 @@ func (s *userService) Register(input models.User) (responses.User, error) {
 	return formattedUser, nil
 }
 
-func (s *userService) Login(input inputs.LoginUser) (string, error) {
+func (s *userService) Login(input inputs.LoginUser) (models.UserLoginResponse, error) {
 
-	token, err := s.repository.Login(input.Email, input.Password)
+	response, err := s.repository.Login(input.Email, input.Password)
 	if err != nil {
-		return "", err
+		return response, err
 	}
 
-	return token, nil
+	return response, nil
 }
 
 func (s *userService) ValidateAccount(token string) error {

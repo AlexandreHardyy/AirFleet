@@ -186,7 +186,7 @@ func (th *UserHandler) Login(c *gin.Context) {
 		return
 	}
 
-	tkn, err := th.userService.Login(input)
+	serviceResponse, err := th.userService.Login(input)
 	if err != nil {
 		response := &Response{
 			Message: err.Error(),
@@ -200,8 +200,9 @@ func (th *UserHandler) Login(c *gin.Context) {
 		Content: "[Login]: " + input.Email,
 	})
 
-	c.JSON(http.StatusOK, gin.H{
-		"token": tkn,
+	c.JSON(http.StatusOK, responses.Login{
+		Token: serviceResponse.Token,
+		Role:  serviceResponse.Role,
 	})
 }
 

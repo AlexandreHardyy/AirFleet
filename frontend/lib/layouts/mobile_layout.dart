@@ -156,14 +156,13 @@ class MobileLayout extends StatelessWidget {
                       backgroundColor: const Color(0xFFDCA200),
                       foregroundColor: Colors.white,
                       textStyle: const TextStyle(
-                        // fontWeight: FontWeight.bold,
                           fontSize: 16),
-                      // Couleur du texte blanc
                       shape: RoundedRectangleBorder(
                         borderRadius:
-                        BorderRadius.circular(8.0), // Coins arrondis de 4px
+                        BorderRadius.circular(8.0),
                       ),
-                      padding: const EdgeInsets.all(14)),
+                      padding: const EdgeInsets.all(14),
+                    ),
                 ),
                 // ALTERNATIVE
                 /*textTheme: GoogleFonts.prostoOneTextTheme(),*/
