@@ -178,8 +178,6 @@ class _CreateProposalViewState extends State<CreateProposalView> {
                 )
                     : null,),
               ),
-              if (_suggestions.isNotEmpty &&
-                  departureTextFieldFocusNode.hasFocus)
                 SizedBox(
                   height: 200,
                   child: ListView.builder(
