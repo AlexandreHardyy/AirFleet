@@ -177,6 +177,19 @@
         "server_error": "Erreur serveur"
       }
     },
+    "navigation": {
+      "title": "Navigation",
+      "dashboard": "Tableau de bord",
+      "users": "Utilisateurs",
+      "vehicles": "Véhicules",
+      "flights": "Vols",
+      "monitoringLogs": "Logs de surveillance",
+      "modules": "Modules",
+      "logout": "Déconnexion"
+    },
+    "modules": {
+      "title": "Modules"
+    },
     "users": {
       "title": "Utilisateurs",
       "firstName": "Prénom",

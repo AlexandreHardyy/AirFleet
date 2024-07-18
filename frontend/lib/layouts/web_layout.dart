@@ -8,7 +8,6 @@ import 'package:frontend/web/flights/flight.dart';
 import 'package:frontend/web/flights/flight_details.dart';
 import 'package:frontend/web/home_web.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:frontend/web/module/module.dart';
 import 'package:frontend/web/monitoring-logs/index.dart';
 import 'package:frontend/web/user/user.dart';
 import 'package:frontend/web/vehicle/vehicle.dart';
@@ -28,7 +27,6 @@ class WebLayout extends StatelessWidget {
           '/user': (context) => const UserScreen(),
           '/vehicle': (context) => const VehicleScreen(),
           '/flight': (context) => const FlightsWebScreen(),
-          '/module': (context) => const ModuleScreen(),
           '/monitoring-logs': (context) => const MonitoringLogScreen(),
         },
         onGenerateRoute: (settings) {
