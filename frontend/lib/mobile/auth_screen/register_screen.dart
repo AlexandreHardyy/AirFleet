@@ -5,6 +5,7 @@ import 'package:frontend/mobile/auth_screen/login_screen.dart';
 import 'package:frontend/mobile/auth_screen/register_pilot_screen.dart';
 import 'package:frontend/services/user.dart';
 import 'package:frontend/widgets/input.dart';
+import 'package:frontend/widgets/info_box.dart';
 import 'package:frontend/widgets/title.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -23,6 +24,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _formKey = GlobalKey<FormBuilderState>();
   final _emailFieldKey = GlobalKey<FormBuilderState>();
   var _apiMessage = "";
+  var _isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -97,6 +99,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 if (!isValid) {
                   return;
                 }
+                setState(() {
+                  _isLoading = true;
+                });
+
                 final formValues = state.instantValue;
                 final result = await UserService.register(
                     formValues['email'],
@@ -113,11 +119,24 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   } else {
                     _apiMessage = 'An error occurred';
                   }
+                  _isLoading = false;
                 });
               },
-              child: const Text('Register'),
+              child: _isLoading
+                  ? const SizedBox(
+                      height: 15.0,
+                      width: 15.0,
+                      child: Center(
+                          child: CircularProgressIndicator(
+                        color: Colors.white,
+                        strokeWidth: 2,
+                      )),
+                    )
+                  : const Text('Register'),
             ),
-            Text(_apiMessage),
+            const SizedBox(height: 24),
+            InfoBox(content: _apiMessage),
+            const SizedBox(height: 24),
             MaterialButton(
                 onPressed: () {
                   LoginScreen.navigateTo(context);

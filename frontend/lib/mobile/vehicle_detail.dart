@@ -26,6 +26,7 @@ class _VehicleDetailsPageState extends State<VehicleDetailsPage> {
   final _formKey = GlobalKey<FormState>();
   late Vehicle _vehicle;
   bool isPlaneSelected = true;
+  var _isLoading = false;
 
   InputDecoration _buildInputDecoration(
       {required String labelText, IconData? prefixIcon, String? suffixText}) {
@@ -246,6 +247,9 @@ class _VehicleDetailsPageState extends State<VehicleDetailsPage> {
                                     if (_formKey.currentState!.validate()) {
                                       _formKey.currentState!.save();
                                       try {
+                                        setState(() {
+                                          _isLoading = true;
+                                        });
                                         await VehicleService.createVehicle(
                                             _vehicle);
                                         Navigator.of(context).pop();
@@ -258,15 +262,22 @@ class _VehicleDetailsPageState extends State<VehicleDetailsPage> {
                                           ),
                                         );
                                       }
+                                      setState(() {
+                                        _isLoading = false;
+                                      });
                                     }
                                   },
-                                  style: ElevatedButton.styleFrom(
-                                    foregroundColor: Colors.black,
-                                    padding: const EdgeInsets.symmetric(
-                                      vertical: 15,
-                                    ),
-                                  ),
-                                  child: const Text('Save Vehicle'),
+                                  child: _isLoading
+                                      ? const SizedBox(
+                                          height: 15.0,
+                                          width: 15.0,
+                                          child: Center(
+                                              child: CircularProgressIndicator(
+                                            color: Colors.white,
+                                            strokeWidth: 2,
+                                          )),
+                                        )
+                                      : const Text('Save Vehicle'),
                                 ),
                               ),
                             ]
