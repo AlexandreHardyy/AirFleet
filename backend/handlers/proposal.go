@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"backend/auth"
 	"backend/inputs"
 	"backend/repositories"
 	"backend/responses"
@@ -224,55 +225,6 @@ func (h *ProposalHandler) GetProposal(c *gin.Context) {
 	c.JSON(http.StatusOK, proposal)
 }
 
-// UpdateProposal godoc
-//
-// @Summary Update a proposal
-// @Schemes
-// @Description Update a proposal
-// @Tags proposals
-// @Accept			json
-// @Produce		json
-//
-// @Param			id	path	int	true	"ID"
-// @Param			proposal	body	inputs.InputUpdateProposal	true	"Proposal"
-//
-// @Success		200				{object}	responses.ResponseProposal
-// @Failure		400				{object}	Response
-//
-// @Router			/proposals/{id} [patch]
-//
-// @Security	BearerAuth
-func (h *ProposalHandler) UpdateProposal(c *gin.Context) {
-	idStr := c.Param("id")
-	id, err := strconv.Atoi(idStr)
-
-	if err != nil {
-		c.String(http.StatusBadRequest, "Invalid ID format")
-		return
-	}
-
-	var input inputs.InputUpdateProposal
-	err = c.ShouldBindJSON(&input)
-	if err != nil {
-		response := &Response{
-			Message: "Error: cannot extract JSON body",
-		}
-		c.JSON(http.StatusBadRequest, response)
-		return
-	}
-
-	updatedProposal, err := h.proposalService.UpdateProposal(id, input)
-	if err != nil {
-		response := &Response{
-			Message: err.Error(),
-		}
-		c.JSON(http.StatusBadRequest, response)
-		return
-	}
-
-	c.JSON(http.StatusOK, updatedProposal)
-}
-
 // DeleteProposal godoc
 //
 // @Summary Delete a proposal
@@ -293,9 +245,42 @@ func (h *ProposalHandler) UpdateProposal(c *gin.Context) {
 func (h *ProposalHandler) DeleteProposal(c *gin.Context) {
 	idStr := c.Param("id")
 	id, err := strconv.Atoi(idStr)
-
 	if err != nil {
 		c.String(http.StatusBadRequest, "Invalid ID format")
+		return
+	}
+
+	userID, err := token.ExtractTokenID(c)
+	if err != nil {
+		response := &Response{
+			Message: "Error: cannot extract user ID",
+		}
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	proposalToDelete, err := h.proposalService.GetProposal(id)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			c.Status(http.StatusNotFound)
+			return
+		}
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	isAdmin, err := auth.IsAdmin(userID)
+	if err != nil {
+		response := &Response{
+			Message: "Error: cannot extract user ID",
+		}
+		c.JSON(http.StatusBadRequest, response)
+		return
+
+	}
+
+	if proposalToDelete.Flight.Pilot.ID != userID && !isAdmin {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 		return
 	}
 
