@@ -73,26 +73,31 @@ class _VehiclesManagementScreenState extends State<VehiclesManagementScreen> {
                   ),
                 );
               } else {
-                return ListView.builder(
-                  itemCount: snapshot.data!.length,
-                  itemBuilder: (context, index) {
-                    Vehicle vehicle = snapshot.data![index];
-                    return Card(
-                      margin: const EdgeInsets.all(8.0),
-                      child: ListTile(
-                        title: Text(vehicle.modelName),
-                        subtitle: Text('Matriculation: ${vehicle.matriculation}'),
-                        leading: vehicle.isVerified!
-                            ? const Icon(Icons.check_circle, color: Colors.green)
-                            : const Icon(Icons.cancel, color: Colors.red),
-                        onTap: () async {
-                          await VehicleDetailsPage.navigateTo(context,
-                              vehicleId: vehicle.id);
-                          refreshVehicles();
-                        },
-                      ),
-                    );
+                return RefreshIndicator(
+                  onRefresh: () async {
+                    refreshVehicles();
                   },
+                  child: ListView.builder(
+                    itemCount: snapshot.data!.length,
+                    itemBuilder: (context, index) {
+                      Vehicle vehicle = snapshot.data![index];
+                      return Card(
+                        margin: const EdgeInsets.all(8.0),
+                        child: ListTile(
+                          title: Text(vehicle.modelName),
+                          subtitle: Text('Matriculation: ${vehicle.matriculation}'),
+                          leading: vehicle.isVerified!
+                              ? const Icon(Icons.check_circle, color: Colors.green)
+                              : const Icon(Icons.cancel, color: Colors.red),
+                          onTap: () async {
+                            await VehicleDetailsPage.navigateTo(context,
+                                vehicleId: vehicle.id);
+                            refreshVehicles();
+                          },
+                        ),
+                      );
+                    },
+                  ),
                 );
               }
             },

@@ -38,51 +38,56 @@ class _MyProposalViewState extends State<MyProposalView> {
         } else if (snapshot.hasError) {
           return Center(child: Text('Error: ${snapshot.error}'));
         } else if (snapshot.hasData && snapshot.data!.isNotEmpty) {
-          return ListView.builder(
-            itemCount: snapshot.data!.length,
-            itemBuilder: (context, index) {
-              Proposal proposal = snapshot.data![index];
-              DateTime parsedDepartureTime = DateTime.parse(proposal.departureTime);
-              String formattedDepartureTime = DateFormat('dd/MM/yyyy HH:mm').format(parsedDepartureTime);
-              return Padding(
-                padding: const EdgeInsets.all(14.0),
-                child: Container(
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: Colors.grey[300]!,
-                      width: 1.0,
-                    ),
-                    borderRadius: BorderRadius.circular(12.0),
-                  ),
-                  child: ListTile(
-                    title: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(proposal.flight.departure.name,
-                            style: const TextStyle(fontWeight: FontWeight.bold)),
-                        Text(proposal.flight.arrival.name,
-                            style: const TextStyle(fontWeight: FontWeight.bold)),
-                        Divider(color: Colors.grey[400]), // Separator
-                        Padding(
-                          padding: const EdgeInsets.only(top: 4.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text('Departure Time: $formattedDepartureTime',
-                                  style: const TextStyle(fontSize: 12)),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                    onTap: () async {
-                      await ProposalDetail.navigateTo(context, proposalId: proposal.id);
-                      refreshProposals();
-                    },
-                  ),
-                ),
-              );
+          return RefreshIndicator(
+            onRefresh: () async {
+              refreshProposals();
             },
+            child: ListView.builder(
+              itemCount: snapshot.data!.length,
+              itemBuilder: (context, index) {
+                Proposal proposal = snapshot.data![index];
+                DateTime parsedDepartureTime = DateTime.parse(proposal.departureTime);
+                String formattedDepartureTime = DateFormat('dd/MM/yyyy HH:mm').format(parsedDepartureTime);
+                return Padding(
+                  padding: const EdgeInsets.all(14.0),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: Colors.grey[300]!,
+                        width: 1.0,
+                      ),
+                      borderRadius: BorderRadius.circular(12.0),
+                    ),
+                    child: ListTile(
+                      title: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(proposal.flight.departure.name,
+                              style: const TextStyle(fontWeight: FontWeight.bold)),
+                          Text(proposal.flight.arrival.name,
+                              style: const TextStyle(fontWeight: FontWeight.bold)),
+                          Divider(color: Colors.grey[400]), // Separator
+                          Padding(
+                            padding: const EdgeInsets.only(top: 4.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('Departure Time: $formattedDepartureTime',
+                                    style: const TextStyle(fontSize: 12)),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      onTap: () async {
+                        await ProposalDetail.navigateTo(context, proposalId: proposal.id);
+                        refreshProposals();
+                      },
+                    ),
+                  ),
+                );
+              },
+            ),
           );
         } else {
           return Center(

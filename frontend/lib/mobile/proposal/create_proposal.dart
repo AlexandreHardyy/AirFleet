@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
@@ -6,6 +7,7 @@ import 'package:flutter_translate/flutter_translate.dart';
 import 'package:frontend/mobile/home/flights_management/user_flight_management/create_flight.dart';
 import 'package:frontend/mobile/map/mapbox_endpoint/retrieve.dart';
 import 'package:frontend/mobile/map/mapbox_endpoint/suggest.dart';
+import 'package:frontend/mobile/proposal/proposal_detail.dart';
 import 'package:frontend/models/flight.dart';
 import 'package:frontend/models/vehicle.dart';
 import 'package:frontend/services/dio.dart';
@@ -13,6 +15,7 @@ import 'package:frontend/services/proposal.dart';
 import 'package:frontend/services/vehicle.dart';
 import 'package:frontend/widgets/input.dart';
 import 'package:intl/intl.dart';
+import 'package:toastification/toastification.dart';
 
 class CreateProposalView extends StatefulWidget {
   const CreateProposalView({super.key});
@@ -59,7 +62,11 @@ class _CreateProposalViewState extends State<CreateProposalView> {
             .toList();
       });
     } catch (e) {
-      // Handle error
+      toastification.show(
+        title: const Text('Error, could not find vehicles'),
+        autoCloseDuration: const Duration(seconds: 5),
+        primaryColor: CupertinoColors.systemRed,
+      );
     }
   }
 
@@ -312,7 +319,7 @@ class _CreateProposalViewState extends State<CreateProposalView> {
                         if (_formKey.currentState!.validate()) {
                           _formKey.currentState!.save();
                           try {
-                            await ProposalService.createProposal({
+                            var proposal = await ProposalService.createProposal({
                               "availableSeats": availableSeats,
                               "departureTime": DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").format(departureTime.toUtc()),
                               "description": description,
@@ -333,7 +340,14 @@ class _CreateProposalViewState extends State<CreateProposalView> {
                                 },
                               },
                             });
-                            Navigator.pop(context, true);
+                            toastification.show(
+                              title: Text(translate('common.success')),
+                              autoCloseDuration: const Duration(seconds: 5),
+                              primaryColor: CupertinoColors.systemGreen,
+                            );
+                            if (proposal != null) {
+                              await ProposalDetail.navigateTo(context, proposalId: proposal.id);
+                            }
                           } on DioException catch (e) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
