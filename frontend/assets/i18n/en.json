@@ -164,6 +164,7 @@
   "web": {
     "login": {
       "title": "Login",
+      "subtitle": "Welcome on board! Please login to access the admin menu.",
       "email": "Email",
       "password": "Password",
       "submit": "Login",
