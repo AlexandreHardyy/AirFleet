@@ -32,7 +32,7 @@ class _CreateProposalViewState extends State<CreateProposalView> {
   Airport? selectedDepartureAirport;
   Airport? selectedArrivalAirport;
 
-  List<Suggestion> _suggestions = [];
+  List<Suggestion>? _suggestions = [];
 
   FocusNode departureTextFieldFocusNode = FocusNode();
   FocusNode arrivalTextFieldFocusNode = FocusNode();
@@ -112,7 +112,7 @@ class _CreateProposalViewState extends State<CreateProposalView> {
     );
 
     setState(() {
-      _suggestions = [];
+      _suggestions = null;
       if (departureTextFieldFocusNode.hasFocus) {
         selectedDepartureAirport = airport;
         _departureController.text = selectedDepartureAirport!.name;
@@ -172,18 +172,19 @@ class _CreateProposalViewState extends State<CreateProposalView> {
                   onPressed: () {
                     _departureController.clear();
                     setState(() {
-                      _suggestions = [];
+                      _suggestions = null;
                     });
                   },
                 )
                     : null,),
               ),
+              if (_suggestions != null && departureTextFieldFocusNode.hasFocus)
                 SizedBox(
                   height: 200,
                   child: ListView.builder(
-                    itemCount: _suggestions.length,
+                    itemCount: _suggestions?.length,
                     itemBuilder: (BuildContext context, int index) {
-                      final airportSuggestion = _suggestions[index];
+                      final airportSuggestion = _suggestions![index];
                       return GestureDetector(
                         onTap: () => _onSelectAirport(airportSuggestion),
                         child: Container(
@@ -218,19 +219,19 @@ class _CreateProposalViewState extends State<CreateProposalView> {
                     onPressed: () {
                       _arrivalController.clear();
                       setState(() {
-                        _suggestions = [];
+                        _suggestions = null;
                       });
                     },
                   )
                       : null,),
               ),
-              if (_suggestions.isNotEmpty && arrivalTextFieldFocusNode.hasFocus)
+              if (_suggestions != null && arrivalTextFieldFocusNode.hasFocus)
                 SizedBox(
                   height: 200,
                   child: ListView.builder(
-                    itemCount: _suggestions.length,
+                    itemCount: _suggestions?.length,
                     itemBuilder: (BuildContext context, int index) {
-                      final airportSuggestion = _suggestions[index];
+                      final airportSuggestion = _suggestions![index];
                       return GestureDetector(
                         onTap: () => _onSelectAirport(airportSuggestion),
                         child: Container(
