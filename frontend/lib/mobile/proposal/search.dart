@@ -148,11 +148,11 @@ class _SearchViewState extends State<SearchView> {
                                   const SizedBox(height: 8),
                                   Row(
                                     children: [
-                                      const ClipOval(
+                                      ClipOval(
                                         child: SizedBox(
                                           width: 45,
                                           height: 45,
-                                          child: ProfileImage(),
+                                          child: ProfileImage(profileID: proposal.flight.pilot?.id.toString()),
                                         ),
                                       ),
                                       const SizedBox(width: 8),
